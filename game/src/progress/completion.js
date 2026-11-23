@@ -29,3 +29,33 @@ export function completionPercent(state) {
   for (const [, done, total, weight] of completionGoals(state)) pct += weight * Math.min(1, done / Math.max(1, total));
   return Math.floor(pct);
 }
+
+const MILESTONES = [25, 50, 75, 100];
+const HUNDRED_BONUS = 100000;
+
+// Watches progress during play: a toast at each quarter and, at one hundred percent, a bonus
+// and a headline. Older saves start at the milestone they have already passed, silently.
+export class CompletionWatch {
+  constructor(game) {
+    this.game = game;
+    this.wait = 0;
+  }
+
+  update(dt) {
+    this.wait -= dt;
+    if (this.wait > 0) return;
+    this.wait = 2;
+    const g = this.game, st = g.state;
+    const pct = completionPercent(st);
+    const reached = MILESTONES.filter((m) => pct >= m).pop() || 0;
+    if (st.completionShown === undefined) { st.completionShown = reached; return; }
+    if (reached <= st.completionShown) return;
+    st.completionShown = reached;
+    if (reached === 100) {
+      st.money += HUNDRED_BONUS;
+      g.hud.bigMessage('THE KEYS ARE YOURS', `100% COMPLETE · +$${HUNDRED_BONUS.toLocaleString('en-US')}`, 4);
+    } else {
+      g.hud.toast(`<b>Island ${reached}% complete</b> · check the Assets tab for what is left`);
+    }
+  }
+}
