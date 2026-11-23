@@ -186,6 +186,13 @@ export class Player {
     const state = !this.onGround ? 'jump' : this.aiming ? 'aim' : speed > 5 ? 'run' : speed > 0 ? 'walk' : 'idle';
     this.moveState = state;
     poseHuman(this.rig, state, speed, dt, this.aiming ? ctx.camera.pitch * 0.8 : 0);
+    if (this.punchTimer > 0) {
+      // a quick right jab: snap out, ease back
+      this.punchTimer -= dt;
+      const k = Math.sin(Math.max(0, this.punchTimer) / 0.25 * Math.PI);
+      this.rig.userData.arms[1].rotation.set(0.4 + k * 1.25, 0, -0.2);
+      this.rig.userData.arms[0].rotation.set(0.9, 0, 0.35);
+    }
     this.rig.userData.gun.visible = !WEAPONS[this.weapon].melee;
     this.syncRig(dt);
   }
