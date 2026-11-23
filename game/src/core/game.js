@@ -322,7 +322,9 @@ export class Game {
     const lamps = state.night > 0.3 ? lampHeads.map((l) => [l, l.distanceToSquared(focus)]).sort((a, b) => a[1] - b[1]).slice(0, this.nightLights.length) : [];
     // (toggling visibility only at dusk and dawn keeps daytime shaders free of these lights)
     this.nightLights.forEach((l, k) => { l.visible = !!lamps[k]; if (lamps[k]) { l.position.copy(lamps[k][0]); l.intensity = 30 * state.night; } });
-    this.post.render(this.scene, this.threeCamera, { exposure, bloom: 0.45 + state.night * 0.5 });
+    const v = this.player.vehicle;
+    const speedBlur = v ? Math.max(0, Math.abs(v.speed) - 24) / 40 : 0;
+    this.post.render(this.scene, this.threeCamera, { exposure, bloom: 0.45 + state.night * 0.5, speedBlur: Math.min(0.6, speedBlur) });
   }
 
   // Advances the simulation without drawing (used by automated play tests).

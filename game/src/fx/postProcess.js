@@ -58,8 +58,18 @@ vec3 aces(vec3 color) {
 vec3 toSRGB(vec3 c) {
   return mix(c * 12.92, 1.055 * pow(c, vec3(1.0 / 2.4)) - 0.055, step(vec3(0.0031308), c));
 }
+uniform float uSpeedBlur;
+vec3 sceneAt(vec2 uv) {
+  // radial streaks toward the screen edges at speed, the centre stays sharp
+  if (uSpeedBlur < 0.001) return texture2D(tScene, uv).rgb;
+  vec2 d = uv - 0.5;
+  float edge = smoothstep(0.32, 0.72, length(d));
+  vec3 acc = vec3(0.0);
+  for (int i = 0; i < 6; i++) acc += texture2D(tScene, uv - d * uSpeedBlur * edge * float(i) * 0.018).rgb;
+  return acc / 6.0;
+}
 void main() {
-  vec3 hdr = texture2D(tScene, vUv).rgb + texture2D(tBloom, vUv).rgb * uBloom;
+  vec3 hdr = sceneAt(vUv) + texture2D(tBloom, vUv).rgb * uBloom;
   vec3 c = aces(hdr * uTint);
   float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
   c = mix(vec3(l), c, uSaturation);
@@ -89,7 +99,7 @@ export class PostProcess {
     this.blurMat = mat(blurFrag, { tInput: { value: null }, uDir: { value: new THREE.Vector2() } });
     this.gradeMat = mat(gradeFrag, {
       tScene: { value: null }, tBloom: { value: null }, uExposure: { value: 1.05 }, uBloom: { value: 0.55 },
-      uSaturation: { value: 1.2 }, uTint: { value: new THREE.Color(1.03, 1.0, 0.96) }, uVignette: { value: 0.55 },
+      uSaturation: { value: 1.2 }, uSpeedBlur: { value: 0 }, uTint: { value: new THREE.Color(1.03, 1.0, 0.96) }, uVignette: { value: 0.55 },
     });
     this.enabled = true;
     // the grade pass does the tone mapping, so the scene itself renders linear HDR
@@ -113,7 +123,8 @@ export class PostProcess {
     this.renderer.render(this.scene, this.camera);
   }
 
-  render(scene, camera, { exposure = 1.05, bloom = 0.55 } = {}) {
+  render(scene, camera, { exposure = 1.05, bloom = 0.55, speedBlur = 0 } = {}) {
+    this.gradeMat.uniforms.uSpeedBlur.value = speedBlur;
     const r = this.renderer;
     if (!this.enabled) { r.setRenderTarget(null); r.render(scene, camera); return; }
     const size = r.getSize(new THREE.Vector2());
