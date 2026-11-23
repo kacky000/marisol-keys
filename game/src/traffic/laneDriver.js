@@ -95,9 +95,28 @@ export class LaneDriver {
     // keep distance from anything in front (other cars or the player)
     const f = v.forward();
     const gap = this.gapAhead(v, f, vehicles, player);
-    if (gap < 22) targetSpeed = Math.min(targetSpeed, Math.max(0, (gap - 6) * 0.7));
-
     const sp = v.speed;
+    // a junction standoff (two cars waiting on each other) is broken by nudging through
+    this.assertive = Math.max(0, (this.assertive || 0) - dt);
+    if (gap < 22 && this.assertive <= 0) {
+      targetSpeed = Math.min(targetSpeed, Math.max(0, (gap - 6) * 0.7));
+      this.blocked = Math.abs(sp) < 0.6 ? (this.blocked || 0) + dt : 0;
+      // only cars caught inside a junction push on (a queue at a red light waits politely)
+      const inJunction = (this.path[0] && this.path[0].turn) || Math.hypot(v.pos.x - this.from.x, v.pos.z - this.from.z) < 16;
+      if (this.blocked > 4 && inJunction && Math.hypot(player.pos.x - v.pos.x, player.pos.z - v.pos.z) > 25) { this.assertive = 2.5; this.blocked = 0; }
+    }
+    // wedged against a wall or spun around: back out for a moment
+    if (this.reverseT > 0) {
+      this.reverseT -= dt;
+      v.input.throttle = 0; v.input.brake = 1; v.input.steer = -clamp(err * 2, -1, 1); v.input.handbrake = false;
+      return;
+    }
+    this.wedged = v.input.throttle > 0.3 && Math.abs(sp) < 0.6 ? (this.wedged || 0) + dt : 0;
+    if (this.wedged > 2) { this.wedged = 0; this.reverseT = 1.3; }
+    // a car that has gone nowhere for 25 s is quietly recycled by the traffic system once out of sight
+    this.still = Math.abs(sp) < 0.5 ? (this.still || 0) + dt : 0;
+    this.recycle = this.still > 25;
+
     v.input.steer = clamp(err * 2.4, -1, 1);
     v.input.handbrake = false;
     if (sp < targetSpeed - 0.5) { v.input.throttle = clamp((targetSpeed - sp) * 0.35, 0.2, 1); v.input.brake = 0; }

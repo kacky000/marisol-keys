@@ -58,7 +58,8 @@ export class TrafficSystem {
     for (const v of [...this.vehicles.list]) {
       if (v.persistent || v === player.vehicle) continue;
       const d2 = (v.pos.x - px) ** 2 + (v.pos.z - pz) ** 2;
-      if (d2 > 330 * 330 || (v.wrecked && d2 > 120 * 120)) { this.drivers.delete(v); this.vehicles.remove(v); }
+      const stuck = this.drivers.get(v)?.recycle && d2 > 70 * 70;
+      if (d2 > 330 * 330 || (v.wrecked && d2 > 120 * 120) || stuck) { this.drivers.delete(v); this.vehicles.remove(v); }
     }
     this.spawnTimer -= dt;
     if (this.spawnTimer <= 0 && this.drivers.size < this.target) {
