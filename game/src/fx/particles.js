@@ -118,6 +118,16 @@ export class ParticleFX {
     this.glow.emit({ x: x + (Math.random() - 0.5) * 1.4, y, z: z + (Math.random() - 0.5) * 1.4, vy: 2.5 + Math.random() * 2, life: 0.6, size: 1.2, grow: -0.8, color: '#ffd36b', color2: '#ff3a10' });
   }
 
+  // A hose jet from (x, y, z) arcing toward (tx, tz), breaking into spray and steam.
+  waterJet(x, y, z, tx, tz) {
+    const dx = tx - x, dz = tz - z, d = Math.hypot(dx, dz) || 1, t = d / 11;
+    for (let k = 0; k < 3; k++) {
+      const j = 1 + (Math.random() - 0.5) * 0.12;
+      this.smoke.emit({ x, y, z, vx: (dx / t) * j, vy: 4.5 + Math.random() * 0.6, vz: (dz / t) * j, life: t * 1.05, size: 0.22, grow: 0.9, gravity: 9, color: '#e6f6ff', color2: '#ffffff', alpha: 0.75 });
+    }
+    if (Math.random() < 0.5) this.smoke.emit({ x: tx + (Math.random() - 0.5), y: 1.2, z: tz + (Math.random() - 0.5), vy: 1.8, life: 1.6, size: 1.1, grow: 1.6, color: '#f2f2f0', alpha: 0.35 });
+  }
+
   explosion(x, y, z) {
     for (let k = 0; k < 60; k++) {
       const a = Math.random() * Math.PI * 2, e = Math.random() * 1.2, sp = 4 + Math.random() * 10;

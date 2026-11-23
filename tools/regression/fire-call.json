@@ -1,0 +1,3 @@
+[
+ {"eval": "window.__errs = []; addEventListener('error', (e) => __errs.push(String(e.message))); marisol.menus.act('new'); marisol.intro.stop(); marisol.debugStep(5); { const g = marisol; g.player.placeAt(11 * 64 + 20, 4 * 64 + 12); const w = g.vehicles.spawn('sedan', 11 * 64 + 34, 4 * 64 + 3.4, -Math.PI / 2, {}); w.persistent = true; w.explode(); g.wanted.clear(); const stages = []; for (let k = 0; k < 150; k++) { g.debugStep(30); const c = g.fire.call; const s = c ? c.stage : '-'; if (stages[stages.length - 1] !== s) stages.push(s); if (stages.includes('leave')) break; } JSON.stringify({ expect: '- respond work board leave, fire out', stages, burning: w.burning, errors: __errs }) }"}
+]

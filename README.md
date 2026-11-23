@@ -70,11 +70,12 @@ the sidewalks, cross at the zebras on their light, sunbathe, wade in the surf, f
 and get thrown by speeding cars; boats on the water; random street events (police pursuits, Gull's crew loitering at harbor hangouts,
 street racers, muggings you can break up). When someone goes down near you, a Sunwake Medical
 ambulance runs lights and siren to the scene and two paramedics kneel over the patient and carry
-them off.
+them off; a burning wreck brings KFD Engine 7, whose crew hoses it down before rolling home.
 
-**Driving.** Eleven invented vehicles — Solara Vela sedan, Kestrel Strata GT, Marisol Spyder
+**Driving.** Twelve invented vehicles — Solara Vela sedan, Kestrel Strata GT, Marisol Spyder
 convertible, Mako Tradesman pickup, Keys Cab, Coastline Transit bus, MKPD Interceptor, Sunrise
-Courier van, Sunwake Medical Rescue ambulance, Zephyr 400 motorbike, Riptide 22 speedboat — with arcade physics, handbrake drifts,
+Courier van, Sunwake Medical Rescue ambulance, KFD Engine 7 fire truck, Zephyr 400 motorbike,
+Riptide 22 speedboat — with arcade physics, handbrake drifts,
 stunt-jump ramps, crashes, smoke, fire and explosions, skid marks, and a speed-sensitive chase
 camera. Near misses at speed and long clean drifts pay street-style cash.
 
@@ -129,8 +130,8 @@ own music.
 
 `bash tools/regression/run.sh` (with the local server running) plays the real game in headless
 Chrome: it drives all ten story missions to the end, holds a five-star police siege through
-several deaths and respawns, saves and continues, and follows an ambulance call from dispatch to
-departure — each script prints its result and any page errors.
+several deaths and respawns, saves and continues, and follows an ambulance call and a fire call
+from dispatch to departure — each script prints its result and any page errors.
 
 ## Screenshots
 

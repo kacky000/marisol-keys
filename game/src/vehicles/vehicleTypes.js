@@ -47,6 +47,11 @@ export const VEHICLE_TYPES = {
     maxSpeed: 40, accel: 11, brake: 24, grip: 6.4, steer: 0.55, health: 1600, mass: 1.8,
     cabin: { front: 2.05, back: 0.75, top: 2.15, slopeF: 0.5, slopeB: 0.0 }, ambulance: true, paints: ['#f7f5ef'],
   },
+  firetruck: {
+    name: 'KFD Engine 7', len: 8.2, width: 2.45, height: 2.9, wheelbase: 4.8, wheelR: 0.5,
+    maxSpeed: 34, accel: 8, brake: 20, grip: 5.6, steer: 0.5, health: 2600, mass: 3.0,
+    cabin: { front: 3.3, back: 1.7, top: 2.75, slopeF: 0.25, slopeB: 0.0 }, firetruck: true, paints: ['#c8202a'],
+  },
   boat: {
     name: 'Riptide 22 Speedboat', len: 7, width: 2.3, height: 1.4, wheelbase: 3, wheelR: 0.3,
     maxSpeed: 40, accel: 12, brake: 10, grip: 2.2, steer: 0.55, health: 1000, mass: 1.2,

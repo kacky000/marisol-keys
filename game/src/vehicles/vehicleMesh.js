@@ -16,6 +16,7 @@ const tireMat = new THREE.MeshStandardMaterial({ color: '#18181a', roughness: 0.
 const rimMat = new THREE.MeshStandardMaterial({ color: '#d7dbe0', metalness: 0.9, roughness: 0.25 });
 const redLight = new THREE.MeshBasicMaterial({ color: new THREE.Color(7, 0.35, 0.3) });
 const blueLight = new THREE.MeshBasicMaterial({ color: new THREE.Color(0.3, 0.9, 8) });
+const whiteLight = new THREE.MeshBasicMaterial({ color: new THREE.Color(6, 6, 5.5) });
 const GLASS = '#16222e';
 const tireGeo = new THREE.CylinderGeometry(1, 1, 1, 16);
 tireGeo.rotateZ(Math.PI / 2);
@@ -215,6 +216,27 @@ export function buildVehicleMesh(type, spec, paint) {
     }
     if (type === 'van') {
       for (const s of [-1, 1]) body.orientedBox(s * (W / 2 + 0.005), spec.height * 0.55, 0.6, 0.01, 0.5, 2.4, 0, tint('#ff6b35'));
+    }
+    if (spec.firetruck) {
+      // equipment body with roller lockers, a ladder on the roof rack, white band, red/white bar
+      const white = tint('#f2efe8'), locker = tint('#9a1a20');
+      const boxFront = -spec.cabin.back, boxLen = L / 2 - boxFront, boxZ = boxFront + boxLen / 2, top = spec.height * 0.86;
+      body.orientedBox(0, (belt - 0.1 + top) / 2, boxZ, W, top - belt + 0.1, boxLen, 0, paintC);
+      for (const s of [-1, 1]) {
+        body.orientedBox(s * (W / 2 + 0.005), belt - 0.05, 0, 0.01, 0.16, L * 0.96, 0, white);
+        for (let k = 0; k < 3; k++) body.orientedBox(s * (W / 2 + 0.008), (belt + top) / 2 + 0.05, boxFront + 0.35 + k * (boxLen / 3) + boxLen / 6 - 0.35, 0.01, top - belt - 0.35, boxLen / 3 - 0.25, 0, locker);
+      }
+      for (const s of [-1, 1]) body.orientedBox(s * 0.55, top + 0.32, boxZ - 0.3, 0.08, 0.08, boxLen + 1.6, 0, chrome); // ladder rails
+      for (let k = 0; k < 12; k++) body.orientedBox(0, top + 0.32, boxFront - 0.8 + k * ((boxLen + 1.2) / 11), 1.1, 0.05, 0.06, 0, chrome); // rungs
+      for (const z of [boxFront + 0.3, L / 2 - 0.4]) body.orientedBox(0, top + 0.14, z, 1.4, 0.28, 0.12, 0, dark); // rack posts
+      body.orientedBox(0, belt - 0.3, -L / 2 - 0.12, W * 0.8, 0.2, 0.14, 0, chrome); // front bumper
+      const y = spec.cabin.top + 0.1, z = -spec.cabin.front + spec.cabin.slopeF + 0.25;
+      body.orientedBox(0, y - 0.07, z, 1.9, 0.08, 0.3, 0, black);
+      const a = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.15, 0.26), redLight);
+      const b = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.15, 0.26), whiteLight);
+      a.position.set(-0.46, y, z); b.position.set(0.46, y, z);
+      group.add(a, b);
+      lightbar.push(a, b);
     }
     if (spec.ambulance) {
       // a tall patient box behind the cab, coral band, red crosses on its sides and roof,
