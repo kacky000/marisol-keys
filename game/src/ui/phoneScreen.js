@@ -8,6 +8,7 @@ import { CAST, paintPortrait } from '../story/cast.js';
 import { PROPERTIES } from '../economy/shops.js';
 import { formatMoney } from '../core/mathUtil.js';
 import { planRoute } from '../roads/routePlanner.js';
+import { DISTRICTS } from '../world/cityPlan.js';
 import { formatClock } from '../sky/timeOfDay.js';
 
 const MAP_VIEW = { x0: -70, z0: 15, span: 1010 };
@@ -70,7 +71,7 @@ export class PhoneScreen {
       drawBlip(ctx, { kind: 'contact', letter: CAST[m.giver].name[0] }, x + (k % 3) * 6, y, 13);
     });
     // uncollected Tide pages are secrets: show how many remain, not where
-    for (const b of [...g.shops.blips(), ...g.activities.blips(), ...g.missions.blips()]) {
+    for (const b of [...g.shops.blips(), ...g.activities.blips(), ...g.stunts.blips(), ...g.missions.blips()]) {
       const [x, y] = project(b.x, b.z);
       drawBlip(ctx, b, x, y, 11, g.time);
     }
@@ -115,7 +116,15 @@ export class PhoneScreen {
 
   renderSide() {
     const g = this.game, st = g.state;
-    if (this.tab === 'story' || this.tab === 'map') {
+    if (this.tab === 'map') {
+      const rows = ['D', 'A', 'S', 'RN', 'RS', 'C', 'H', 'V', 'P'].map((k) => {
+        const d = DISTRICTS[k];
+        return `<div class="row"><span class="num" style="background:${d.map}"></span><span class="what"><b>${d.name}</b><span class="who">${d.sub}</span></span></div>`;
+      }).join('');
+      this.side.innerHTML = `<h3>THE ISLAND</h3><div class="progress">CLICK THE MAP TO DROP A WAYPOINT · RIGHT-CLICK CLEARS</div><div class="story-list">${rows}</div>`;
+      return;
+    }
+    if (this.tab === 'story') {
       const pct = Math.round((st.story / STORY.length) * 100);
       const rows = STORY.map((m, k) => {
         const cls = k < st.story ? 'done' : k === st.story ? 'next' : '';
