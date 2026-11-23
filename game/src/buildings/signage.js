@@ -40,6 +40,8 @@ export const BRAND_STYLES = {
   "OZZIE'S BAIT & TACKLE": ['#1d4e5f', '#ffd36e', 'round'],
   'TOWER 3': ['#ffffff', '#ff6b5a', 'block'],
   'SUNWAKE THREADS': ['#fff0f5', '#d6336c', 'script'],
+  'SUNWAKE MEDICAL': ['#ffffff', '#d62839', 'block'],
+  'MKPD PRECINCT': ['#132a4a', '#ffffff', 'block'],
   'DRINK MANGO BAY': ['#ff8a00', '#fff8e1', 'billboard'],
   'SUNWAKE · ROOMS FROM $89': ['#00a6a6', '#ffffff', 'billboard'],
 };

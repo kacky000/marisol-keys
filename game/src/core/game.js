@@ -35,6 +35,7 @@ import { PostProcess } from '../fx/postProcess.js';
 import { renderFrame } from '../fx/frameRenderer.js';
 // the island, sky and light
 import { buildWorld } from '../world/worldBuilder.js';
+import { RESPAWN } from '../buildings/landmarkSigns.js';
 import { districtAtPoint, PLACES } from '../world/cityPlan.js';
 import { createSkyDome } from '../sky/skyDome.js';
 import { createLighting } from '../sky/sunLight.js';
@@ -241,7 +242,7 @@ export class Game {
 
   respawn() {
     const p = this.player;
-    const spot = this.downBusted ? { x: PLACES.lumenTower.x, z: PLACES.lumenTower.z + 30 } : { x: PLACES.boardwalk.x - 4, z: PLACES.boardwalk.z };
+    const spot = this.downBusted ? RESPAWN.precinct : RESPAWN.hospital;
     this.state.money = Math.max(0, this.state.money - (this.downBusted ? 300 : 150));
     if (this.downBusted) { p.ammo.smg = Math.floor(p.ammo.smg / 2); p.ammo.shotgun = Math.floor(p.ammo.shotgun / 2); }
     p.dead = false;
