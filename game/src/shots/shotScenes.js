@@ -83,6 +83,8 @@ export const SCENES = {
       streetCar(game, 'sedan', 4, 11 * B + 8, true, 1, 8);
       streetCar(game, 'bike', 4, 10 * B + 52, false, 0, 9);
       streetCar(game, 'taxi', 4, 10 * B + 44, false, 1, 9);
+      streetCar(game, 'convertible', 4, 10 * B + 28, false, 0, 9);
+      streetCar(game, 'convertible', 4, 9 * B + 62, true, 0, 9);
       crowd(game, [[11 * B + 8, 4 * B - 9, -1.6, 'flee'], [11 * B + 4, 4 * B - 9.5, 1.6, 'flee'], [11 * B + 2, 4 * B + 9.2, -1.5, 'idle'], [11 * B + 3, 4 * B + 9.6, 1.6, 'idle'],
         [11 * B + 18, 4 * B - 9, -1.6, 'walk'], [11 * B + 12, 4 * B + 9, 1.5, 'walk'], [10 * B + 56, 4 * B - 9.3, -1.6, 'walk'], [10 * B + 50, 4 * B + 9.5, -1.4, 'flee']]);
       game.wanted.setStars(4);

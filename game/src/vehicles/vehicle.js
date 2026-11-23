@@ -199,6 +199,7 @@ export class Vehicle {
 
   syncMesh(dt, vF, time) {
     const m = this.mesh;
+    if (m.userData.npc) m.userData.npc.visible = !!this.driver && this.driver !== 'player' && !this.wrecked;
     m.position.copy(this.pos);
     m.rotation.set(this.spec.boat ? 0 : (this.pitch || 0), -this.heading, 0);
     // body roll in turns and pitch under braking

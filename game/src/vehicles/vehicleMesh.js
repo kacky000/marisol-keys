@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { MeshBatch, tint } from '../core/meshBatch.js';
 import { canvasTexture } from '../core/canvasTexture.js';
 import { speedboatBatch } from '../water/boats.js';
+import { buildHuman, poseHuman } from '../peds/humanModel.js';
 
 const bodyMat = new THREE.MeshPhysicalMaterial({ vertexColors: true, metalness: 0.3, roughness: 0.35, clearcoat: 1, clearcoatRoughness: 0.08, side: THREE.DoubleSide });
 const glowMat = new THREE.MeshStandardMaterial({ vertexColors: true, emissive: '#ffffff', emissiveIntensity: 3.2, roughness: 0.3 });
@@ -230,5 +231,14 @@ export function buildVehicleMesh(type, spec, paint) {
   beam.visible = false;
   group.add(beam);
   group.userData = { wheels, lightbar, body: bodyMesh, beam };
+  if (spec.open) {
+    // a seated driver, visible in the open cockpit (removed when Tessa takes the wheel)
+    const npc = buildHuman({ skin: '#d9a07a', shirt: paint === '#ffffff' ? '#ff6b5a' : '#ffffff', pants: '#3d5a80', hair: '#4a2c1a', hairStyle: 'short', shades: true, shoes: '#222', build: 0.95 });
+    poseHuman(npc, 'drive', 0, 0);
+    npc.userData.hips.position.y = 0.7;
+    npc.position.set(-0.42, -0.05, 0.55);
+    group.add(npc);
+    group.userData.npc = npc;
+  }
   return group;
 }
