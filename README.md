@@ -76,7 +76,7 @@ Any static file server works too: the game is just the files under `game/`.
   armed gang crews and officers that advance, strafe and return fire.
 - **Story** — *The Tide Book*, nine missions with dialogue and painted portraits for Tessa, Ozzie
   Calderón, Priya Lund, Lulu Marchetti, Gideon "Gull" Moreau and Captain Rourke Hale: drives,
-  races, rooftop relays, harbor shoot-outs, a stolen evidence van, a downtown takedown and a
+  races, wiretap relays against the clock, harbor shoot-outs, a stolen evidence van, a downtown takedown and a
   four-star run across the causeway. Contacts wait in person at their spots and face-to-face
   scenes cut to a two-shot camera; a new game opens with a letterboxed glide down from the skyline; MKPD dispatch chatter narrates every pursuit.
 - **Side jobs and progression** — Keys Cab fares, Sunrise Couriers deliveries, the Night Sprint
