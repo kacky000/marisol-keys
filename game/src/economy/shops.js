@@ -7,6 +7,7 @@ import { wasPressed } from '../core/input.js';
 import { emit } from '../core/events.js';
 import { STORE, clothingStore } from './clothingStore.js';
 import { PropertySigns } from './propertySigns.js';
+import { CarDealer, DEALER } from './carDealer.js';
 
 export const PROPERTIES = [
   { id: 'deco-loft', name: 'Pastel Mile Loft', x: 11 * 64 - 9.5, z: 7 * 64 + 30, price: 6000, income: 300 },
@@ -20,6 +21,7 @@ export const SHOPS = [
   { id: 'paint', name: 'Pastel Paint & Body', letter: 'P', ...PLACES.paintShop },
   { id: 'garage', name: 'Sunbelt Garage', letter: 'G', ...PLACES.garage },
   { id: 'threads', name: STORE.name, letter: 'S', x: STORE.x, z: STORE.z },
+  { id: 'cars', name: DEALER.name, letter: 'K', x: DEALER.x, z: DEALER.z },
 ];
 
 export class Shops {
@@ -27,6 +29,7 @@ export class Shops {
     this.game = game;
     this.lastDay = Math.floor(game.state.hour / 24);
     this.signs = new PropertySigns(game.scene, PROPERTIES);
+    this.dealer = new CarDealer(game);
   }
 
   // The stored car waits at the safehouse kerb when the game starts.
@@ -47,6 +50,7 @@ export class Shops {
   update() {
     const g = this.game, p = g.player;
     this.signs.update(g.state.properties, g.time);
+    this.dealer.update(1 / 60);
     // daily property income at 08:00
     const day = Math.floor((g.state.hour - 8) / 24);
     if (day > this.lastDay) {

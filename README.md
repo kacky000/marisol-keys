@@ -84,7 +84,7 @@ Any static file server works too: the game is just the files under `game/`.
   scenes cut to a two-shot camera; a new game opens with a letterboxed glide down from the skyline; MKPD dispatch chatter narrates every pursuit.
 - **Side jobs and progression** — Keys Cab fares, Sunrise Couriers deliveries, the Night Sprint
   time trial, Vigilante runs in a stolen MKPD cruiser, Keys Tactical gun shop and body armour, Pastel Paint & Body resprays that shake the
-  police, Sunwake Threads (five outfits for Tessa), four stunt-jump ramps that pay for airtime, Sunbelt Garage repairs and three tiers each of engine, tyre and armour tuning, police
+  police, Sunwake Threads (five outfits for Tessa), Kestrel Motors (buy cars for your garage), four stunt-jump ramps that pay for airtime, Sunbelt Garage repairs and three tiers each of engine, tyre and armour tuning, police
   bribe stars that knock a star off, a phone map you can click to drop a GPS waypoint, four properties that pay out every game day, twenty hidden
   Tide Book pages, respawning health / armour / ammo / cash pickups, and a safehouse that saves,
   sleeps to the next morning and keeps your favourite car in its garage.
