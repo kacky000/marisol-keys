@@ -48,7 +48,7 @@ export class Ped {
   }
 
   flee(fromX, fromZ, time = 8) {
-    if (!this.alive) return;
+    if (!this.alive || this.state === 'wade') return; // swimmers duck under the waves instead
     this.state = 'flee';
     this.fleeTimer = time;
     this.heading = Math.atan2(this.pos.x - fromX, -(this.pos.z - fromZ)) + (sharedRng.next() - 0.5) * 0.8;
@@ -73,6 +73,16 @@ export class Ped {
       this.deadTimer += dt;
       poseHuman(this.rig, 'dead', 0, dt);
       this.rig.position.set(this.pos.x, this.pos.y + 0.14, this.pos.z);
+      this.rig.rotation.y = -this.heading;
+      return;
+    }
+    if (this.state === 'wade') {
+      // standing in the surf, bobbing with the swell, arms out for balance
+      this.phase = (this.phase || 0) + dt;
+      poseHuman(this.rig, 'idle', 0, dt);
+      this.rig.userData.arms[0].rotation.set(0.3, 0, -0.9 - Math.sin(this.phase * 1.3) * 0.2);
+      this.rig.userData.arms[1].rotation.set(0.3, 0, 0.9 + Math.sin(this.phase * 1.3) * 0.2);
+      this.rig.position.set(this.pos.x, this.pos.y + Math.sin(this.phase * 1.6) * 0.08, this.pos.z);
       this.rig.rotation.y = -this.heading;
       return;
     }
@@ -206,6 +216,7 @@ export class PedSystem {
       if (this.rng.next() > (BUSY[l] || 0.5)) continue;
       if (l === 'S') {
         if (this.rng.next() < 0.35) return { x: i * BLOCK + 24 + this.rng.next() * 30, z: pz, sunbathe: true };
+        if (this.rng.next() < 0.25) return { x: (i + 1) * BLOCK + 3 + this.rng.next() * 9, z: pz, wade: true };
         return { x: (BOARDWALK.x0 + BOARDWALK.x1) / 2 + (this.rng.next() < 0.4 ? this.rng.next() * 30 : 0), z: pz };
       }
       // snap to the sidewalk ring
@@ -252,6 +263,7 @@ export class PedSystem {
       if (pt) {
         const ped = this.spawnAt(pt.x, pt.z);
         if (pt.sunbathe) { ped.state = 'sunbathe'; ped.outfit.shorts = true; }
+        if (pt.wade) { ped.state = 'wade'; ped.heading = Math.PI / 2 + (this.rng.next() - 0.5); }
       }
     }
   }
