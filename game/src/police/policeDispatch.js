@@ -4,12 +4,12 @@
 import * as THREE from 'three';
 import { edges, nodes, lanePoint } from '../roads/roadNetwork.js';
 import { PursuitDriver } from './pursuitDriver.js';
-import { Gunman, POLICE_OUTFIT } from '../combat/gunman.js';
+import { Gunman, POLICE_OUTFIT, NPC_DAMAGE } from '../combat/gunman.js';
 import { Helicopter } from './helicopter.js';
 import { WEAPONS } from '../combat/weaponDefs.js';
 import { fireWeapon } from '../combat/gunplay.js';
 import { raycastStatic } from '../world/collisionWorld.js';
-import { emit } from '../core/events.js';
+import { emit, on } from '../core/events.js';
 import { rng } from '../core/rng.js';
 
 const CARS_FOR_STARS = [0, 2, 3, 4, 5, 6];
@@ -26,6 +26,9 @@ export class PoliceDispatch {
     this.spawnTimer = 0;
     this.roadblockTimer = 8;
     this.bustTimer = 0;
+    this.lastPlayerShot = -99;
+    this.clock = 0;
+    on('player:shot', () => { this.lastPlayerShot = this.clock; });
   }
 
   get people() { return this.officers; }
@@ -45,14 +48,15 @@ export class PoliceDispatch {
     v.persistent = true;
     const driver = new PursuitDriver(v);
     v.driver = driver;
-    this.units.push({ vehicle: v, driver, crew: 2 });
+    this.units.push({ vehicle: v, driver, crew: this.wanted.stars >= 4 ? 2 : 1 });
     return v;
   }
 
   spawnOfficer(x, z, heading = 0) {
     const o = new Gunman(this.scene, x, z, POLICE_OUTFIT, 'police', this.wanted.stars >= 4 ? 'smg' : 'pistol');
     o.heading = heading;
-    o.mode = 'attack';
+    // low-level pursuits try to make an arrest; from three stars they come out shooting
+    o.mode = this.wanted.stars >= 3 ? 'attack' : 'arrest';
     this.officers.push(o);
     return o;
   }
@@ -101,6 +105,7 @@ export class PoliceDispatch {
   }
 
   update(dt, time, player, targets, fx) {
+    this.clock = time;
     const stars = this.wanted.stars;
     // dispatch more units as the level rises
     this.spawnTimer -= dt;
@@ -135,16 +140,18 @@ export class PoliceDispatch {
         }
       }
     }
-    const ctx = { player, targets, fx, alert: stars > 0, onShot: () => emit('sound', { name: 'pistol-far' }) };
+    const hostile = stars >= 3 || time - this.lastPlayerShot < 6;
+    const ctx = { player, targets, fx, alert: false, hostile, onShot: () => emit('sound', { name: 'pistol-far' }) };
     for (const o of this.officers) {
       if (stars === 0 && o.alive) { o.mode = 'guard'; }
+      else if (o.mode === 'guard') o.mode = hostile ? 'attack' : 'arrest';
       o.think(dt, ctx);
     }
     if (this.heli) {
       this.heli.update(dt, time, player, stars, (h) => {
         const origin = new THREE.Vector3(h.pos.x, h.pos.y - 1.5, h.pos.z);
         const aim = new THREE.Vector3(player.pos.x + (rng.next() - 0.5) * 3, player.pos.y + 1, player.pos.z + (rng.next() - 0.5) * 3);
-        fireWeapon(WEAPONS.smg, origin, aim.sub(origin).normalize(), { team: 'police', pos: h.pos }, targets, fx);
+        fireWeapon({ ...WEAPONS.smg, damage: WEAPONS.smg.damage * NPC_DAMAGE }, origin, aim.sub(origin).normalize(), { team: 'police', pos: h.pos }, targets, fx);
       });
     }
     // busted: an officer right next to a slow suspect on foot

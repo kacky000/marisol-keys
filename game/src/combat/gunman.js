@@ -11,6 +11,8 @@ import { groundHeight } from '../world/groundHeight.js';
 import { dampAngle } from '../core/mathUtil.js';
 import { rng } from '../core/rng.js';
 
+export const NPC_DAMAGE = 0.32;   // share of a weapon's damage when an NPC pulls the trigger
+
 export const POLICE_OUTFIT = { skin: '#c68e62', shirt: '#1f3d66', pants: '#14233b', hair: '#1d1a17', shorts: false, hat: 'police', shades: false, shoes: '#111', badge: true, longSleeves: false, build: 1.04 };
 export const GANG_OUTFITS = [
   { skin: '#b97a55', shirt: '#2b2d42', pants: '#4a4e69', hair: '#111', shorts: false, hat: 'cap', hatColor: '#d62828', shades: true, shoes: '#222', build: 1.05, vest: '#3d3d3d' },
@@ -23,6 +25,7 @@ export class Gunman extends Ped {
     super(scene, x, z, outfit, team === 'police' ? 'cop' : 'gang');
     this.team = team;
     this.weapon = WEAPONS[weaponId];
+    this.npcWeapon = { ...this.weapon, damage: this.weapon.damage * NPC_DAMAGE };
     this.rig.userData.gun.visible = true;
     this.mode = 'guard';
     this.cooldown = 1 + rng.next();
@@ -58,6 +61,13 @@ export class Gunman extends Ped {
     let move = 0, moveDir = 0;
     const face = Math.atan2(dx, -dz);
     let state = 'idle';
+    if (this.mode === 'arrest' && p.alive) {
+      // move in to cuff the suspect; draw down only if they get violent
+      this.heading = dampAngle(this.heading, face, 8, dt);
+      if (ctx.hostile) this.mode = 'attack';
+      else if (dist > 1.8) { move = dist > 8 ? 4.8 : 2.4; moveDir = face; state = dist > 8 ? 'run' : 'aim'; }
+      else state = 'aim';
+    }
     if (this.mode === 'attack' && p.alive) {
       this.heading = dampAngle(this.heading, face, 8, dt);
       const sees = dist < 70 && this.canSee(p);
@@ -66,12 +76,13 @@ export class Gunman extends Ped {
       else { move = 1.4; moveDir = face + this.strafe * Math.PI / 2; state = 'aim'; if (rng.next() < dt * 0.3) this.strafe *= -1; }
       this.cooldown -= dt;
       if (sees && dist < this.weapon.range && this.cooldown <= 0) {
-        this.cooldown = 1 / this.weapon.rate * (2.2 + rng.next() * 1.5);
+        // NPCs fire in short, slower bursts and hit softer than the player, so fights last
+        this.cooldown = 1 / this.weapon.rate * (3.2 + rng.next() * 2.5) + 0.25;
         const origin = new THREE.Vector3(this.pos.x, this.pos.y + 1.45, this.pos.z);
         const miss = (1 - this.accuracy) * (1.2 + dist * 0.03);
         const aim = new THREE.Vector3(p.pos.x + (rng.next() - 0.5) * miss * 2, p.pos.y + 1.1 + (rng.next() - 0.5) * miss, p.pos.z + (rng.next() - 0.5) * miss * 2);
         const dir = aim.sub(origin).normalize();
-        fireWeapon(this.weapon, origin, dir, this, ctx.targets, ctx.fx);
+        fireWeapon(this.npcWeapon, origin, dir, this, ctx.targets, ctx.fx);
         ctx.onShot?.(this);
         state = 'aim';
       }

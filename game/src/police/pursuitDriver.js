@@ -24,8 +24,19 @@ export class PursuitDriver {
     if (this.replan <= 0) {
       this.replan = 1.5;
       this.route = dist > 45 ? planRoute(v.pos.x, v.pos.z, goal.x, goal.z) : [];
+      // don't U-turn back to a junction already behind us
+      const r = this.route;
+      if (r.length >= 2 && Math.hypot(r[1].x - v.pos.x, r[1].z - v.pos.z) < Math.hypot(r[1].x - r[0].x, r[1].z - r[0].z)) r.shift();
     }
     while (this.route.length && Math.hypot(this.route[0].x - v.pos.x, this.route[0].z - v.pos.z) < 10) this.route.shift();
+    // slow down ahead of a corner on the route
+    let cornerLimit = Infinity;
+    if (this.route.length >= 2 && dist > 45) {
+      const [n0, n1] = this.route;
+      const a0 = Math.atan2(n0.x - v.pos.x, -(n0.z - v.pos.z)), a1 = Math.atan2(n1.x - n0.x, -(n1.z - n0.z));
+      const d0 = Math.hypot(n0.x - v.pos.x, n0.z - v.pos.z);
+      if (Math.abs(wrapAngle(a1 - a0)) > 0.6 && d0 < 30) cornerLimit = 9 + d0 * 0.35;
+    }
     let tx = goal.x, tz = goal.z;
     if (this.route.length && dist > 45) { tx = this.route[0].x; tz = this.route[0].z; }
     else if (target.vehicle) {
@@ -46,6 +57,7 @@ export class PursuitDriver {
     const onFootClose = !target.vehicle && dist < 16;
     let targetSpeed = onFootClose ? 0 : clamp(dist * 0.6, 12, v.spec.maxSpeed * 0.92);
     if (Math.abs(err) > 0.9 && sp > 14) targetSpeed = 12;
+    targetSpeed = Math.min(targetSpeed, cornerLimit);
     v.input.steer = clamp(err * 2.2, -1, 1);
     v.input.handbrake = Math.abs(err) > 1.1 && sp > 16;
     if (sp < targetSpeed) { v.input.throttle = 1; v.input.brake = 0; }
