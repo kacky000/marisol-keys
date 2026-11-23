@@ -350,6 +350,14 @@ export class Game {
     const lamps = state.night > 0.3 ? lampHeads.map((l) => [l, l.distanceToSquared(focus)]).sort((a, b) => a[1] - b[1]).slice(0, this.nightLights.length) : [];
     // (toggling visibility only at dusk and dawn keeps daytime shaders free of these lights)
     this.nightLights.forEach((l, k) => { l.visible = !!lamps[k]; if (lamps[k]) { l.position.copy(lamps[k][0]); l.intensity = 30 * state.night; } });
+    // only nearby people and cars cast shadows (the shadow map covers ~110 m around the player anyway)
+    this.shadowTimer = (this.shadowTimer || 0) - 1;
+    if (this.shadowTimer <= 0) {
+      this.shadowTimer = 20;
+      const near = (o, r) => (o.pos.x - focus.x) ** 2 + (o.pos.z - focus.z) ** 2 < r * r;
+      for (const ped of this.peds.peds) { const on = near(ped, 60); ped.rig.traverse((m) => { if (m.isMesh) m.castShadow = on; }); }
+      for (const car of this.vehicles.list) { const on = near(car, 90); car.mesh.traverse((m) => { if (m.isMesh) m.castShadow = on; }); }
+    }
     const v = this.player.vehicle;
     const speedBlur = v ? Math.max(0, Math.abs(v.speed) - 24) / 40 : 0;
     this.post.render(this.scene, this.threeCamera, { exposure, bloom: 0.45 + state.night * 0.5, speedBlur: Math.min(0.6, speedBlur) });
