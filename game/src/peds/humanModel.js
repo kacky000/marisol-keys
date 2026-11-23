@@ -47,6 +47,13 @@ export function buildHuman(o) {
   body.cylinder(0, 0.66, 0, 0.065, 0.12, tint(o.skin), { segments: 8, ao: 1 });       // neck
   body.cylinder(0, 0.76, 0, 0.14, 0.28, tint(o.skin), { segments: 12, ao: 1 });      // head
   body.orientedBox(0, 0.86, -0.135, 0.05, 0.07, 0.04, 0, tint(o.skin));               // nose
+  // face: eyes with whites, brows and a mouth on the front of the head
+  for (const s of [-1, 1]) {
+    body.orientedBox(s * 0.055, 0.905, -0.133, 0.05, 0.035, 0.01, 0, tint('#f4f1ea'));
+    body.orientedBox(s * 0.055, 0.905, -0.139, 0.025, 0.03, 0.01, 0, tint('#1d1712'));
+    body.orientedBox(s * 0.055, 0.94, -0.134, 0.065, 0.016, 0.012, 0, tint(o.hair));
+  }
+  body.orientedBox(0, 0.815, -0.134, 0.06, 0.014, 0.012, 0, tint('#7a3b33'));
   const hs = o.hairStyle || 'short';
   if (hs !== 'bald') {
     body.cylinder(0, 0.98, 0.01, 0.152, hs === 'curly' ? 0.13 : 0.08, tint(o.hair), { segments: 12, ao: 1 });   // hair cap
