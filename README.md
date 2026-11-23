@@ -67,11 +67,13 @@ Vela Cinema, Hotel Esmeralda...).
 **A living city.** Lane-following traffic that obeys working traffic lights; pedestrians who walk
 the sidewalks, cross at the zebras on their light, sunbathe, wade in the surf, flee from gunfire
 and get thrown by speeding cars; boats on the water; random street events (police pursuits, Gull's crew loitering at harbor hangouts,
-street racers, muggings you can break up).
+street racers, muggings you can break up). When someone goes down near you, a Sunwake Medical
+ambulance runs lights and siren to the scene and two paramedics kneel over the patient and carry
+them off.
 
-**Driving.** Ten invented vehicles — Solara Vela sedan, Kestrel Strata GT, Marisol Spyder
+**Driving.** Eleven invented vehicles — Solara Vela sedan, Kestrel Strata GT, Marisol Spyder
 convertible, Mako Tradesman pickup, Keys Cab, Coastline Transit bus, MKPD Interceptor, Sunrise
-Courier van, Zephyr 400 motorbike, Riptide 22 speedboat — with arcade physics, handbrake drifts,
+Courier van, Sunwake Medical Rescue ambulance, Zephyr 400 motorbike, Riptide 22 speedboat — with arcade physics, handbrake drifts,
 stunt-jump ramps, crashes, smoke, fire and explosions, skid marks, and a speed-sensitive chase
 camera. Near misses at speed and long clean drifts pay street-style cash.
 
@@ -117,7 +119,7 @@ own music.
 
 `game/src/` is split by job: `world/` (city plan, terrain, collision), `roads/`, `buildings/`,
 `vegetation/`, `props/`, `water/`, `sky/`, `weather/`, `vehicles/`, `traffic/`, `peds/`,
-`player/`, `camera/`, `combat/`, `fx/`, `police/`, `missions/`, `story/`, `activities/`,
+`player/`, `camera/`, `combat/`, `fx/`, `police/`, `emergency/`, `missions/`, `story/`, `activities/`,
 `economy/`, `progress/`, `ui/`, `audio/`, `save/`, `core/` and `shots/`. three.js is the only library
 (`game/vendor/three.module.min.js`).
 

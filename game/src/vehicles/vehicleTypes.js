@@ -42,6 +42,11 @@ export const VEHICLE_TYPES = {
     maxSpeed: 34, accel: 9, brake: 20, grip: 6, steer: 0.55, health: 1400, mass: 1.6,
     cabin: { front: 1.9, back: -2.6, top: 2.4, slopeF: 0.55, slopeB: 0.0 }, paints: ['#ffffff', '#ff6b35'],
   },
+  ambulance: {
+    name: 'Sunwake Medical Rescue', len: 5.8, width: 2.2, height: 2.6, wheelbase: 3.5, wheelR: 0.42,
+    maxSpeed: 40, accel: 11, brake: 24, grip: 6.4, steer: 0.55, health: 1600, mass: 1.8,
+    cabin: { front: 2.05, back: 0.75, top: 2.15, slopeF: 0.5, slopeB: 0.0 }, ambulance: true, paints: ['#f7f5ef'],
+  },
   boat: {
     name: 'Riptide 22 Speedboat', len: 7, width: 2.3, height: 1.4, wheelbase: 3, wheelR: 0.3,
     maxSpeed: 40, accel: 12, brake: 10, grip: 2.2, steer: 0.55, health: 1000, mass: 1.2,

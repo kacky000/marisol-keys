@@ -216,6 +216,30 @@ export function buildVehicleMesh(type, spec, paint) {
     if (type === 'van') {
       for (const s of [-1, 1]) body.orientedBox(s * (W / 2 + 0.005), spec.height * 0.55, 0.6, 0.01, 0.5, 2.4, 0, tint('#ff6b35'));
     }
+    if (spec.ambulance) {
+      // a tall patient box behind the cab, coral band, red crosses on its sides and roof,
+      // and a red light bar over the cab
+      const coral = tint('#ff5a4e'), cross = tint('#e0262b');
+      const boxFront = -spec.cabin.back, boxLen = L / 2 - boxFront, boxZ = boxFront + boxLen / 2, top = spec.height;
+      // (orientedBox takes the centre height)
+      body.orientedBox(0, (belt - 0.1 + top) / 2, boxZ, W, top - belt + 0.1, boxLen, 0, paintC);
+      body.orientedBox(0, top + 0.03, boxZ, W - 0.2, 0.06, boxLen - 0.2, 0, chrome);
+      for (const s of [-1, 1]) {
+        body.orientedBox(s * (W / 2 + 0.005), belt - 0.05, 0.2, 0.01, 0.22, L * 0.95, 0, coral);
+        body.orientedBox(s * (W / 2 + 0.008), belt + 0.55, boxZ, 0.01, 0.8, 0.26, 0, cross);
+        body.orientedBox(s * (W / 2 + 0.008), belt + 0.55, boxZ, 0.01, 0.26, 0.8, 0, cross);
+      }
+      body.orientedBox(0, top + 0.07, boxZ, 1.1, 0.02, 0.34, 0, cross);
+      body.orientedBox(0, top + 0.07, boxZ, 0.34, 0.02, 1.1, 0, cross);
+      for (const s of [-1, 1]) body.orientedBox(s * 0.5, (belt + top) / 2, L / 2 + 0.005, 0.85, top - belt - 0.2, 0.01, 0, dark); // rear doors
+      const y = spec.cabin.top + 0.1, z = -spec.cabin.front + spec.cabin.slopeF + 0.2;
+      body.orientedBox(0, y - 0.07, z, 1.7, 0.08, 0.3, 0, black);
+      const a = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.14, 0.26), redLight);
+      const b = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.14, 0.26), redLight);
+      a.position.set(-0.42, y, z); b.position.set(0.42, y, z);
+      group.add(a, b);
+      lightbar.push(a, b);
+    }
     const wx = W / 2 - 0.1;
     for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) addWheel(group, wheels, sx * wx, spec.wheelR, sz * spec.wheelbase / 2, spec.wheelR, 0.3, sz < 0);
   }

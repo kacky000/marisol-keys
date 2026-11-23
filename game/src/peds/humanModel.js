@@ -105,7 +105,7 @@ export function buildHuman(o) {
   return root;
 }
 
-// Pose the rig. state: 'idle' | 'walk' | 'run' | 'aim' | 'drive' | 'flee' | 'dead' | 'jump'
+// Pose the rig. state: 'idle' | 'walk' | 'run' | 'aim' | 'drive' | 'flee' | 'dead' | 'jump' | 'kneel' | 'sunbathe'
 export function poseHuman(rig, state, speed, dt, aimPitch = 0) {
   const u = rig.userData;
   u.phase += dt * (state === 'run' || state === 'flee' ? 11 : 7) * Math.min(1.4, 0.4 + speed * 0.3);
@@ -140,6 +140,16 @@ export function poseHuman(rig, state, speed, dt, aimPitch = 0) {
     u.legs[1].rotation.set(-0.3, 0, 0);
     u.arms[0].rotation.set(0.5, 0, -0.6);
     u.arms[1].rotation.set(0.5, 0, 0.6);
+  }
+  if (state === 'kneel') {
+    // kneeling on both shins (limbs have no knee joint, so the legs angle back from the hips),
+    // hands working low in front: paramedics at a patient
+    u.hips.position.y = 0.5;
+    u.legs[0].rotation.set(-1.15, 0, -0.08);
+    u.legs[1].rotation.set(-1.15, 0, 0.08);
+    const work = Math.sin(u.phase * 1.6) * 0.15;
+    u.arms[0].rotation.set(1.0 + work, 0, 0.15);
+    u.arms[1].rotation.set(1.0 - work, 0, -0.15);
   }
   if (state === 'sunbathe') {
     rig.rotation.x = Math.PI / 2;

@@ -28,6 +28,7 @@ import { Pickups } from '../activities/pickups.js';
 import { StuntJumps } from '../activities/stuntJumps.js';
 import { CompletionWatch } from '../progress/completion.js';
 import { DrivingBonuses } from '../activities/drivingBonuses.js';
+import { AmbulanceService } from '../emergency/ambulanceService.js';
 import { GangTurf } from '../combat/gangTurf.js';
 import { Shops, tuningFor } from '../economy/shops.js';
 import { playerTuning } from '../vehicles/vehicle.js';
@@ -111,6 +112,7 @@ export class Game {
     this.stunts = new StuntJumps(this);
     this.completion = new CompletionWatch(this);
     this.bonuses = new DrivingBonuses(this);
+    this.ambulance = new AmbulanceService(this);
     this.gangs = new GangTurf(this);
     on('gunfire', ({ x, z, team }) => { if (team === 'player') this.gangs.alertNear(x, z); });
     this.intro = new IntroCinematic(this);
@@ -221,6 +223,7 @@ export class Game {
     this.downTimer = 0;
     this.camera.fixed = null;
     this.fx.skids.clear();
+    this.ambulance.clear();
     this.dialogue.close();
     document.body.classList.remove('busted', 'wasted');
   }
@@ -271,6 +274,7 @@ export class Game {
       this.gangs.update(dt);
       this.completion.update(dt);
       this.bonuses.update(dt);
+      this.ambulance.update(dt);
     }
     this.contacts.update(dt);
     this.dialogue.update(dt);
