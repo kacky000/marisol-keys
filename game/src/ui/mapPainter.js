@@ -105,8 +105,8 @@ export function paintIllustratedMap(g, size, view = { x0: -330, z0: -130, span: 
   const P = (x, z) => [(x - view.x0) * s, (z - view.z0) * s];
   // district labels
   const labels = [
-    ['Mirador Hills', 230, 120], ['Glasswater', 470, 250], ['Pastel Mile', 690, 430], ['Sunwake Beach', 800, 640],
-    ['Lantern Canals', 245, 520], ['Saltgate Harbor', 270, 800], ['Old Keys', 470, 610], ['Palmetto Flats', 300, 330], ['Seagrape Park', 610, 360],
+    ['Mirador Hills', 250, 105], ['Glasswater', 480, 205], ['Pastel Mile', 700, 470], ['Sunwake Beach', 790, 690],
+    ['Lantern Canals', 235, 545], ['Saltgate Harbor', 290, 805], ['Old Keys', 500, 640], ['Palmetto Flats', 215, 360], ['Seagrape Park', 600, 335],
   ];
   g.textAlign = 'center';
   g.textBaseline = 'middle';
@@ -122,7 +122,8 @@ export function paintIllustratedMap(g, size, view = { x0: -330, z0: -130, span: 
   // water names
   g.font = `italic 700 ${Math.round(size * 0.022)}px Georgia, serif`;
   g.fillStyle = 'rgba(230,250,255,0.85)';
-  for (const [name, x, z] of [['Marisol Bay', -60, 520], ['Turquoise Sound', 960, 380], ['Harbor Basin', 380, 960]]) { const [px, py] = P(x, z); g.fillText(name, px, py); }
+  for (const [name, x, z] of [['Marisol Bay', 40, 690], ['Harbor Basin', 420, 950]]) { const [px, py] = P(x, z); g.fillText(name, px, py); }
+  { const [px, py] = P(900, 520); g.save(); g.translate(px, py); g.rotate(Math.PI / 2); g.fillText('Turquoise Sound', 0, 0); g.restore(); }
   // street names along avenues
   g.font = `700 ${Math.round(size * 0.013)}px "Segoe UI", Arial`;
   g.fillStyle = '#334';

@@ -7,6 +7,8 @@ import { STORY, CONTACTS } from '../missions/storyMissions.js';
 import { CAST, paintPortrait } from '../story/cast.js';
 import { PROPERTIES } from '../economy/shops.js';
 import { formatMoney } from '../core/mathUtil.js';
+import { planRoute } from '../roads/routePlanner.js';
+import { formatClock } from '../sky/timeOfDay.js';
 
 export class PhoneScreen {
   constructor(game) {
@@ -27,9 +29,27 @@ export class PhoneScreen {
 
   render() {
     const g = this.game;
+    const status = this.el.querySelector('.phone-status');
+    if (status) status.textContent = `${formatClock(g.state.hour)}   ▂▄▆█ KEYSNET 5G   87%`;
     this.el.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle('on', b.dataset.tab === this.tab || (this.tab === 'map' && b.dataset.tab === 'map')));
     const ctx = this.canvas.getContext('2d');
-    const { project } = paintIllustratedMap(ctx, this.canvas.width);
+    const { project } = paintIllustratedMap(ctx, this.canvas.width, { x0: -70, z0: 15, span: 1010 });
+    // GPS preview: dotted route from Tessa to the next story contact
+    const next = STORY[g.state.story];
+    if (next && !g.missions.active) {
+      const c = CONTACTS[next.at];
+      const route = planRoute(g.player.pos.x, g.player.pos.z, c.x, c.z);
+      ctx.save();
+      ctx.strokeStyle = '#b06bff'; ctx.lineWidth = 6; ctx.lineJoin = 'round'; ctx.setLineDash([10, 7]);
+      ctx.beginPath();
+      const [sx, sy] = project(g.player.pos.x, g.player.pos.z);
+      ctx.moveTo(sx, sy);
+      for (const n of route) { const [x, y] = project(n.x, n.z); ctx.lineTo(x, y); }
+      const [cx, cy] = project(c.x, c.z);
+      ctx.lineTo(cx, cy);
+      ctx.stroke();
+      ctx.restore();
+    }
     // story mission pins with numbers
     STORY.forEach((m, k) => {
       const c = CONTACTS[m.at];
@@ -37,6 +57,7 @@ export class PhoneScreen {
       if (k < g.state.story) return;
       drawBlip(ctx, { kind: 'contact', letter: CAST[m.giver].name[0] }, x + (k % 3) * 6, y, 13);
     });
+    // uncollected Tide pages are secrets: show how many remain, not where
     for (const b of [...g.shops.blips(), ...g.activities.blips(), ...g.missions.blips()]) {
       const [x, y] = project(b.x, b.z);
       drawBlip(ctx, b, x, y, 11, g.time);
@@ -52,10 +73,32 @@ export class PhoneScreen {
     ctx.fillStyle = '#fff'; ctx.strokeStyle = '#0b2233'; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.moveTo(0, -16); ctx.lineTo(12, 13); ctx.lineTo(0, 6); ctx.lineTo(-12, 13); ctx.closePath(); ctx.stroke(); ctx.fill();
     ctx.restore();
-    ctx.fillStyle = 'rgba(8,20,32,0.75)'; ctx.fillRect(14, this.canvas.height - 50, 300, 36);
-    ctx.fillStyle = '#ffd36e'; ctx.font = '900 20px "Arial Black", Arial'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-    ctx.fillText('MARISOL KEYS · ISLAND MAP', 26, this.canvas.height - 32);
+    this.drawLegend(ctx);
     this.renderSide();
+  }
+
+  // Key to the icons along the bottom of the map.
+  drawLegend(ctx) {
+    const H = this.canvas.height, W = this.canvas.width;
+    ctx.fillStyle = 'rgba(8,20,32,0.82)';
+    ctx.beginPath(); ctx.roundRect(12, H - 64, W - 24, 52, 12); ctx.fill();
+    const items = [
+      [{ kind: 'contact', letter: 'O' }, 'Story contact'], [{ kind: 'shop', letter: 'T' }, 'Shop'], [{ kind: 'job', letter: 'C' }, 'Side job'],
+      [{ kind: 'property', color: '#ff8fb1' }, 'Property'], [{ kind: 'objective' }, 'Objective'], [{ kind: 'police' }, 'MKPD'],
+    ];
+    ctx.font = '700 17px "Segoe UI", Arial';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    let x = 38;
+    for (const [b, label] of items) {
+      drawBlip(ctx, b, x, H - 38, 11, 0);
+      ctx.fillStyle = '#fff6ea';
+      ctx.fillText(label, x + 18, H - 37);
+      x += 30 + ctx.measureText(label).width + 20;
+    }
+    ctx.fillStyle = '#ffd36e'; ctx.font = '900 19px "Arial Black", Arial';
+    ctx.fillText('MARISOL KEYS', 22, 30);
+    ctx.font = '700 13px "Segoe UI", Arial'; ctx.fillStyle = '#e8f6ff';
+    ctx.fillText(`PAGES FOUND ${(this.game.state.pages || []).length}/20`, 24, 52);
   }
 
   renderSide() {

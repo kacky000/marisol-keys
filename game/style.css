@@ -83,6 +83,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #0b2233; fon
 
 /* ---------- phone / map ---------- */
 #phone { position: fixed; inset: 18px 40px; background: linear-gradient(160deg, #0f2f45, #1c1530); border-radius: 26px; border: 3px solid rgba(255,255,255,0.25); box-shadow: 0 20px 60px rgba(0,0,0,0.6); display: flex; flex-direction: column; overflow: hidden; }
+#phone .phone-status { text-align: center; font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.75); padding: 6px 0 0; font-weight: 700; white-space: pre; }
 #phone .phone-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 22px; background: rgba(0,0,0,0.3); }
 #phone .phone-title { font-family: var(--display); font-size: 20px; letter-spacing: 3px; color: var(--amber); }
 #phone .phone-tabs b { margin-left: 8px; padding: 4px 14px; border-radius: 14px; font-size: 14px; cursor: pointer; pointer-events: auto; background: rgba(255,255,255,0.08); }
