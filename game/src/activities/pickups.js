@@ -3,7 +3,7 @@
 
 import * as THREE from 'three';
 import { groundHeight } from '../world/groundHeight.js';
-import { emit } from '../core/events.js';
+import { emit, on } from '../core/events.js';
 
 const B = 64;
 const KINDS = {
@@ -61,15 +61,28 @@ export class Pickups {
       game.scene.add(mesh);
       return { kind, x, z, mesh, respawn: 0 };
     });
+    on('ped:killed', ({ ped }) => { if (ped.weapon && ped.kind !== 'civilian') this.drop('ammo', ped.pos.x + 0.6, ped.pos.z); });
   }
 
   blips() {
     return this.items.filter((p) => p.kind === 'health' && p.mesh.visible).map((p) => ({ x: p.x, z: p.z, kind: 'health' }));
   }
 
+  // Armed enemies and officers drop their ammo when they go down (gone again after 30 s).
+  drop(kind, x, z) {
+    const mesh = pickupMesh(kind);
+    mesh.position.set(x, Math.max(0, groundHeight(x, z)), z);
+    this.game.scene.add(mesh);
+    this.items.push({ kind, x, z, mesh, respawn: 0, ttl: 30 });
+  }
+
   update(dt, time) {
     const p = this.game.player;
-    for (const it of this.items) {
+    for (const it of [...this.items]) {
+      if (it.ttl !== undefined) {
+        it.ttl -= dt;
+        if (it.ttl <= 0 || !it.mesh.visible) { this.game.scene.remove(it.mesh); this.items.splice(this.items.indexOf(it), 1); continue; }
+      }
       if (!it.mesh.visible) {
         it.respawn -= dt;
         if (it.respawn <= 0) it.mesh.visible = true;
