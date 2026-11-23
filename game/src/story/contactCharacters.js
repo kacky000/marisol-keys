@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { buildHuman, poseHuman } from '../peds/humanModel.js';
 import { groundHeight } from '../world/groundHeight.js';
+import { raycastStatic } from '../world/collisionWorld.js';
 import { STORY, CONTACTS } from '../missions/storyMissions.js';
 import { dampAngle } from '../core/mathUtil.js';
 
@@ -54,9 +55,20 @@ export class ContactCast {
     const mx = (c.x + p.pos.x) / 2, mz = (c.z + p.pos.z) / 2;
     const dx = c.x - p.pos.x, dz = c.z - p.pos.z;
     const len = Math.hypot(dx, dz) || 1;
-    const nx = -dz / len, nz = dx / len;
     const y = groundHeight(mx, mz);
-    return { pos: new THREE.Vector3(mx + nx * 4.2 - dx * 0.15, y + 1.9, mz + nz * 4.2 - dz * 0.15), look: new THREE.Vector3(mx, y + 1.45, mz) };
+    const look = new THREE.Vector3(mx, y + 1.45, mz);
+    // try both sides of the pair (and a wider shot) and keep the first with a clear view
+    for (const dist of [3.4, 4.6]) {
+      for (const side of [1, -1]) {
+        const nx = (-dz / len) * side, nz = (dx / len) * side;
+        const pos = new THREE.Vector3(mx + nx * dist - dx * 0.12, y + 1.8, mz + nz * dist - dz * 0.12);
+        const dir = pos.clone().sub(look);
+        const d = dir.length();
+        dir.divideScalar(d);
+        if (raycastStatic(look.x, look.y, look.z, dir.x, dir.y, dir.z, d) >= d) return { pos, look };
+      }
+    }
+    return { pos: new THREE.Vector3(mx - dz / len * 3.4, y + 1.8, mz + dx / len * 3.4), look };
   }
 
   update(dt) {
