@@ -210,7 +210,10 @@ export function litWindowsFrom(tex, cols, rows, seed = 5) {
       const r = sd[i], gg = sd[i + 1], b = sd[i + 2];
       const lum = (r * 0.3 + gg * 0.59 + b * 0.11) / 255;
       const cell = lit[Math.floor(x / (w / cols)) + Math.floor(y / (h / rows)) * cols];
-      if (cell && lum < 0.62 && b >= r - 10) { out.data[i] = cell[0]; out.data[i + 1] = cell[1]; out.data[i + 2] = cell[2]; }
+      // glass is picked by its blue cast rather than its brightness, so the pale diagonal sky
+      // reflection painted on the panes lights up too instead of leaving a torn dark edge
+      const glass = b - r > 12 || (lum < 0.45 && b >= r - 10);
+      if (cell && glass) { out.data[i] = cell[0]; out.data[i + 1] = cell[1]; out.data[i + 2] = cell[2]; }
       out.data[i + 3] = 255;
     }
   }

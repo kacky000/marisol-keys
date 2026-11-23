@@ -1,4 +1,5 @@
-// Gradient sky dome with a soft sun disc, glow and painted cumulus bands, following the camera.
+// Gradient sky dome with a soft sun disc, glow and painted cumulus bands, stars and a moon at
+// night, following the camera.
 
 import * as THREE from 'three';
 
@@ -36,6 +37,19 @@ void main() {
   float s = max(dot(d, normalize(uSunDir)), 0.0);
   col += uSunColor * (pow(s, 6.0) * 0.35 + pow(s, 60.0) * 0.6);
   col += vec3(1.0, 0.95, 0.85) * smoothstep(0.9993, 0.9997, s) * 2.0;
+  // night: twinkling stars and a moon opposite the sun, fading in as the zenith darkens
+  float night = smoothstep(0.02, -0.18, normalize(uSunDir).y);
+  if (night > 0.0 && d.y > 0.0) {
+    vec2 sp = d.xz / (d.y + 0.35) * 85.0;
+    vec2 g = floor(sp);
+    float star = step(0.991, hash(g)) * smoothstep(0.24, 0.04, length(fract(sp) - 0.5));
+    float twinkle = 0.65 + 0.35 * sin(uTime * 3.0 + hash(g + 7.0) * 40.0);
+    col += vec3(0.9, 0.95, 1.0) * star * twinkle * night * smoothstep(0.03, 0.3, d.y) * (0.8 + hash(g + 3.0) * 1.4);
+    vec3 moonDir = normalize(vec3(-uSunDir.x, abs(uSunDir.y) * 0.8 + 0.25, -uSunDir.z + 0.3));
+    float m = max(dot(d, moonDir), 0.0);
+    col += vec3(0.95, 0.93, 0.85) * smoothstep(0.99955, 0.99975, m) * 1.6 * night;
+    col += vec3(0.45, 0.55, 0.8) * pow(m, 80.0) * 0.25 * night;
+  }
   // clouds: a band of soft cumulus above the horizon
   if (d.y > 0.0) {
     vec2 uv = d.xz / (d.y + 0.15) * 1.6 + vec2(uTime * 0.004, 0.0);
