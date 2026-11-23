@@ -142,6 +142,10 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #0b2233; fon
 .panel.wide { min-width: 640px; }
 .panel h2 { margin: 0 0 8px; font-family: var(--display); letter-spacing: 3px; color: var(--amber); }
 .panel label { display: flex; justify-content: space-between; gap: 16px; align-items: center; font-size: 15px; pointer-events: auto; }
+.panel label input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--coral); }
+.panel label input[type=range] { accent-color: var(--coral); }
+.pause-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; font-size: 13px; color: #d9e6ee; margin: -2px 0 6px; }
+.pause-stats b { color: var(--amber); font-weight: 800; }
 .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 30px; font-size: 15px; margin-bottom: 10px; }
 .controls-grid b { display: inline-block; min-width: 110px; color: var(--lagoon); }
 

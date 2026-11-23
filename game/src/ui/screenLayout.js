@@ -73,6 +73,7 @@ function menuMarkup() {
 <div id="menu-pause" class="screen hidden">
   <div class="panel">
     <h2>Paused</h2>
+    <div id="pause-stats" class="pause-stats"></div>
     <button data-act="resume">Resume</button>
     <button data-act="save">Save Game</button>
     <button data-act="settings">Settings</button>
@@ -87,9 +88,9 @@ function menuMarkup() {
     <label>Radio volume <input type="range" id="set-radio" min="0" max="100"></label>
     <label>Mouse sensitivity <input type="range" id="set-sens" min="10" max="300"></label>
     <label>Draw distance <input type="range" id="set-draw" min="200" max="900"></label>
-    <label><input type="checkbox" id="set-shadows"> Soft shadows</label>
-    <label><input type="checkbox" id="set-post"> Bloom &amp; colour grade</label>
-    <label><input type="checkbox" id="set-invert"> Invert mouse Y</label>
+    <label>Soft shadows <input type="checkbox" id="set-shadows"></label>
+    <label>Bloom &amp; colour grade <input type="checkbox" id="set-post"></label>
+    <label>Invert mouse Y <input type="checkbox" id="set-invert"></label>
     <button data-act="back">Back</button>
   </div>
 </div>

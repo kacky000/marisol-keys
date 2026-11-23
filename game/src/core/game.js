@@ -26,7 +26,9 @@ import { StreetEvents } from '../activities/streetEvents.js';
 import { TidePages } from '../activities/tidePages.js';
 import { Pickups } from '../activities/pickups.js';
 import { StuntJumps } from '../activities/stuntJumps.js';
-import { CompletionWatch } from '../progress/completion.js';
+import { CompletionWatch, completionPercent } from '../progress/completion.js';
+import { STORY } from '../missions/storyMissions.js';
+import { formatClock } from '../sky/timeOfDay.js';
 import { DrivingBonuses } from '../activities/drivingBonuses.js';
 import { AmbulanceService } from '../emergency/ambulanceService.js';
 import { CabRide } from '../activities/cabRide.js';
@@ -237,7 +239,18 @@ export class Game {
   setPaused(v) {
     this.paused = v;
     setInputEnabled(!v);
-    if (v) this.menus.show('menu-pause');
+    if (v) { this.menus.show('menu-pause'); this.showPauseStats(); }
+  }
+
+  // A glance at progress on the pause card.
+  showPauseStats() {
+    const st = this.state, el = document.getElementById('pause-stats');
+    if (!el || !st) return;
+    const day = Math.floor((st.hour - 8) / 24) + 1;
+    el.innerHTML = [
+      ['Story', `${st.story}/${STORY.length}`], ['Island', `${completionPercent(st)}%`],
+      ['Cash', `$${st.money.toLocaleString('en-US')}`], ['Day', `${day} · ${formatClock(st.hour)}`],
+    ].map(([k, v]) => `<span>${k} <b>${v}</b></span>`).join('');
   }
 
   quitToTitle() {
