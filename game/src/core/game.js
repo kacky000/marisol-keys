@@ -15,7 +15,8 @@ import { DispatchRadio } from '../police/dispatchRadio.js';
 import { Player } from '../player/player.js';
 import { VehicleManager } from '../vehicles/vehicleManager.js';
 import { TrafficSystem } from '../traffic/trafficSystem.js';
-import { PedSystem } from '../peds/pedSystem.js';
+import { LaneDriver } from '../traffic/laneDriver.js';
+import { PedSystem, pedClock } from '../peds/pedSystem.js';
 import { GameCamera } from '../camera/gameCamera.js';
 // activities and the economy
 import { SideJobs } from '../activities/sideJobs.js';
@@ -89,6 +90,7 @@ export class Game {
     }
     this.traffic = new TrafficSystem(this.vehicles, rng);
     this.peds = new PedSystem(s, rng);
+    LaneDriver.crossers = this.peds.peds;
     this.player = new Player(s);
     this.camera = new GameCamera(this.threeCamera);
     this.fx = { particles: new ParticleFX(s), tracers: new TracerFX(s) };
@@ -256,6 +258,7 @@ export class Game {
     p.update(dt, { camera: this.camera, vehicles: this.vehicles, targets: this.targets, fx: this.fx, time: this.time });
     this.traffic.update(dt, this.time, p);
     this.vehicles.update(dt, this.time);
+    pedClock.time = this.time;
     this.peds.update(dt, p, this.vehicles);
     const seen = this.wanted.stars > 0 && this.police.canAnyoneSee(p);
     this.wanted.update(dt, p, seen);

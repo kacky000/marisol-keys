@@ -6,6 +6,8 @@ import { ROAD_HALF } from '../world/cityPlan.js';
 import { clamp, wrapAngle } from '../core/mathUtil.js';
 
 export class LaneDriver {
+  static crossers = [];   // the pedestrian list, shared so drivers can yield at crossings
+
   constructor(vehicle, fromId, toId, lane, s, rng) {
     this.vehicle = vehicle;
     this.rng = rng;
@@ -136,6 +138,8 @@ export class LaneDriver {
     };
     for (const o of vehicles) if (o !== v) test(o.pos.x, o.pos.z, o.spec.len / 2);
     if (player && !player.vehicle) test(player.pos.x, player.pos.z, 0.5);
+    // pedestrians on a zebra crossing
+    for (const p of LaneDriver.crossers) if (p.crossing && p.alive) test(p.pos.x, p.pos.z, 0.8);
     return gap;
   }
 }

@@ -9,8 +9,10 @@ import { BOARDWALK } from '../props/beachfront.js';
 import { on, emit } from '../core/events.js';
 import { wrapAngle } from '../core/mathUtil.js';
 import { rng as sharedRng } from '../core/rng.js';
+import { nodes, lightFor } from '../roads/roadNetwork.js';
 
 let pedId = 1;
+export const pedClock = { time: 0 };   // game time, for reading the crossing lights
 
 export class Ped {
   constructor(scene, x, z, outfit, kind = 'civilian') {
@@ -76,8 +78,13 @@ export class Ped {
       const t = this.route[0];
       const dx = t.x - this.pos.x, dz = t.z - this.pos.z;
       const d = Math.hypot(dx, dz);
-      if (d < 0.8) this.route.shift();
+      // at the kerb: wait for the traffic on this road to be held at red
+      const node = t.cross && nodes.get(t.cross.node);
+      const waiting = node && !this.crossing && lightFor(node, t.cross.axis, pedClock.time) !== 'red';
+      if (d < 0.8) { this.route.shift(); this.crossing = false; }
+      else if (waiting) { this.heading += wrapAngle(Math.atan2(dx, -dz) - this.heading) * Math.min(1, dt * 6); }
       else {
+        if (t.cross) this.crossing = true;
         const want = Math.atan2(dx, -dz);
         this.heading += wrapAngle(want - this.heading) * Math.min(1, dt * 6);
         moving = this.speed;
@@ -125,7 +132,22 @@ export function planStroll(x, z, rand) {
   let k0 = 0, best = Infinity;
   corners.forEach((c, k) => { const d = (c.x - x) ** 2 + (c.z - z) ** 2; if (d < best) { best = d; k0 = k; } });
   const dir = rand() < 0.5 ? 1 : 3;
-  return [0, 1, 2, 3, 4].map((n) => corners[(k0 + n * dir) % 4]);
+  const route = [0, 1, 2, 3].map((n) => ({ ...corners[(k0 + n * dir) % 4] }));
+  // then, half the time, use the zebra crossing at the last corner to reach the next block
+  const end = route[route.length - 1];
+  if (rand() < 0.6) {
+    const acrossX = rand() < 0.5;
+    const east = end.x > i * BLOCK + BLOCK / 2, south = end.z > j * BLOCK + BLOCK / 2;
+    const ni = acrossX ? i + (east ? 1 : -1) : i, nj = acrossX ? j : j + (south ? 1 : -1);
+    if (isUrban(blockLetter(ni, nj))) {
+      const roadX = (east ? i + 1 : i) * BLOCK, roadZ = (south ? j + 1 : j) * BLOCK;
+      const target = acrossX ? { x: roadX + (east ? inset : -inset), z: end.z } : { x: end.x, z: roadZ + (south ? inset : -inset) };
+      // crossing a north-south road means waiting for that road's traffic to get a red light
+      target.cross = { node: `${Math.round(roadX / BLOCK)},${Math.round(roadZ / BLOCK)}`, axis: acrossX ? 'ns' : 'ew' };
+      route.push(target);
+    }
+  }
+  return route;
 }
 
 const BUSY = { A: 1.4, S: 1.6, D: 1.2, R: 0.8, C: 1.0, P: 0.9, H: 0.25, V: 0.3 };
