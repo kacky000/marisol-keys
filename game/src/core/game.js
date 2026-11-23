@@ -134,6 +134,12 @@ export class Game {
       this.scene.add(l);
       pool.push(l);
     }
+    // two siren lights (red, blue) that follow the nearest cruiser with its lights on
+    this.sirenLights = ['#ff2a2a', '#2a5bff'].map((c) => {
+      const l = new THREE.PointLight(c, 0, 18, 1.4);
+      this.scene.add(l);
+      return l;
+    });
     return pool;
   }
 

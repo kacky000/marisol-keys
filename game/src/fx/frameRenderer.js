@@ -41,6 +41,25 @@ function trimShadowCasters(game, state, focus) {
   }
 }
 
+// Red and blue light from the nearest cruiser's light bar splashes onto the road and cars.
+function flashSirens(game, focus) {
+  const pool = game.sirenLights;
+  if (!pool) return;
+  let best = null, bd = 60 * 60;
+  for (const v of game.vehicles.list) {
+    if (!v.sirenOn || v.wrecked) continue;
+    const d = (v.pos.x - focus.x) ** 2 + (v.pos.z - focus.z) ** 2;
+    if (d < bd) { bd = d; best = v; }
+  }
+  const phase = Math.floor(game.time * 6) % 2;
+  pool.forEach((l, k) => {
+    if (!best) { l.intensity = 0; return; }
+    const r = best.right();
+    l.position.set(best.pos.x + r.x * (k ? 0.6 : -0.6), best.pos.y + best.spec.height + 0.6, best.pos.z + r.z * (k ? 0.6 : -0.6));
+    l.intensity = (k === phase ? 26 : 12);
+  });
+}
+
 export function renderFrame(game) {
   fitToWindow(game.renderer, game.threeCamera);
   const state = game.weather.apply(skyStateAt(game.state.hour));
@@ -53,6 +72,7 @@ export function renderFrame(game) {
   lightTheCity(game, state);
   placeNightLamps(game, state, focus);
   trimShadowCasters(game, state, focus);
+  flashSirens(game, focus);
   const v = game.player.vehicle;
   const speedBlur = v ? Math.max(0, Math.abs(v.speed) - 24) / 40 : 0;
   game.post.render(game.scene, game.threeCamera, { exposure: 1.0 + state.night * 0.35, bloom: 0.45 + state.night * 0.5, speedBlur: Math.min(0.6, speedBlur) });
