@@ -10,6 +10,7 @@ import { emit, on } from '../core/events.js';
 import { rng } from '../core/rng.js';
 import { CAST } from '../story/cast.js';
 import { wasPressed } from '../core/input.js';
+import { rollCredits } from '../ui/creditsRoll.js';
 
 export class MissionRunner {
   constructor(game) {
@@ -283,6 +284,7 @@ export class MissionRunner {
     emit('mission:passed', { mission: m });
     emit('sound', { name: 'passed' });
     g.save();
+    if (g.state.story >= STORY.length && !g.shotMode) setTimeout(() => rollCredits(), 4500);
   }
 
   fail(reason) {

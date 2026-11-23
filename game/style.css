@@ -138,6 +138,15 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #0b2233; fon
 body.wasted #stage canvas { filter: grayscale(0.85) brightness(0.75) sepia(0.25); transition: filter 1.2s; }
 body.busted #stage canvas { filter: grayscale(0.6) brightness(0.8) hue-rotate(180deg) saturate(0.6); transition: filter 1.2s; }
 body.wasted #hud-bigmsg { color: #ff6b5a; }
+#credits { position: fixed; inset: 0; z-index: 30; background: linear-gradient(180deg, rgba(10,6,24,0.85), rgba(60,20,60,0.75)); overflow: hidden; pointer-events: none; }
+#credits .credits-inner { position: absolute; left: 0; right: 0; top: 100%; text-align: center; animation: creditsUp 24s linear forwards; }
+@keyframes creditsUp { to { transform: translateY(-160vh); } }
+#credits h1 { font-family: var(--display); font-size: 64px; margin: 0; background: linear-gradient(180deg, #fff, #ffd9a0, var(--coral)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+#credits h2 { letter-spacing: 8px; color: var(--lagoon); margin: 6px 0 60px; }
+#credits .credit { margin: 0 auto 34px; max-width: 640px; }
+#credits .credit b { display: block; font-family: var(--display); font-size: 26px; color: var(--amber); }
+#credits .credit span { font-size: 18px; font-style: italic; }
+#credits .credits-foot { margin-top: 70px; font-size: 16px; opacity: 0.85; line-height: 1.6; }
 #intro .bar { position: fixed; left: 0; right: 0; height: 12vh; background: #05080c; z-index: 20; }
 #intro .bar.top { top: 0; }
 #intro .bar.bottom { bottom: 0; display: flex; align-items: center; justify-content: center; }

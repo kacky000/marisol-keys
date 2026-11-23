@@ -10,7 +10,7 @@ function canopyGeometry() {
   const parts = [[0, 0, 0, 1], [0.7, -0.15, 0.3, 0.75], [-0.6, -0.1, -0.35, 0.8], [0.1, 0.45, -0.2, 0.7]];
   const pos = [], nrm = [];
   for (const [x, y, z, s] of parts) {
-    const g = new THREE.IcosahedronGeometry(s, 1).toNonIndexed();
+    const g = new THREE.IcosahedronGeometry(s, 1);
     g.computeVertexNormals();
     const p = g.attributes.position, n = g.attributes.normal;
     for (let i = 0; i < p.count; i++) {
