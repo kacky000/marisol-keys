@@ -37,7 +37,7 @@ Any static file server works too: the game is just the files under `game/`.
 |---|---|---|
 | W A S D | walk | throttle, brake / reverse, steer |
 | Shift | sprint | — |
-| Ctrl or X | crouch in cover (half damage) | — |
+| X | crouch in cover (half damage) | — |
 | Space | jump | handbrake (drift) |
 | Mouse | look / aim | look around |
 | Left click / Right click | fire / aim | drive-by (hold right, click left) |

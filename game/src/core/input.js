@@ -10,6 +10,8 @@ let enabled = true;
 export function initInput(canvas) {
   addEventListener('keydown', (e) => {
     if (e.code === 'Tab') e.preventDefault();
+    // keep Ctrl+key browser shortcuts (and Space page-scrolling) from firing mid-game
+    if (enabled && (e.ctrlKey || e.code === 'Space') && e.code !== 'KeyR' && e.code !== 'F5') e.preventDefault();
     if (!down.has(e.code)) pressed.add(e.code);
     down.add(e.code);
   });

@@ -52,7 +52,7 @@ const CONTROLS = [
   ['W A S D', 'walk / drive'], ['Shift', 'sprint'], ['Space', 'jump / handbrake'], ['Mouse', 'look &amp; aim'],
   ['Left click', 'fire'], ['Right click', 'aim'], ['F', 'steal / enter / exit car'], ['1-4 / wheel', 'switch weapon'],
   ['R', 'reload'], ['E', 'interact / start job / buy'], ['Q', 'radio station · armour at the gun shop'], ['H', 'horn'],
-  ['M or Tab', 'phone &amp; map'], ['Esc / P', 'pause'], ['C', 'look behind'], ['V', 'camera distance · hood cam'], ['Ctrl / X', 'crouch in cover (half damage)'],
+  ['M or Tab', 'phone &amp; map'], ['Esc / P', 'pause'], ['C', 'look behind'], ['V', 'camera distance · hood cam'], ['X', 'crouch in cover (half damage)'],
   ['G', 'siren (in a cruiser)'], ['Space', 'skip dialogue'],
 ];
 
