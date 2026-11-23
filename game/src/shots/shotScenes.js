@@ -96,7 +96,7 @@ export const SCENES = {
     finalize(game) {
       const p = game.player.vehicle;
       const units = game.police.units.map((u) => u.vehicle);
-      const spots = [[p.pos.x + 2.6, 4 * B + 2.2, -Math.PI / 2 + 0.06], [p.pos.x + 8.5, p.pos.z + 0.3, -Math.PI / 2 - 0.04], [p.pos.x + 22, 4 * B + 3, -Math.PI / 2]];
+      const spots = [[p.pos.x + 3.2, 4 * B + 2.4, -Math.PI / 2 + 0.07], [p.pos.x + 5.6, p.pos.z - 3.1, -Math.PI / 2 - 0.06], [p.pos.x + 19, 4 * B + 3.2, -Math.PI / 2]];
       units.forEach((v, k) => { if (spots[k]) { v.pos.set(spots[k][0], v.pos.y, spots[k][1]); v.heading = spots[k][2]; v.syncMesh(0.016, 34, game.time); } });
       const h = game.police.heli;
       h.pos.set(p.pos.x - 22, 14.5, p.pos.z + 3);
@@ -107,7 +107,7 @@ export const SCENES = {
       game.wanted.seen = true;
       game.hud.showDistrict({ name: 'Pastel Mile', sub: 'SUNDOWN BOULEVARD' });
       game.dispatch.show('Air One is up. Suspect westbound on Sundown Boulevard, all units converge.');
-      return { pos: new THREE.Vector3(p.pos.x + 15, 5.0, p.pos.z + 0.8), look: new THREE.Vector3(p.pos.x - 30, 2.4, p.pos.z + 0.6) };
+      return { pos: new THREE.Vector3(p.pos.x + 12.5, 4.3, p.pos.z + 0.9), look: new THREE.Vector3(p.pos.x - 30, 2.6, p.pos.z + 0.2) };
     },
   },
 

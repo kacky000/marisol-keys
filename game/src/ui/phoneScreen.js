@@ -109,7 +109,12 @@ export class PhoneScreen {
         const cls = k < st.story ? 'done' : k === st.story ? 'next' : '';
         return `<div class="row ${cls}"><span class="num">${k < st.story ? '✓' : k + 1}</span><canvas data-portrait="${m.giver}" width="40" height="40" style="width:30px;height:30px;border-radius:6px"></canvas><span class="what"><b>${m.title}</b><span class="who">${CAST[m.giver].name}</span></span><span class="pay">${formatMoney(m.reward)}</span></div>`;
       }).join('');
-      this.side.innerHTML = `<h3>THE TIDE BOOK</h3><div class="progress">STORY ${st.story}/${STORY.length} · ${pct}% COMPLETE<i style="--p:${pct}%"></i></div>${rows}`;
+      const owned = st.properties.length;
+      const tiles = [
+        ['🚕', 'Cab fares', `${st.stats.fares} done`], ['📦', 'Couriers', `${st.stats.deliveries} runs`], ['🏁', 'Night Sprint', st.stats.bestRace ? `${st.stats.bestRace.toFixed(1)}s` : 'no time'],
+        ['📄', 'Tide pages', `${(st.pages || []).length}/20`], ['⌂', 'Properties', `${owned}/4 owned`], ['⛵', 'Speedboats', 'pier · harbor'],
+      ].map(([icon, name, val]) => `<div class="tile"><span>${icon}</span><b>${name}</b><i>${val}</i></div>`).join('');
+      this.side.innerHTML = `<h3>THE TIDE BOOK</h3><div class="progress">STORY ${st.story}/${STORY.length} · ${pct}% COMPLETE<i style="--p:${pct}%"></i></div><div class="story-list">${rows}</div><h3 class="sub">ON THE ISLAND</h3><div class="tiles">${tiles}</div>`;
       this.side.querySelectorAll('[data-portrait]').forEach((c) => paintPortrait(c.getContext('2d'), c.dataset.portrait, 40));
     } else if (this.tab === 'jobs') {
       this.side.innerHTML = `<h3>SIDE JOBS</h3>
