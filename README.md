@@ -57,12 +57,17 @@ Any static file server works too: the game is just the files under `game/`.
   footbridges and moored skiffs, Saltgate Harbor with gantry cranes and container stacks, Mirador
   Hills villas with pools, Palmetto Flats, Old Keys and Seagrape Park; Pelican and Tarpon
   causeways to the mainland.
-- **Driving** — eight invented vehicles (Solara Vela sedan, Kestrel Strata GT, Mako Tradesman
+- **Landmarks** — the 206 m Lumen Tower with its crown of light rings, rounded art-deco corner
+  towers with neon, Ozzie's Bait & Tackle, The Coral Room, the Sunwake pier café, a skyline of
+  invented brands (Mango Bay Cola, Palmetto Bank, Vela Cinema, Hotel Esmeralda...).
+- **Driving** — nine invented vehicles (Solara Vela sedan, Kestrel Strata GT, Mako Tradesman
   pickup, Keys Cab, Coastline Transit bus, MKPD Interceptor, Sunrise Courier van, Zephyr 400
-  motorbike), arcade physics with handbrake drifts, crashes, damage smoke, fire and explosions,
-  a speed-sensitive chase camera.
+  motorbike, Riptide 22 speedboat), arcade physics with handbrake drifts, crashes, damage smoke,
+  fire and explosions, a speed-sensitive chase camera. Speedboats sail the bay and the open sea.
 - **A living city** — lane-following traffic that stops at working traffic lights, pedestrians on
-  the sidewalks and boardwalk who flee from gunfire and speeding cars.
+  the sidewalks, boardwalk and beach (sunbathers included) who flee from gunfire and speeding
+  cars, boats on the water, and random street events: police pursuits, street racers, muggings
+  you can break up for a reward.
 - **Wanted level** — one to five stars from crimes the city sees; MKPD cruisers that route
   through the streets and ram, officers who bail out and shoot, roadblocks from three stars, the
   helicopter from four; break line of sight and leave the search circle to escape. Busted and
@@ -72,10 +77,13 @@ Any static file server works too: the game is just the files under `game/`.
 - **Story** — *The Tide Book*, nine missions with dialogue and painted portraits for Tessa, Ozzie
   Calderón, Priya Lund, Lulu Marchetti, Gideon "Gull" Moreau and Captain Rourke Hale: drives,
   races, rooftop relays, harbor shoot-outs, a stolen evidence van, a downtown takedown and a
-  four-star run across the causeway.
+  four-star run across the causeway. Contacts wait in person at their spots and face-to-face
+  scenes cut to a two-shot camera; MKPD dispatch chatter narrates every pursuit.
 - **Side jobs and progression** — Keys Cab fares, Sunrise Couriers deliveries, the Night Sprint
   time trial, Keys Tactical gun shop and body armour, Pastel Paint & Body resprays that shake the
-  police, Sunbelt Garage repairs, and four properties that pay out every game day.
+  police, Sunbelt Garage repairs, four properties that pay out every game day, twenty hidden
+  Tide Book pages, respawning health / armour / ammo / cash pickups, and a safehouse that saves
+  and sleeps to the next morning.
 - **HUD and menus** — rotating minimap drawn from the city plan with a GPS route, search circle
   and blips; health, armour, money, stars, weapon and ammo, objective and timer, speedometer,
   district pop-ups; a phone with the illustrated island map, story list, jobs and assets; title
