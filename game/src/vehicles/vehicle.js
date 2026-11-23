@@ -69,9 +69,10 @@ export class Vehicle {
     if (!inp.throttle && !inp.brake) vF -= Math.sign(vF) * Math.min(Math.abs(vF), 2.2 * dt);
 
     // steering: wheel angle eases toward input, less lock at speed
-    const lock = s.steer / (1 + Math.abs(vF) * 0.035);
+    const lock = s.steer / (1 + Math.abs(vF) * 0.09);
     this.steer += (inp.steer * lock - this.steer) * Math.min(1, dt * 8);
-    const targetYaw = (vF / s.wheelbase) * Math.tan(this.steer) * (inp.handbrake ? 1.45 : 1);
+    const maxYaw = inp.handbrake ? 3.0 : 2.2;
+    const targetYaw = clamp((vF / s.wheelbase) * Math.tan(this.steer) * (inp.handbrake ? 1.6 : 1), -maxYaw, maxYaw);
     this.yawRate += (targetYaw - this.yawRate) * Math.min(1, dt * (inp.handbrake ? 4 : 9));
     this.heading = wrapAngle(this.heading + this.yawRate * dt);
 
@@ -131,7 +132,7 @@ export class Vehicle {
         this.vel.multiplyScalar(0.8);
         const impact = -vn;
         if (impact > 6 && time - this.lastImpact > 0.25) {
-          this.damage(impact * impact * 0.9, 'crash');
+          this.damage(impact * impact * 0.32, 'crash');
           this.lastImpact = time;
           emit('vehicle:impact', { vehicle: this, impact, x: c.x, z: c.z });
         }

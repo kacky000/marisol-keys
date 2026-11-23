@@ -39,6 +39,7 @@ import { startAudio, applyVolumes } from '../audio/audioEngine.js';
 import { playSound } from '../audio/soundEffects.js';
 import { VehicleAudio } from '../audio/vehicleAudio.js';
 import { Radio } from '../audio/radioStations.js';
+import { Ambience } from '../audio/ambience.js';
 import { lampHeads } from '../props/streetFurniture.js';
 
 export class Game {
@@ -148,7 +149,8 @@ export class Game {
 
   startGame(continueSave) {
     startAudio(this.settings);
-    this.vehicleAudio = new VehicleAudio();
+    this.vehicleAudio ??= new VehicleAudio();
+    this.ambience ??= new Ambience();
     const loaded = continueSave ? loadGame() : null;
     this.state = loaded || newGameState();
     const p = this.player;
@@ -242,6 +244,7 @@ export class Game {
       for (const v of this.vehicles.list) if (v.sirenOn) { count++; near = Math.min(near, Math.hypot(v.pos.x - p.pos.x, v.pos.z - p.pos.z)); }
       this.vehicleAudio.update(p, near, count);
       this.radio.update(!!p.vehicle && !this.dialogue.open);
+      this.ambience.update(dt, p, this.time);
     }
     this.districtTimer = (this.districtTimer || 0) - dt;
     if (this.districtTimer <= 0 && this.running) {

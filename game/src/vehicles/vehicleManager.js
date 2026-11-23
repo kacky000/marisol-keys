@@ -61,8 +61,8 @@ export class VehicleManager {
           b.vel.x += nx * jImp * wb; b.vel.y += nz * jImp * wb;
           const impact = -rel;
           if (impact > 4 && time - (a.lastImpact || 0) > 0.2) {
-            a.damage(impact * impact * 0.6, 'crash');
-            b.damage(impact * impact * 0.6, 'crash');
+            a.damage(impact * impact * 0.3, 'crash');
+            b.damage(impact * impact * 0.3, 'crash');
             a.lastImpact = b.lastImpact = time;
             emit('vehicle:collision', { a, b, impact, x: (a.pos.x + b.pos.x) / 2, z: (a.pos.z + b.pos.z) / 2 });
           }
