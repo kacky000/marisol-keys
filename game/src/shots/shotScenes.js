@@ -106,6 +106,7 @@ export const SCENES = {
       game.wanted.zone = { x: p.pos.x, z: p.pos.z, r: game.wanted.zoneRadius() };
       game.wanted.seen = true;
       game.hud.showDistrict({ name: 'Pastel Mile', sub: 'SUNDOWN BOULEVARD' });
+      game.dispatch.show('Air One is up. Suspect westbound on Sundown Boulevard, all units converge.');
       return { pos: new THREE.Vector3(p.pos.x + 15, 5.0, p.pos.z + 0.8), look: new THREE.Vector3(p.pos.x - 30, 2.4, p.pos.z + 0.6) };
     },
   },
@@ -250,6 +251,22 @@ export const SCENES = {
       game.fx.tracers.update(0.01);
       game.hud.showDistrict({ name: 'Saltgate Harbor', sub: 'CRANE YARD 7' });
       return { pos: new THREE.Vector3(p.pos.x - 3.4, p.pos.y + 2.4, p.pos.z + 1.5), look: new THREE.Vector3(p.pos.x + 20, p.pos.y + 1.9, p.pos.z - 1.2) };
+    },
+  },
+
+  // Extra: the city after dark from the Pastel Mile (for checking the night look).
+  night: {
+    hour: 21.5,
+    setup(game) {
+      game.peds.target = 12;
+      game.traffic.target = 14;
+      const pv = car(game, 'sports', 11 * B + 34, 4 * B - 3.4, -Math.PI / 2, 12, '#19c3b4');
+      seatPlayer(game, pv);
+    },
+    steps: 40,
+    finalize(game) {
+      const p = game.player.vehicle;
+      return { pos: new THREE.Vector3(p.pos.x + 12, 4.5, p.pos.z + 0.8), look: new THREE.Vector3(p.pos.x - 30, 3, p.pos.z) };
     },
   },
 

@@ -5,6 +5,7 @@ import { eachBlock, BLOCK, ROAD_HALF, DISTRICTS, CAUSEWAYS, AVENUES, STREETS, GR
 import { edges } from '../roads/roadNetwork.js';
 import { PIER } from '../props/beachfront.js';
 import { CANAL_HALF } from '../world/terrain.js';
+import { eachCollider } from '../world/collisionWorld.js';
 
 export const MAP_BOUNDS = { x0: -820, z0: -260, x1: 1140, z1: 1300 };
 const PPM = 1; // pixels per metre in the cached map
@@ -67,6 +68,21 @@ export function cityMapCanvas() {
   for (const e of edges) { if (e.kind === 'causeway') { g.moveTo(e.ax, e.az); g.lineTo(e.bx, e.bz); } }
   for (const i of Object.keys(AVENUES)) { g.moveTo(i * BLOCK, BLOCK); g.lineTo(i * BLOCK, (GRID - 2) * BLOCK); }
   g.stroke();
+  // building footprints from the collision boxes, shaded by height, with a drop shadow
+  eachCollider((b) => {
+    if (b.tag !== 'wall' && b.tag !== 'container') return;
+    const w = b.x1 - b.x0, d = b.z1 - b.z0;
+    if (w * d < 6) return;
+    const h = b.y1;
+    g.fillStyle = 'rgba(30,40,60,0.25)';
+    g.fillRect(b.x0 + 1.5, b.z0 + 1.5, w, d);
+    if (b.tag === 'container') g.fillStyle = '#c98a6a';
+    else g.fillStyle = h > 60 ? '#5f7896' : h > 25 ? '#8aa0b8' : h > 12 ? '#e7d3bf' : '#f3e6d6';
+    g.fillRect(b.x0, b.z0, w, d);
+    g.strokeStyle = 'rgba(60,50,40,0.35)';
+    g.lineWidth = 0.8;
+    g.strokeRect(b.x0, b.z0, w, d);
+  });
   // pier
   g.fillStyle = '#b07d52';
   g.fillRect(PIER.x0, PIER.z - PIER.half, PIER.x1 - PIER.x0, PIER.half * 2);

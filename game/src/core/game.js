@@ -24,6 +24,7 @@ import { startDamageEffects } from '../fx/damageEffects.js';
 import { WantedLevel } from '../police/wantedLevel.js';
 import { PoliceDispatch } from '../police/policeDispatch.js';
 import { startCrimeWatch } from '../police/crimeWatch.js';
+import { DispatchRadio } from '../police/dispatchRadio.js';
 import { MissionRunner } from '../missions/missionRunner.js';
 import { SideJobs } from '../activities/sideJobs.js';
 import { Shops } from '../economy/shops.js';
@@ -75,6 +76,7 @@ export class Game {
     this.phone = new PhoneScreen(this);
     this.damageFx = startDamageEffects(this);
     this.radio = new Radio();
+    this.dispatch = new DispatchRadio(this);
     startCrimeWatch(this);
     this.bindEvents();
     this.nightLights = this.makeNightLights();
@@ -210,6 +212,7 @@ export class Game {
     const seen = this.wanted.stars > 0 && this.police.canAnyoneSee(p);
     this.wanted.update(dt, p, seen);
     this.police.update(dt, this.time, p, this.targets, this.fx);
+    this.dispatch.update(dt);
     if (this.running) {
       this.missions.update(dt);
       this.activities.update(dt);

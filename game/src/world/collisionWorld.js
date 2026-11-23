@@ -104,3 +104,6 @@ export function raycastStatic(ox, oy, oz, dx, dy, dz, maxDist) {
 }
 
 export const colliderCount = () => boxes.length;
+
+// Every static box, for map painting (footprints of buildings and containers).
+export function eachCollider(fn) { for (const b of boxes) fn(b); }

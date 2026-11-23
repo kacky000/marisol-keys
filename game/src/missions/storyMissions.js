@@ -123,7 +123,7 @@ export const STORY = [
         ['lulu', 'Gull just left my club in a hurry. Heading for Lumen Tower — that\'s Hale\'s office.'],
         ['tessa', 'Then he doesn\'t get there.'],
       ] },
-      { type: 'goto', x: 7 * B, z: 4 * B + 30, radius: 14, inVehicle: true, text: 'Get to <b>Glasswater</b> downtown' },
+      { type: 'goto', x: 7 * B, z: 4 * B + 30, radius: 14, text: 'Take a car and get to <b>Glasswater</b> downtown' },
       { type: 'destroy', vehicle: { type: 'sports', paint: '#111111' }, text: 'Wreck Gull\'s black <b>Strata GT</b>' },
       { type: 'talk', lines: [['gull', 'You… idiot. Hale\'s been waiting for this. Now he\'s got nothing left to lose.']] },
     ],
