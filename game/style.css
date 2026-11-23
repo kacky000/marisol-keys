@@ -112,6 +112,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #0b2233; fon
 #phone-side .story-list { display: flex; flex-direction: column; gap: 4px; }
 #phone-side .story-list .row { padding: 3px 9px; }
 #phone-side .assets-list .row .what b { display: inline; margin-right: 8px; }
+#phone-side .job-list .row { padding: 4px 9px; }
+#phone-side .job-list .row .what { font-size: 12px; color: #cfdde6; }
+#phone-side .job-list .row .what b { display: inline-block; min-width: 150px; margin-right: 10px; font-size: 13.5px; color: #fff; }
 #phone-side .story-list .row .what b { font-size: 13.5px; display: inline; }
 #phone-side .story-list .row .who { margin-left: 8px; }
 #phone-side .story-list .row canvas { width: 24px !important; height: 24px !important; }

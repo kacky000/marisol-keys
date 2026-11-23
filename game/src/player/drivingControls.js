@@ -33,7 +33,7 @@ export function updateDriving(player, dt, ctx) {
   v.input.handbrake = !locked && isDown('Space');
   if (player.autoDrive) Object.assign(v.input, player.autoDrive); // scripted scenes
   if (!locked && wasPressed('KeyH')) emit('sound', { name: 'horn' });
-  if (!locked && v.spec.police && wasPressed('KeyG')) v.sirenOn = !v.sirenOn;
+  if (!locked && (v.spec.police || v.spec.ambulance) && wasPressed('KeyG')) v.sirenOn = !v.sirenOn;
   player.pos.set(v.pos.x, v.pos.y, v.pos.z);
   player.heading = v.heading;
   seatRider(player, v, dt);

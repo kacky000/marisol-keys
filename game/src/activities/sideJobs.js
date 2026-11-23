@@ -1,5 +1,6 @@
 // Side activities: Keys Cab fares (any taxi, press E), Sunrise Couriers deliveries against the
-// clock, and the Night Sprint time trial from the boulevard start line.
+// clock, the Night Sprint time trial from the boulevard start line, Vigilante in a cruiser and
+// Paramedic duty in an ambulance (paramedicJob.js).
 
 import { Marker, checkpointMarker } from '../missions/markers.js';
 import { PLACES, BLOCK, ROAD_HALF, blockLetter, isUrban } from '../world/cityPlan.js';
@@ -9,6 +10,7 @@ import { rng } from '../core/rng.js';
 import { edges, nodes, lanePoint } from '../roads/roadNetwork.js';
 import { LaneDriver } from '../traffic/laneDriver.js';
 import { streetNameAt } from '../police/dispatchRadio.js';
+import { startParamedic, updateParamedic, dropPatient } from './paramedicJob.js';
 
 const SPRINT = [[10 * BLOCK, 11 * BLOCK], [10 * BLOCK, 9 * BLOCK], [8 * BLOCK + 32, 8 * BLOCK], [7 * BLOCK, 7 * BLOCK], [5 * BLOCK, 6 * BLOCK + 20], [6 * BLOCK, 10 * BLOCK], [8 * BLOCK, 12 * BLOCK], [10 * BLOCK, 12 * BLOCK + 32]];
 const FARE_NAMES = ['a tourist in a sun hat', 'a nervous accountant', 'two surfers', 'a wedding planner', 'a chef late for service', 'a lost cruise passenger'];
@@ -54,6 +56,7 @@ export class SideJobs {
     this.marker?.dispose();
     this.marker = null;
     if (this.active?.suspect) this.active.suspect.persistent = false;
+    dropPatient(g, this.active);
     this.active = null;
     g.hud.setObjective(null);
     g.hud.setTimer(null);
@@ -73,6 +76,10 @@ export class SideJobs {
       if (p.vehicle && p.vehicle.type === 'police' && g.wanted.stars === 0) {
         g.hud.prompt('<kbd>E</kbd> Vigilante — run down MKPD\'s most wanted');
         if (wasPressed('KeyE')) this.startVigilante(1);
+      }
+      if (p.vehicle && p.vehicle.type === 'ambulance') {
+        g.hud.prompt('<kbd>E</kbd> Paramedic — rush patients to Sunwake Medical');
+        if (wasPressed('KeyE')) startParamedic(this, 1);
       }
       for (const s of this.startMarkers) {
         if (Math.hypot(p.pos.x - s.x, p.pos.z - s.z) > 6) continue;
@@ -104,6 +111,7 @@ export class SideJobs {
       if (Math.hypot(p.pos.x - s.pos.x, p.pos.z - s.pos.z) > 380) { s.persistent = false; this.end('SUSPECT ESCAPED'); }
       return;
     }
+    if (a.kind === 'paramedic') { updateParamedic(this, a, d, wasPressed('KeyE')); return; }
     if (a.kind === 'taxi') {
       if (wasPressed('KeyE')) { this.end('OFF DUTY'); return; }
       if (d < 6 && Math.abs(p.vehicle?.speed || 0) < 4) {

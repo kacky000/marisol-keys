@@ -142,15 +142,16 @@ export class PhoneScreen {
       this.side.innerHTML = `<h3>THE TIDE BOOK</h3><div class="progress">STORY ${st.story}/${STORY.length} · ${pct}% COMPLETE<i style="--p:${pct}%"></i></div><div class="story-list">${rows}</div><h3 class="sub">ON THE ISLAND</h3><div class="tiles">${tiles}</div>`;
       this.side.querySelectorAll('[data-portrait]').forEach((c) => paintPortrait(c.getContext('2d'), c.dataset.portrait, 40));
     } else if (this.tab === 'jobs') {
-      this.side.innerHTML = `<h3>SIDE JOBS</h3>
+      this.side.innerHTML = `<h3>SIDE JOBS</h3><div class="story-list job-list">
         <div class="row"><span class="num">🚕</span><span class="what"><b>Keys Cab fares</b>Get in any taxi and press E</span><span class="pay">${st.stats.fares} done</span></div>
         <div class="row"><span class="num">📦</span><span class="what"><b>Sunrise Couriers</b>Three parcels against the clock</span><span class="pay">${st.stats.deliveries} done</span></div>
         <div class="row"><span class="num">🏁</span><span class="what"><b>Night Sprint</b>Time trial from Marisol Blvd</span><span class="pay">${st.stats.bestRace ? st.stats.bestRace.toFixed(1) + 's' : '—'}</span></div>
         <div class="row"><span class="num">🚓</span><span class="what"><b>Vigilante</b>Take an MKPD cruiser, press E, wreck fleeing suspects</span><span class="pay">best L${st.stats.vigilante || 0}</span></div>
+        <div class="row"><span class="num">🚑</span><span class="what"><b>Paramedic</b>Take the ambulance outside Sunwake Medical, press E</span><span class="pay">${st.stats.patients || 0} saved</span></div>
         <div class="row"><span class="num">J</span><span class="what"><b>Stunt jumps</b>Four ramps in the parks and on the quay</span><span class="pay">${st.stats.jumps || 0} landed</span></div>
         <div class="row"><span class="num">💨</span><span class="what"><b>Street style</b>Near misses at speed and long clean drifts pay cash</span></div>
         <div class="row"><span class="num">T</span><span class="what"><b>Keys Tactical</b>Guns, ammo and armour</span></div>
-        <div class="row"><span class="num">P</span><span class="what"><b>Pastel Paint &amp; Body</b>Respray to lose the police · $250</span></div>`;
+        <div class="row"><span class="num">P</span><span class="what"><b>Pastel Paint &amp; Body</b>Respray to lose the police · $250</span></div></div>`;
     } else {
       const rows = `<div class="story-list assets-list">${PROPERTIES.map((p) => `<div class="row ${st.properties.includes(p.id) ? 'done' : ''}"><span class="num">${st.properties.includes(p.id) ? '✓' : '⌂'}</span><span class="what"><b>${p.name}</b><span class="who">+${formatMoney(p.income)} A DAY</span></span><span class="pay">${formatMoney(p.price)}</span></div>`).join('')}</div>`;
       const pct = completionPercent(st);

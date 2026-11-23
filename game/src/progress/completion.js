@@ -12,7 +12,7 @@ export function completionGoals(state) {
   const u = state.upgrades || {};
   const tuned = (u.engine || 0) + (u.tyres || 0) + (u.armor || 0);
   return [
-    ['Story missions', state.story || 0, STORY.length, 50],
+    ['Story missions', state.story || 0, STORY.length, 47],
     ['Tide Book pages', (state.pages || []).length, PAGE_COUNT, 15],
     ['Stunt jumps', s.jumps || 0, JUMP_COUNT, 8],
     ['Properties', (state.properties || []).length, PROPERTIES.length, 10],
@@ -21,6 +21,7 @@ export function completionGoals(state) {
     ['Courier runs', s.deliveries || 0, 1, 3],
     ['Night Sprint', s.races || 0, 1, 3],
     ['Vigilante level', s.vigilante || 0, 3, 3],
+    ['Paramedic saves', s.patients || 0, 3, 3],
   ];
 }
 

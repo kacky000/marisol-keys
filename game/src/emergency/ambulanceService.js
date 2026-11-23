@@ -10,6 +10,7 @@ import { groundHeight } from '../world/groundHeight.js';
 import { resolveCircle } from '../world/collisionWorld.js';
 import { on } from '../core/events.js';
 import { rng } from '../core/rng.js';
+import { HOSPITAL_BAY } from '../activities/paramedicJob.js';
 
 const RESPONSE_DELAY = 6;     // seconds after the incident before the call goes out
 const CALL_RANGE = 160;       // only incidents this close to the player get a response
@@ -59,8 +60,21 @@ export class AmbulanceService {
     });
   }
 
+  // One ambulance always waits in the bay outside Sunwake Medical (paramedic duty starts there).
+  // Once it has been taken, a fresh one appears while the player is out of sight of the bay.
+  keepBayStocked() {
+    const g = this.game, bay = this.bay;
+    const away = Math.hypot(g.player.pos.x - HOSPITAL_BAY.x, g.player.pos.z - HOSPITAL_BAY.z) > 120;
+    if (bay && !bay.removed && !bay.wrecked && Math.hypot(bay.pos.x - HOSPITAL_BAY.x, bay.pos.z - HOSPITAL_BAY.z) < 6) return;
+    if (!away && bay) return;
+    if (bay && bay.driver !== 'player') bay.persistent = false;
+    this.bay = g.vehicles.spawn('ambulance', HOSPITAL_BAY.x, HOSPITAL_BAY.z, 0);
+    this.bay.persistent = true;
+  }
+
   update(dt) {
     const g = this.game;
+    this.keepBayStocked();
     if (this.call) { this.runCall(dt); return; }
     const p = g.player.pos;
     this.incidents = this.incidents.filter((i) => g.peds.peds.includes(i.ped) && g.time - i.t < 60);

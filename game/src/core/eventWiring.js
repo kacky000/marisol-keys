@@ -21,7 +21,7 @@ export function wireGameEvents(game) {
   });
   on('player:entered', ({ vehicle }) => {
     game.traffic.release(vehicle);
-    if (vehicle.spec.police) vehicle.sirenOn = false;
+    if (vehicle.spec.police || vehicle.spec.ambulance) vehicle.sirenOn = false;
     game.hud.setRadio(game.radio.tune(game.radio.index));
     playSound('door');
   });
