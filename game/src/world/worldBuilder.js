@@ -25,6 +25,7 @@ import { createOcean, createSurf } from '../water/ocean.js';
 import { buildBoats } from '../water/boats.js';
 import { Seagulls } from '../props/seagulls.js';
 import { buildLandmarkSigns } from '../buildings/landmarkSigns.js';
+import { buildSeawalls } from '../props/seawalls.js';
 import { createRng, hash2 } from '../core/rng.js';
 import { MeshBatch } from '../core/meshBatch.js';
 
@@ -55,6 +56,7 @@ export function buildWorld(scene) {
   const signals = buildTrafficLights(kit, group);
   buildBeachfront(kit);
   buildLandmarkSigns(kit);
+  buildSeawalls(kit);
   const craneBatch = new MeshBatch();
   buildHarborMeshes(group, craneBatch);
   group.add(craneBatch.toMesh(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6, metalness: 0.3 })));
