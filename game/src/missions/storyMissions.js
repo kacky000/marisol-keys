@@ -116,6 +116,25 @@ export const STORY = [
     ],
   },
   {
+    id: 'lowwater', title: 'Low Water', giver: 'ozzie', at: 'ozzie', reward: 2800,
+    blurb: 'Run copies of the manifests round the island by speedboat before the harbor closes.',
+    steps: [
+      { type: 'talk', lines: [
+        ['ozzie', 'Priya made copies. If Hale seals the basin, the originals never leave the island.'],
+        ['ozzie', 'My Riptide is tied up below the shop. Round the south point, up the Sound, to the press boat off the pier.'],
+        ['tessa', 'You still keep that thing fuelled?'],
+        ['ozzie', 'I keep everything fuelled, Tess. That is the whole job.'],
+      ] },
+      { type: 'enterVehicle', vehicle: { type: 'boat', x: 196, z: 910.5, heading: Math.PI / 2, paint: '#e63946' }, text: 'Get in Ozzie\'s <b>Riptide</b> speedboat' },
+      { type: 'checkpoints', timer: 120, text: 'Run the <b>buoys</b> round the island', points: [
+        [420, 985], [640, 990], [860, 960], [905, 800], [905, 620], [912, 470],
+      ] },
+      { type: 'talk', lines: [
+        ['priya', 'Press boat has them. Whatever Hale does now, the story is already off the island.'],
+      ] },
+    ],
+  },
+  {
     id: 'glass', title: 'Glass Ceiling', giver: 'lulu', at: 'lulu', reward: 3500,
     blurb: 'Run Gull off the road before he reaches Hale downtown.',
     steps: [

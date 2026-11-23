@@ -24,7 +24,7 @@ export class Marker {
   constructor(scene, x, z, { color = '#ffd23f', radius = 2.2, height = 7, chevron = true } = {}) {
     this.scene = scene;
     this.group = new THREE.Group();
-    const y = groundHeight(x, z);
+    const y = Math.max(groundHeight(x, z), -0.5); // on the water, markers float at the surface
     this.group.position.set(x, y + 0.05, z);
     const beamMat = new THREE.MeshBasicMaterial({ color, map: beamTexture(), transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, toneMapped: false });
     const beam = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, height, 28, 1, true), beamMat);

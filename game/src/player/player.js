@@ -266,7 +266,9 @@ export class Player {
   }
 
   tryEnterVehicle(ctx) {
-    const v = ctx.vehicles.nearest(this.pos.x, this.pos.z, 4.5, (c) => !c.wrecked && c.driver !== 'player');
+    // boats sit off the quay, so they can be boarded from a little further away
+    const v = ctx.vehicles.nearest(this.pos.x, this.pos.z, 4.5, (c) => !c.wrecked && c.driver !== 'player')
+      || ctx.vehicles.nearest(this.pos.x, this.pos.z, 9.5, (c) => c.spec.boat && !c.wrecked && c.driver !== 'player');
     if (!v) return;
     const right = v.right();
     const side = ((this.pos.x - v.pos.x) * right.x + (this.pos.z - v.pos.z) * right.z) > 0 ? 1 : -1;
