@@ -80,7 +80,7 @@ Any static file server works too: the game is just the files under `game/`.
   four-star run across the causeway. Contacts wait in person at their spots and face-to-face
   scenes cut to a two-shot camera; MKPD dispatch chatter narrates every pursuit.
 - **Side jobs and progression** — Keys Cab fares, Sunrise Couriers deliveries, the Night Sprint
-  time trial, Keys Tactical gun shop and body armour, Pastel Paint & Body resprays that shake the
+  time trial, Vigilante runs in a stolen MKPD cruiser, Keys Tactical gun shop and body armour, Pastel Paint & Body resprays that shake the
   police, four stunt-jump ramps that pay for airtime, Sunbelt Garage repairs and three tiers each of engine, tyre and armour tuning, police
   bribe stars that knock a star off, a phone map you can click to drop a GPS waypoint, four properties that pay out every game day, twenty hidden
   Tide Book pages, respawning health / armour / ammo / cash pickups, and a safehouse that saves

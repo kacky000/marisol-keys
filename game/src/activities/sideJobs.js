@@ -6,6 +6,9 @@ import { PLACES, BLOCK, ROAD_HALF, blockLetter, isUrban } from '../world/cityPla
 import { wasPressed } from '../core/input.js';
 import { emit } from '../core/events.js';
 import { rng } from '../core/rng.js';
+import { edges, nodes, lanePoint } from '../roads/roadNetwork.js';
+import { LaneDriver } from '../traffic/laneDriver.js';
+import { streetNameAt } from '../police/dispatchRadio.js';
 
 const SPRINT = [[10 * BLOCK, 11 * BLOCK], [10 * BLOCK, 9 * BLOCK], [8 * BLOCK + 32, 8 * BLOCK], [7 * BLOCK, 7 * BLOCK], [5 * BLOCK, 6 * BLOCK + 20], [6 * BLOCK, 10 * BLOCK], [8 * BLOCK, 12 * BLOCK], [10 * BLOCK, 12 * BLOCK + 32]];
 const FARE_NAMES = ['a tourist in a sun hat', 'a nervous accountant', 'two surfers', 'a wedding planner', 'a chef late for service', 'a lost cruise passenger'];
@@ -36,6 +39,8 @@ export class SideJobs {
   blips() {
     const out = this.startMarkers.map((s) => ({ x: s.x, z: s.z, kind: 'job', letter: s.letter }));
     if (this.marker) out.unshift({ x: this.marker.x, z: this.marker.z, kind: 'objective' });
+    const s = this.active?.suspect;
+    if (s && !s.wrecked) out.unshift({ x: s.pos.x, z: s.pos.z, kind: 'objective' });
     return out;
   }
 
@@ -48,6 +53,7 @@ export class SideJobs {
     const g = this.game;
     this.marker?.dispose();
     this.marker = null;
+    if (this.active?.suspect) this.active.suspect.persistent = false;
     this.active = null;
     g.hud.setObjective(null);
     g.hud.setTimer(null);
@@ -64,6 +70,10 @@ export class SideJobs {
         g.hud.prompt('<kbd>E</kbd> Go on duty — Keys Cab fares');
         if (wasPressed('KeyE')) this.startTaxi();
       }
+      if (p.vehicle && p.vehicle.type === 'police' && g.wanted.stars === 0) {
+        g.hud.prompt('<kbd>E</kbd> Vigilante — run down MKPD\'s most wanted');
+        if (wasPressed('KeyE')) this.startVigilante(1);
+      }
       for (const s of this.startMarkers) {
         if (Math.hypot(p.pos.x - s.x, p.pos.z - s.z) > 6) continue;
         if (s.kind === 'courier' && !p.vehicle) { g.hud.prompt('<kbd>E</kbd> Sunrise Couriers — deliver 3 parcels'); if (wasPressed('KeyE')) this.startCourier(); }
@@ -77,6 +87,23 @@ export class SideJobs {
     if (a.timer <= 0) { this.end('OUT OF TIME'); return; }
     if (!p.vehicle && a.needsVehicle) { a.grace = (a.grace || 0) + dt; if (a.grace > 8) { this.end('JOB ABANDONED'); return; } } else a.grace = 0;
     const d = this.marker ? Math.hypot(p.pos.x - this.marker.x, p.pos.z - this.marker.z) : 999;
+    if (a.kind === 'vigilante') {
+      const s = a.suspect;
+      if (wasPressed('KeyE')) { this.end('OFF DUTY'); return; }
+      if (s.wrecked) {
+        const pay = 400 * a.level;
+        g.state.money += pay;
+        g.state.stats.vigilante = Math.max(g.state.stats.vigilante || 0, a.level);
+        g.hud.bigMessage(`SUSPECT DOWN · LEVEL ${a.level}`, `+$${pay}`, 2.5);
+        emit('sound', { name: 'cash' });
+        s.persistent = false;
+        this.active = null;
+        this.startVigilante(a.level + 1);
+        return;
+      }
+      if (Math.hypot(p.pos.x - s.pos.x, p.pos.z - s.pos.z) > 380) { s.persistent = false; this.end('SUSPECT ESCAPED'); }
+      return;
+    }
     if (a.kind === 'taxi') {
       if (wasPressed('KeyE')) { this.end('OFF DUTY'); return; }
       if (d < 6 && Math.abs(p.vehicle?.speed || 0) < 4) {
@@ -121,6 +148,27 @@ export class SideJobs {
         g.hud.setObjective('NIGHT SPRINT', `Checkpoint ${a.cp}/${SPRINT.length}`);
       }
     }
+  }
+
+  // Vigilante: a getaway car spawns ahead and flees; wreck it before the clock runs out.
+  startVigilante(level) {
+    const g = this.game, p = g.player;
+    const near = edges.filter((e) => e.kind === 'street' && (() => { const d = Math.hypot((e.ax + e.bx) / 2 - p.pos.x, (e.az + e.bz) / 2 - p.pos.z); return d > 60 && d < 130; })());
+    if (!near.length) return;
+    const e = near[Math.floor(rng.next() * near.length)];
+    const a = nodes.get(e.a), b = nodes.get(e.b);
+    const lp = lanePoint(a, b, 1, e.len / 2);
+    const suspect = g.vehicles.spawn(level > 2 ? 'sports' : 'sedan', lp.x, lp.z, lp.heading, { paint: '#2b2d42' });
+    suspect.persistent = true;
+    suspect.health *= 0.5 + level * 0.1;
+    const d = new LaneDriver(suspect, a.id, b.id, 1, e.len / 2, rng);
+    d.panic = 9999;
+    d.cruise = 14 + level * 2;
+    suspect.driver = d;
+    g.traffic.drivers.set(suspect, d);
+    this.active = { kind: 'vigilante', level, suspect, timer: 90, needsVehicle: true };
+    g.hud.setObjective(`VIGILANTE · LEVEL ${level}`, 'Wreck the <b>suspect\'s car</b>');
+    g.dispatch.show(`Unit, suspect vehicle fleeing near ${streetNameAt(suspect.pos.x, suspect.pos.z)}. Take it down.`);
   }
 
   startTaxi() {
