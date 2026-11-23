@@ -149,6 +149,10 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #0b2233; fon
 body.wasted #stage canvas { filter: grayscale(0.85) brightness(0.75) sepia(0.25); transition: filter 1.2s; }
 body.busted #stage canvas { filter: grayscale(0.6) brightness(0.8) hue-rotate(180deg) saturate(0.6); transition: filter 1.2s; }
 body.wasted #hud-bigmsg { color: #ff6b5a; }
+#cab-fade { position: fixed; inset: 0; z-index: 40; display: grid; place-content: center; text-align: center; gap: 10px; background: radial-gradient(circle at 50% 55%, #1b1530 0%, #05040a 75%); color: #fff6ea; opacity: 0; pointer-events: none; transition: opacity 0.45s ease; }
+#cab-fade.on { opacity: 1; }
+#cab-fade b { font-family: var(--display); font-size: 46px; letter-spacing: 6px; color: #ffd23f; text-shadow: 0 0 24px rgba(255,210,63,0.5); }
+#cab-fade span { font-size: 16px; letter-spacing: 2px; color: #d9e6ee; }
 #credits { position: fixed; inset: 0; z-index: 30; background: linear-gradient(180deg, rgba(10,6,24,0.85), rgba(60,20,60,0.75)); overflow: hidden; pointer-events: none; }
 #credits .credits-inner { position: absolute; left: 0; right: 0; top: 100%; text-align: center; animation: creditsUp 24s linear forwards; }
 @keyframes creditsUp { to { transform: translateY(-160vh); } }

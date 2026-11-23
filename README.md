@@ -49,7 +49,8 @@ Any static file server works too: the game is just the files under `game/`.
 | H | — | horn |
 | C | — | look behind |
 | V | camera distance | camera distance, hood cam |
-| G | — | siren (in an MKPD cruiser) |
+| G | — | siren (in an MKPD cruiser or an ambulance) |
+| T | — | hail a Keys Cab to your map waypoint (fast travel, paid) |
 | M or Tab | phone: map, story, jobs, assets | same |
 | Esc or P | pause menu (save, settings, controls) | same |
 
