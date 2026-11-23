@@ -84,6 +84,15 @@ export function buildBeachfront(kit) {
       kit.trim.box(b.x0 + 30, 1.6, b.cz, 0.05, 0.9, 10, tint('#e8e8e8'));
     }
   });
+  // the Pelican Surf Shack (a property Tessa can buy): boards racked against a striped hut
+  {
+    const sx = 12 * BLOCK + 27, sz = 11 * BLOCK + 22;
+    kit.stucco.box(sx, 0.05, sz, 5, 3, 4, tint('#c8f7ea'), { top: false });
+    kit.roof.pyramid(sx, 3.05, sz, 6, 5, 1.3, tint('#e76f51'));
+    kit.signs.push({ x: sx - 2.55, y: 2.2, z: sz, yaw: -Math.PI / 2, w: 3.6, h: 0.8, brand: 'PELICAN SURF CO' });
+    for (let k = 0; k < 5; k++) kit.trim.orientedBox(sx + 2.7, 1.1, sz - 1.6 + k * 0.8, 0.12, 2.2, 0.5, 0.15, tint(['#ff6b5a', '#19c3b4', '#ffd23f', '#ffffff', '#5b7cff'][k]));
+    addCollider(sx - 2.5, sz - 2, sx + 2.5, sz + 2, 3);
+  }
   // the pier
   const p = PIER;
   kit.boardwalk.flat(p.x0, p.z - p.half, p.x1, p.z + p.half, 1.2, tint('#ffffff'));
