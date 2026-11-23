@@ -8,7 +8,7 @@ import { ROAD_HALF, BLOCK, blockLetter } from '../world/cityPlan.js';
 import { addCollider } from '../world/collisionWorld.js';
 import { hash2 } from '../core/rng.js';
 
-const STONE = tint('#c9bfae'), CAP = tint('#eee7da'), RAIL = tint('#f4f1ea'), ROCK = tint('#8c857a'), BOLLARD = tint('#2b2b2b');
+const STONE = tint('#c9bfae'), CAP = tint('#eee7da'), RAIL = tint('#f4f1ea'), ROCK = tint('#8c857a'), ROCK_LIGHT = tint('#a39b8d'),BOLLARD = tint('#2b2b2b');
 
 function roadTowardWater(node, wx, wz) {
   return node.links.some((id) => {
@@ -51,11 +51,16 @@ export function buildSeawalls(kit) {
         addCollider(c.x - w / 2, c.z - d / 2, c.x + w / 2, c.z + d / 2, 1.4, -5, 'rail');
       }
       // riprap boulders in the water at the foot of the wall
-      for (let s = 2; s < e.len; s += 3.2) {
+      for (let s = s0 + 1; s < s1; s += 2.1) {
         const h = hash2(Math.round(s * 7), Math.round(c.x + c.z), 11);
-        if (h < 0.35) continue;
-        const p = at(s, off + 1.4 + h * 2);
-        kit.trim.orientedBox(p.x, -0.75, p.z, 1.2 + h, 0.9 + h * 0.6, 1.1 + h * 0.8, h * 3, ROCK);
+        if (h < 0.2) continue;
+        const p = at(s, off + 1.1 + h * 1.6);
+        const shade = h > 0.6 ? ROCK : ROCK_LIGHT;
+        kit.trim.orientedBox(p.x, -1.1, p.z, 1.5 + h, 1.1 + h * 0.7, 1.3 + h, h * 3, shade);
+        if (h > 0.55) {
+          const q = at(s + 0.6, off + 0.8);
+          kit.trim.orientedBox(q.x, -0.4, q.z, 0.9, 0.7 + h * 0.3, 0.8, h * 5, ROCK_LIGHT);
+        }
       }
     }
   }
