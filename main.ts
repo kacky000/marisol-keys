@@ -9,7 +9,7 @@
 //
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts      (grader: writes to /output)
 
-import { cpSync, existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
@@ -37,7 +37,18 @@ mkdirSync(outputDir, { recursive: true });
 copyFolder('game');
 copyFolder('screenshots');
 
+// Fail loudly here rather than at the gate: the page, the screenshot count and sizes.
+if (!existsSync(join(outputDir, 'game', 'index.html'))) throw new Error('game/index.html is missing');
 const shots = readdirSync(join(outputDir, 'screenshots')).filter((f) => !f.startsWith('.'));
 if (shots.length < 3 || shots.length > 4) throw new Error(`expected 3-4 screenshots, found ${shots.length}`);
+for (const shot of shots) {
+  const bytes = statSync(join(outputDir, 'screenshots', shot)).size;
+  if (bytes > LIMITS.screenshots.max_bytes) throw new Error(`${shot} is ${bytes} bytes, over the 256 KiB cap`);
+}
+function countEntries(dir: string): number {
+  return readdirSync(dir, { withFileTypes: true }).reduce((n, e) => n + 1 + (e.isDirectory() ? countEntries(join(dir, e.name)) : 0), 0);
+}
+const gameEntries = countEntries(join(outputDir, 'game'));
+if (gameEntries > LIMITS.game_max_files) throw new Error(`game/ holds ${gameEntries} entries, over ${LIMITS.game_max_files}`);
 
 writeFileSync(join(outputDir, 'dossier.json'), buildDossier(outputDir, LIMITS));
