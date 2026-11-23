@@ -135,6 +135,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #0b2233; fon
 .controls-grid b { display: inline-block; min-width: 110px; color: var(--lagoon); }
 
 #error-box { position: fixed; left: 10px; top: 10px; right: 10px; z-index: 99; white-space: pre-wrap; font: 14px monospace; color: #fff; background: rgba(160,20,20,0.9); padding: 10px; border-radius: 8px; }
+body.wasted #stage canvas { filter: grayscale(0.85) brightness(0.75) sepia(0.25); transition: filter 1.2s; }
+body.busted #stage canvas { filter: grayscale(0.6) brightness(0.8) hue-rotate(180deg) saturate(0.6); transition: filter 1.2s; }
+body.wasted #hud-bigmsg { color: #ff6b5a; }
 #intro .bar { position: fixed; left: 0; right: 0; height: 12vh; background: #05080c; z-index: 20; }
 #intro .bar.top { top: 0; }
 #intro .bar.bottom { bottom: 0; display: flex; align-items: center; justify-content: center; }

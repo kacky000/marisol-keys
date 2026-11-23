@@ -220,6 +220,7 @@ export class Game {
     this.hud.bigMessage(busted ? 'BUSTED' : 'WASTED', busted ? 'Captain Hale sends his regards' : 'Sunwake Medical patched you up', 3.5);
     this.downTimer = 3.5;
     this.downBusted = busted;
+    document.body.classList.add(busted ? 'busted' : 'wasted');
   }
 
   respawn() {
@@ -237,6 +238,7 @@ export class Game {
     this.wanted.clear();
     this.police.clearAll(p);
     this.downTimer = 0;
+    document.body.classList.remove('busted', 'wasted');
   }
 
   update(dt) {
