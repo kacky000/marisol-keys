@@ -42,14 +42,34 @@ export function buildBeachfront(kit) {
     lifeguardTower(kit, tx, tz, b.j === 9 ? TOWER_COLORS[0] : TOWER_COLORS[1 + (towerIndex++ % (TOWER_COLORS.length - 1))]);
     if (b.j === 9) kit.signs.push({ x: tx - 1.42, y: 3.0, z: tz, yaw: -Math.PI / 2, w: 2.0, h: 0.7, brand: 'TOWER 3' });
     kit.signs.push({ x: tx + 1.42, y: 3.0, z: tz, yaw: Math.PI / 2, w: 2.0, h: 0.7, brand: 'PELICAN SURF CO' });
-    // umbrellas and towels
-    for (let k = 0; k < 7; k++) {
-      const ux = b.x0 + rng.range(22, 52), uz = b.z0 + rng.range(4, 60);
+    // umbrellas with striped towels, loungers, surfboards stuck in the sand, beach balls
+    for (let k = 0; k < 10; k++) {
+      const ux = b.x0 + rng.range(20, 54), uz = b.z0 + rng.range(4, 60);
       if (Math.abs(uz - tz) < 4 && Math.abs(ux - tx) < 4) continue;
       const col = rng.pick(UMBRELLAS);
       kit.trim.box(ux, 0, uz, 0.08, 2.4, 0.08, tint('#eeeeee'));
       kit.roof.pyramid(ux, 2.0, uz, 2.8, 2.8, 0.7, tint(col));
-      kit.trim.box(ux + 1.2, 0.06, uz + rng.range(-0.6, 0.6), 1.0, 0.03, 2.0, tint(rng.pick(UMBRELLAS)));
+      const towel = rng.pick(UMBRELLAS);
+      for (let s = 0; s < 4; s++) kit.trim.box(ux + 1.2, 0.06, uz - 0.75 + s * 0.5, 1.0, 0.03, 0.5, tint(s % 2 ? '#ffffff' : towel));
+      if (rng.chance(0.5)) {
+        // a lounger
+        kit.trim.orientedBox(ux - 1.4, 0.35, uz, 0.7, 0.08, 1.9, 0, tint('#f4f1ea'));
+        kit.trim.orientedBox(ux - 1.4, 0.6, uz - 0.95, 0.7, 0.5, 0.08, 0, tint('#f4f1ea'));
+      }
+    }
+    for (let k = 0; k < 3; k++) {
+      const sx = b.x0 + rng.range(46, 58), sz = b.z0 + rng.range(6, 58);
+      kit.trim.orientedBox(sx, 1.0, sz, 0.55, 2.1, 0.12, rng.range(-0.3, 0.3), tint(rng.pick(['#ff6b5a', '#19c3b4', '#ffd23f', '#ffffff'])));
+    }
+    for (let k = 0; k < 2; k++) kit.trim.cylinder(b.x0 + rng.range(24, 50), 0.05, b.z0 + rng.range(6, 58), 0.32, 0.6, tint(rng.pick(['#ff5d8f', '#ffd23f', '#5b7cff'])), { segments: 8 });
+    // ice-cream kiosk on the boardwalk
+    if (b.j % 3 === 1) {
+      const kx = bw.x0 + 5, kz = b.z0 + 44;
+      kit.stucco.box(kx, bw.y, kz, 3, 2.4, 2.6, tint('#fff3f8'), { top: false });
+      kit.roof.pyramid(kx, bw.y + 2.4, kz, 3.8, 3.4, 0.9, tint('#ff8fb1'));
+      for (let s = 0; s < 6; s++) kit.trim.box(kx - 1.3 + s * 0.52, bw.y + 2.15, kz - 1.55, 0.52, 0.3, 0.12, tint(s % 2 ? '#ffffff' : '#ff8fb1'));
+      kit.signs.push({ x: kx, y: bw.y + 2.9, z: kz - 1.75, yaw: Math.PI, w: 3.2, h: 0.8, brand: 'NOVA GELATO' });
+      addCollider(kx - 1.5, kz - 1.3, kx + 1.5, kz + 1.3, bw.y + 3);
     }
     // beach huts on the inland edge every other block
     if (b.j % 2 === 0) {
