@@ -4,6 +4,7 @@ const down = new Set();
 const pressed = new Set();
 const mouse = { dx: 0, dy: 0, left: false, right: false, leftPressed: false, wheel: 0 };
 let locked = false;
+let lockRefused = false;
 let enabled = true;
 
 export function initInput(canvas) {
@@ -16,7 +17,7 @@ export function initInput(canvas) {
   addEventListener('blur', () => down.clear());
   canvas.addEventListener('mousedown', (e) => {
     // the click that captures the mouse should not also fire a shot
-    if (enabled && !locked && canvas.requestPointerLock) { canvas.requestPointerLock(); return; }
+    if (enabled && !locked && !lockRefused && canvas.requestPointerLock) { canvas.requestPointerLock(); return; }
     if (e.button === 0) { mouse.left = true; mouse.leftPressed = true; }
     if (e.button === 2) mouse.right = true;
   });
@@ -25,8 +26,10 @@ export function initInput(canvas) {
     if (e.button === 2) mouse.right = false;
   });
   addEventListener('contextmenu', (e) => e.preventDefault());
+  // if the page may not capture the mouse (embedded frames, some kiosks), plain moves steer the camera
+  document.addEventListener('pointerlockerror', () => { lockRefused = true; });
   addEventListener('mousemove', (e) => {
-    if (!locked) return;
+    if (!locked && !lockRefused) return;
     mouse.dx += e.movementX;
     mouse.dy += e.movementY;
   });
