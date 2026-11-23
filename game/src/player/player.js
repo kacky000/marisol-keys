@@ -74,6 +74,7 @@ export class Player {
 
   hurt(amount, source) {
     if (this.dead) return false;
+    if (this.crouching && !source?.explosion) amount *= 0.5; // crouched in cover takes half
     if (this.armor > 0) {
       const a = Math.min(this.armor, amount * 0.7);
       this.armor -= a;
@@ -136,7 +137,8 @@ export class Player {
     }
     const mouse = mouseState();
     this.aiming = !locked && (mouse.right || (mouse.left && !WEAPONS[this.weapon].melee));
-    const sprint = isDown('ShiftLeft') && !this.aiming;
+    this.crouching = !locked && (isDown('ControlLeft') || isDown('KeyX'));
+    const sprint = isDown('ShiftLeft') && !this.aiming && !this.crouching;
     const len = Math.hypot(mx, mz);
     let speed = 0;
     if (len > 0) {
@@ -144,7 +146,7 @@ export class Player {
       const fx = Math.sin(yaw), fz = -Math.cos(yaw);
       const rx = Math.cos(yaw), rz = Math.sin(yaw);
       const dx = (fx * -mz + rx * mx) / len, dz = (fz * -mz + rz * mx) / len;
-      speed = this.aiming ? 2.4 : sprint ? 7.2 : 3.6;
+      speed = this.crouching ? 1.8 : this.aiming ? 2.4 : sprint ? 7.2 : 3.6;
       this.pos.x += dx * speed * dt;
       this.pos.z += dz * speed * dt;
       if (!this.aiming) this.heading = dampAngle(this.heading, Math.atan2(dx, -dz), 12, dt);
@@ -199,6 +201,13 @@ export class Player {
       const k = Math.sin(Math.max(0, this.punchTimer) / 0.25 * Math.PI);
       this.rig.userData.arms[1].rotation.set(0.4 + k * 1.25, 0, -0.2);
       this.rig.userData.arms[0].rotation.set(0.9, 0, 0.35);
+    }
+    if (this.crouching && this.onGround) {
+      // knees bent, hips low
+      const u = this.rig.userData;
+      u.hips.position.y = 0.62;
+      u.legs[0].rotation.x = 1.3 + u.legs[0].rotation.x * 0.3;
+      u.legs[1].rotation.x = 0.6 + u.legs[1].rotation.x * 0.3;
     }
     this.rig.userData.gun.visible = !WEAPONS[this.weapon].melee;
     this.syncRig(dt);
