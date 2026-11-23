@@ -1,7 +1,7 @@
 // Pastel Mile: three-to-five storey art-deco hotels and shops in candy pastels, with racing
 // stripes, eyebrow awnings, stepped central fins and neon trims.
 
-import { addBlockBuilding, addSign, addRooftopClutter, streetSide } from './buildingKit.js';
+import { addBlockBuilding, addSign, addRooftopClutter, streetSide, addShopfront } from './buildingKit.js';
 import { tint } from '../core/meshBatch.js';
 import { WALK_Y } from '../world/terrain.js';
 
@@ -15,6 +15,7 @@ function decoBuilding(kit, block, cx, cz, w, d, rng) {
   const h = floors * 3.3 + 1;
   const pastel = rng.pick(PASTELS), accent = rng.pick(ACCENTS), neon = rng.pick(NEON);
   const top = addBlockBuilding(kit, 'deco', cx, cz, w, d, h, pastel);
+  addShopfront(kit, cx, cz, w, d);
   const side = streetSide(block, cx, cz);
   // racing stripes wrapping the upper floors
   for (let k = 0; k < 3; k++) kit.trim.box(cx, top - 1.6 - k * 0.55, cz, w + 0.25, 0.22, d + 0.25, tint(accent));

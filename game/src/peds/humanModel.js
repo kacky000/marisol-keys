@@ -112,6 +112,13 @@ export function poseHuman(rig, state, speed, dt, aimPitch = 0) {
     u.arms[0].rotation.set(0.5, 0, -0.6);
     u.arms[1].rotation.set(0.5, 0, 0.6);
   }
+  if (state === 'sunbathe') {
+    rig.rotation.x = Math.PI / 2;
+    u.hips.position.y = 0.16;
+    u.arms[0].rotation.set(2.9, 0, -0.3);
+    u.arms[1].rotation.set(0.2, 0, 0.35);
+    u.legs[1].rotation.set(0.25, 0, 0);
+  }
   if (state === 'dead') {
     rig.rotation.x = -Math.PI / 2;
     u.hips.position.y = 0.15;

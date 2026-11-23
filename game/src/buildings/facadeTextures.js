@@ -140,6 +140,54 @@ export function villaFacade() {
   }, { seed: 35 });
 }
 
+// Street-level shopfront: one tile = 6 m wide x 3.6 m tall. Big display windows with warm-lit
+// interiors and shelf silhouettes, a glass door, kick plate and a dark fascia for the sign.
+export function shopfrontFacade() {
+  return canvasTexture(256, 160, (g, w, h, rng) => {
+    g.fillStyle = '#2a2d33';
+    g.fillRect(0, 0, w, h);
+    const fascia = 26;
+    g.fillStyle = '#3a3e46';
+    g.fillRect(0, 0, w, fascia);
+    const pane = (x, pw, warmth) => {
+      const grad = g.createLinearGradient(0, fascia, 0, h - 14);
+      grad.addColorStop(0, warmth ? '#ffd9a0' : '#bfe4f0');
+      grad.addColorStop(0.55, warmth ? '#e8a060' : '#6fa8c0');
+      grad.addColorStop(1, '#3a2a24');
+      g.fillStyle = grad;
+      g.fillRect(x, fascia + 6, pw, h - fascia - 22);
+      // shelves and goods
+      for (let s = 0; s < 3; s++) {
+        const y = fascia + 30 + s * 30;
+        g.fillStyle = 'rgba(60,35,20,0.55)';
+        g.fillRect(x + 4, y, pw - 8, 3);
+        for (let k = 0; k < 6; k++) {
+          g.fillStyle = `hsla(${rng.int(0, 360)},55%,55%,0.7)`;
+          g.fillRect(x + 6 + k * (pw - 12) / 6, y - rng.range(6, 14), (pw - 12) / 8, rng.range(6, 14));
+        }
+      }
+      // reflection sweep
+      g.fillStyle = 'rgba(255,255,255,0.16)';
+      g.beginPath(); g.moveTo(x, h - 30); g.lineTo(x + pw * 0.45, fascia + 6); g.lineTo(x + pw * 0.62, fascia + 6); g.lineTo(x + pw * 0.15, h - 16); g.fill();
+    };
+    pane(8, 92, true);
+    pane(156, 92, rng.chance(0.5));
+    // door
+    g.fillStyle = '#1b1e22';
+    g.fillRect(108, fascia + 6, 40, h - fascia - 6);
+    g.fillStyle = 'rgba(190,225,240,0.55)';
+    g.fillRect(113, fascia + 12, 30, h - fascia - 30);
+    g.fillStyle = '#d9d9d9';
+    g.fillRect(138, fascia + 60, 3, 18);
+    // kick plate and mullions
+    g.fillStyle = '#5a5e66';
+    g.fillRect(0, h - 14, w, 14);
+    g.fillRect(0, fascia, w, 6);
+    g.fillRect(0, 0, 8, h); g.fillRect(100, fascia, 8, h); g.fillRect(148, fascia, 8, h); g.fillRect(w - 8, 0, 8, h);
+    grain(g, w, h, rng, 6);
+  }, { seed: 37 });
+}
+
 // Flat roofs: gravel with HVAC grime.
 export function roofTexture() {
   return canvasTexture(256, 256, (g, w, h, rng) => {

@@ -1,6 +1,6 @@
 // Glasswater: glass towers on podiums with setbacks, crowns and spires, tallest at the core.
 
-import { addBlockBuilding, addSign, streetSide } from './buildingKit.js';
+import { addBlockBuilding, addSign, streetSide, addShopfront } from './buildingKit.js';
 import { tint } from '../core/meshBatch.js';
 import { WALK_Y } from '../world/terrain.js';
 
@@ -13,6 +13,7 @@ function tower(kit, block, cx, cz, w, d, h, rng) {
   const podium = rng.pick(PODIUM_TINTS);
   const podH = 7;
   addBlockBuilding(kit, 'stucco', cx, cz, w + 4, d + 4, podH, podium);
+  addShopfront(kit, cx, cz, w + 4, d + 4);
   // storefront glow band and canopy
   kit.trim.box(cx, WALK_Y + podH - 0.8, cz, w + 5, 0.5, d + 5, tint('#3a3f48'));
   let y = WALK_Y + podH;

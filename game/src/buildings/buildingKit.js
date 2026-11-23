@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { MeshBatch, tint } from '../core/meshBatch.js';
 import { addCollider } from '../world/collisionWorld.js';
-import { glassFacade, decoFacade, stuccoFacade, warehouseFacade, villaFacade, roofTexture } from './facadeTextures.js';
+import { glassFacade, decoFacade, stuccoFacade, warehouseFacade, villaFacade, roofTexture, shopfrontFacade } from './facadeTextures.js';
 import { WALK_Y } from '../world/terrain.js';
 import { boardwalkTexture } from '../world/groundTextures.js';
 
@@ -19,6 +19,7 @@ export function createBuildingKit() {
     trim: new MeshBatch({ tileU: 4, tileV: 4 }),
     glow: new MeshBatch({ tileU: 4, tileV: 4 }),
     boardwalk: new MeshBatch({ tileU: 4, tileV: 4 }),
+    shop: new MeshBatch({ tileU: 6, tileV: 3.6 }),
     signs: [],     // { x, y, z, yaw, w, h, brand }
     palms: [],      // { x, z, h, lean }
     rooftops: [],   // { x, y, z, w, d }
@@ -41,6 +42,11 @@ export function addBlockBuilding(kit, style, cx, cz, w, d, h, color, { y0 = WALK
   }
   if (collide) addCollider(cx - w / 2, cz - d / 2, cx + w / 2, cz + d / 2, y0 + h);
   return y0 + h;
+}
+
+// Glass shopfronts wrapping a building's ground floor.
+export function addShopfront(kit, cx, cz, w, d) {
+  kit.shop.box(cx, 0, cz, w + 0.14, 3.6, d + 0.14, tint('#ffffff'), { top: false });
 }
 
 // Rooftop clutter: AC units, a water tank, an antenna.
@@ -88,6 +94,14 @@ export function buildKitMeshes(kit, group) {
     const mesh = batch.toMesh(mat);
     mesh.name = 'buildings';
     group.add(mesh);
+  }
+  if (kit.shop.vertexCount) {
+    const tex = shopfrontFacade();
+    const shopMat = new THREE.MeshStandardMaterial({ map: tex, emissiveMap: tex, emissive: '#ffffff', emissiveIntensity: 0.3, roughness: 0.25, metalness: 0.2, vertexColors: true });
+    const mesh = kit.shop.toMesh(shopMat);
+    mesh.name = 'shopfronts';
+    group.add(mesh);
+    kit.shopMaterial = shopMat;
   }
   if (kit.glow.vertexCount) {
     const glowMat = new THREE.MeshStandardMaterial({ vertexColors: true, emissive: '#ffffff', emissiveIntensity: 0.9, roughness: 0.4 });

@@ -1,7 +1,7 @@
 // Palmetto Flats and Old Keys: two-to-six storey stucco apartments, corner shops with signs,
 // terracotta-roofed houses and backyard palms.
 
-import { addBlockBuilding, addSign, addRooftopClutter, streetSide } from './buildingKit.js';
+import { addBlockBuilding, addSign, addRooftopClutter, streetSide, addShopfront } from './buildingKit.js';
 import { tint } from '../core/meshBatch.js';
 import { WALK_Y } from '../world/terrain.js';
 
@@ -22,6 +22,7 @@ function apartment(kit, block, cx, cz, w, d, rng) {
   }
   // shop sign + awning on the ground floor
   if (rng.chance(0.55)) {
+    addShopfront(kit, cx, cz, w, d);
     addSign(kit, cx, cz, w, d, WALK_Y + 3.6, side, rng.pick(SHOP_BRANDS), Math.min(8, (side === 'n' || side === 's' ? w : d) * 0.7), 1.4);
     const along = side === 'n' || side === 's';
     const ax = side === 'e' ? cx + w / 2 + 0.8 : side === 'w' ? cx - w / 2 - 0.8 : cx;

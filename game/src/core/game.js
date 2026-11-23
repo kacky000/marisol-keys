@@ -277,6 +277,7 @@ export class Game {
     this.skyEnv.update(state);
     const exposure = 1.0 + state.night * 0.35;
     this.world.signMaterial.emissiveIntensity = 0.25 + state.night * 1.4;
+    if (this.world.shopMaterial) this.world.shopMaterial.emissiveIntensity = 0.3 + state.night * 1.6;
     if (this.police.heli) this.police.heli.night = state.night > 0.3;
     // street lamps near the player light up at night
     const lamps = state.night > 0.3 ? lampHeads.map((l) => [l, l.distanceToSquared(focus)]).sort((a, b) => a[1] - b[1]).slice(0, this.nightLights.length) : [];

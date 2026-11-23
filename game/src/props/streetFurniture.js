@@ -11,6 +11,7 @@ import { hash2 } from '../core/rng.js';
 export const lampHeads = [];   // world positions of lamp bulbs (night glow)
 
 const PALM_AVENUES = new Set([10, 12]);
+const PALM_STREETS = new Set([4, 9]);
 
 export function buildStreetFurniture(kit) {
   const poles = kit.trim;
@@ -21,7 +22,7 @@ export function buildStreetFurniture(kit) {
     const rx = -uz, rz = ux;
     const vertical = Math.abs(uz) > 0.5;
     const lineIndex = vertical ? Math.round(a.x / BLOCK) : Math.round(a.z / BLOCK);
-    const palmRow = vertical && PALM_AVENUES.has(lineIndex);
+    const palmRow = vertical ? PALM_AVENUES.has(lineIndex) : PALM_STREETS.has(lineIndex);
     for (const side of [-1, 1]) {
       // only furnish sides that have a sidewalk (land block on that side)
       const px = (a.x + b.x) / 2 + rx * side * (ROAD_HALF + 2), pz = (a.z + b.z) / 2 + rz * side * (ROAD_HALF + 2);

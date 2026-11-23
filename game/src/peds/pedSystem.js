@@ -60,6 +60,12 @@ export class Ped {
       this.rig.rotation.y = -this.heading;
       return;
     }
+    if (this.state === 'sunbathe') {
+      poseHuman(this.rig, 'sunbathe', 0, dt);
+      this.rig.position.set(this.pos.x, this.pos.y + 0.12, this.pos.z);
+      this.rig.rotation.y = -this.heading;
+      return;
+    }
     let moving = 0;
     if (this.state === 'flee') {
       this.fleeTimer -= dt;
@@ -162,7 +168,10 @@ export class PedSystem {
       const l = blockLetter(i, j);
       if (!isUrban(l) && l !== 'S') continue;
       if (this.rng.next() > (BUSY[l] || 0.5)) continue;
-      if (l === 'S') return { x: (BOARDWALK.x0 + BOARDWALK.x1) / 2 + (this.rng.next() < 0.4 ? this.rng.next() * 30 : 0), z: pz };
+      if (l === 'S') {
+        if (this.rng.next() < 0.35) return { x: i * BLOCK + 24 + this.rng.next() * 30, z: pz, sunbathe: true };
+        return { x: (BOARDWALK.x0 + BOARDWALK.x1) / 2 + (this.rng.next() < 0.4 ? this.rng.next() * 30 : 0), z: pz };
+      }
       // snap to the sidewalk ring
       const lx = px - i * BLOCK, lz = pz - j * BLOCK;
       const inset = ROAD_HALF + 2;
@@ -202,7 +211,10 @@ export class PedSystem {
     if (this.timer <= 0 && this.peds.filter((p) => p.kind === 'civilian').length < this.target) {
       this.timer = 0.2;
       const pt = this.findSpawnPoint(px, pz, 35, 140);
-      if (pt) this.spawnAt(pt.x, pt.z);
+      if (pt) {
+        const ped = this.spawnAt(pt.x, pt.z);
+        if (pt.sunbathe) { ped.state = 'sunbathe'; ped.outfit.shorts = true; }
+      }
     }
   }
 }

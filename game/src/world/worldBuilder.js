@@ -21,6 +21,7 @@ import { buildPalms } from '../vegetation/palms.js';
 import { buildStreetFurniture } from '../props/streetFurniture.js';
 import { buildBeachfront } from '../props/beachfront.js';
 import { createOcean, createSurf } from '../water/ocean.js';
+import { buildBoats } from '../water/boats.js';
 import { createRng, hash2 } from '../core/rng.js';
 import { MeshBatch } from '../core/meshBatch.js';
 
@@ -64,16 +65,19 @@ export function buildWorld(scene) {
   group.add(ocean.mesh);
   const surf = createSurf(13 * BLOCK + 6, 1 * BLOCK - 20, 14 * BLOCK + 20);
   group.add(surf);
+  const rockBoats = buildBoats(group);
   scene.add(group);
   return {
     group,
     tallest: kit.tallest,
     signMaterial,
+    shopMaterial: kit.shopMaterial,
     signals,
     update(time, dt = 0.016) {
       signals.update(dt, time);
       ocean.uniforms.uTime.value = time;
       surf.userData.update(time);
+      rockBoats(time);
     },
   };
 }

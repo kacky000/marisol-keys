@@ -46,7 +46,7 @@ export const DISTRICTS = {
 
 // Named streets (for the map screen and the HUD).
 export const AVENUES = { 2: 'Bayfront Way', 5: 'Mirador Ave', 7: 'Halcyon Ave', 10: 'Marisol Boulevard', 12: 'Coral Parade' };
-export const STREETS = { 1: 'Vista Rd', 3: 'Lumen St', 5: 'Pelican Causeway', 7: 'Seagrape St', 10: 'Tarpon Causeway', 12: 'Ferry St', 14: 'Quay Road' };
+export const STREETS = { 1: 'Vista Rd', 3: 'Lumen St', 4: 'Sundown Boulevard', 5: 'Pelican Causeway', 7: 'Seagrape St', 9: 'Flamingo Way', 10: 'Tarpon Causeway', 12: 'Ferry St', 14: 'Quay Road' };
 
 // Causeways: long bridges to the mainland across Marisol Bay (west).
 export const CAUSEWAYS = [
