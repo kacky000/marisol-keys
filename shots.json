@@ -1,5 +1,6 @@
 [
-  { "name": "1-start.jpg", "query": "?shot=start&seed=1" },
-  { "name": "2-play.jpg", "query": "?shot=play&seed=1" },
-  { "name": "3-end.jpg", "query": "?shot=end&seed=1" }
+  { "name": "1-cover-boulevard-chase.jpg", "query": "?shot=cover&seed=1" },
+  { "name": "2-sunwake-boardwalk.jpg", "query": "?shot=boardwalk&seed=1" },
+  { "name": "3-crane-yard-shootout.jpg", "query": "?shot=harbor&seed=1" },
+  { "name": "4-island-map-phone.jpg", "query": "?shot=map&seed=1" }
 ]
