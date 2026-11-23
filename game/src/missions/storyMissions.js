@@ -71,10 +71,10 @@ export const STORY = [
     steps: [
       { type: 'talk', lines: [
         ['priya', 'You\'re on Static 88, the only honest station on the Keys. Marco was my best source.'],
-        ['priya', 'Hale\'s harbor division talks on a private band. Plant three relays and we hear everything.'],
+        ['priya', 'Hale\'s harbor division talks on a private band. Clip three relays into the city junction boxes and we hear everything.'],
         ['tessa', 'Three relays, one afternoon. Sure.'],
       ] },
-      { type: 'checkpoints', timer: 150, text: 'Plant relays at the <b>three rooftops</b>', relay: true, points: [
+      { type: 'checkpoints', timer: 150, text: 'Plant relays in the <b>three junction boxes</b>', relay: true, points: [
         [5 * B + 3.5, 7 * B + 32], [8 * B, 3 * B + 3.5], [11 * B - 3.5, 8 * B + 32],
       ] },
       { type: 'talk', lines: [
