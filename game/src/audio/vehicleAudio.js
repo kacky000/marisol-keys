@@ -1,7 +1,10 @@
 // Continuous vehicle sounds: the player's engine (pitch follows speed and throttle), tyre squeal
-// while drifting, and police sirens that wail louder as cruisers close in.
+// while drifting, and sirens that grow louder as units close in, voiced by the nearest one.
 
 import { audioContext, bus, noiseBuffer } from './audioEngine.js';
+
+// [centre pitch Hz, sweep rate Hz, sweep depth Hz] for each kind of emergency vehicle
+const SIREN_VOICES = { police: [900, 0.45, 320], ambulance: [1050, 2.6, 380], fire: [640, 0.22, 260] };
 
 export class VehicleAudio {
   constructor() {
@@ -32,16 +35,16 @@ export class VehicleAudio {
     this.siren = ctx.createOscillator();
     this.siren.type = 'triangle';
     this.siren.frequency.value = 900;
-    const lfo = ctx.createOscillator();
+    const lfo = this.lfo = ctx.createOscillator();
     lfo.frequency.value = 0.45;
-    const lfoGain = ctx.createGain();
+    const lfoGain = this.lfoGain = ctx.createGain();
     lfoGain.gain.value = 320;
     lfo.connect(lfoGain).connect(this.siren.frequency);
     this.siren.connect(this.sirenGain).connect(bus('sfx'));
     this.siren.start(); lfo.start();
   }
 
-  update(player, nearestSirenDist, sirenCount) {
+  update(player, nearestSirenDist, sirenCount, sirenKind = 'police') {
     if (!this.ok) return;
     const ctx = audioContext();
     const t = ctx.currentTime;
@@ -62,5 +65,10 @@ export class VehicleAudio {
     }
     const sirenVol = sirenCount ? Math.min(0.12, 6 / Math.max(20, nearestSirenDist)) : 0;
     this.sirenGain.gain.setTargetAtTime(sirenVol, t, 0.2);
+    // the nearest unit sets the voice: MKPD wail, ambulance yelp, fire engine low wail
+    const [pitch, rate, depth] = SIREN_VOICES[sirenKind] || SIREN_VOICES.police;
+    this.siren.frequency.setTargetAtTime(pitch, t, 0.3);
+    this.lfo.frequency.setTargetAtTime(rate, t, 0.3);
+    this.lfoGain.gain.setTargetAtTime(depth, t, 0.3);
   }
 }

@@ -298,9 +298,14 @@ export class Game {
     this.weather.update(dt, this.time, this.threeCamera);
     // radio and engine audio
     if (this.vehicleAudio) {
-      let near = Infinity, count = 0;
-      for (const v of this.vehicles.list) if (v.sirenOn) { count++; near = Math.min(near, Math.hypot(v.pos.x - p.pos.x, v.pos.z - p.pos.z)); }
-      this.vehicleAudio.update(p, near, count);
+      let near = Infinity, count = 0, kind = 'police';
+      for (const v of this.vehicles.list) {
+        if (!v.sirenOn) continue;
+        count++;
+        const d = Math.hypot(v.pos.x - p.pos.x, v.pos.z - p.pos.z);
+        if (d < near) { near = d; kind = v.spec.ambulance ? 'ambulance' : v.spec.firetruck ? 'fire' : 'police'; }
+      }
+      this.vehicleAudio.update(p, near, count, kind);
       this.radio.update(!!p.vehicle && !this.dialogue.open);
       this.ambience.update(dt, p, this.time, this.weather.rainAmount || 0);
     }
