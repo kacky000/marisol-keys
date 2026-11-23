@@ -33,6 +33,7 @@ const SOUNDS = {
   empty: (t) => tone(t, 1800, 0.03, 'square', 0.08),
   punch: (t) => { burst(t, 0.12, 300, 1.2, 0.5, undefined, 'lowpass'); tone(t, 120, 0.1, 'sine', 0.3, 60); },
   explosion: (t) => { burst(t, 1.6, 90, 0.4, 1.0, undefined, 'lowpass'); burst(t, 0.6, 900, 0.5, 0.6); tone(t, 70, 1.2, 'sine', 0.6, 25); },
+  thunder: (t) => { burst(t, 2.6, 70, 0.3, 0.9, undefined, 'lowpass'); burst(t + 0.1, 1.8, 160, 0.4, 0.5, undefined, 'lowpass'); },
   crash: (t) => { burst(t, 0.4, 500, 0.6, 0.7); burst(t, 0.25, 2500, 2, 0.25); tone(t, 140, 0.2, 'triangle', 0.2, 60); },
   horn: (t) => { tone(t, 392, 0.45, 'sawtooth', 0.12); tone(t, 494, 0.45, 'sawtooth', 0.1); },
   blip: (t) => tone(t, 880, 0.06, 'triangle', 0.06, 1200),

@@ -96,7 +96,7 @@ export class Hud {
     this.shownMoney += (s.money - this.shownMoney) * Math.min(1, dt * 6);
     if (Math.abs(s.money - this.shownMoney) < 1) this.shownMoney = s.money;
     $('hud-money').textContent = formatMoney(this.shownMoney);
-    $('hud-clock').textContent = formatClock(s.hour);
+    $('hud-clock').textContent = `${s.weatherIcon || ''} ${formatClock(s.hour)}`;
     const stars = $('hud-stars').children;
     for (let k = 0; k < 5; k++) stars[k].className = k < s.stars ? 'on' : '';
     $('hud-stars').classList.toggle('flash', s.starsFlash);

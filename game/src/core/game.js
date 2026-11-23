@@ -36,6 +36,8 @@ import { createSkyDome, updateSkyDome } from '../sky/skyDome.js';
 import { createLighting, updateLighting } from '../sky/sunLight.js';
 import { skyStateAt } from '../sky/timeOfDay.js';
 import { SkyEnvironment } from '../sky/skyEnvironment.js';
+import { WeatherSystem } from '../weather/weatherSystem.js';
+import { roadMaterials } from '../roads/roadMesh.js';
 // engine plumbing
 import { fitToWindow } from './renderer.js';
 import { initInput, endInputFrame, wasPressed, menuPressed, setInputEnabled, pointerLocked } from './input.js';
@@ -74,6 +76,8 @@ export class Game {
     this.lights = createLighting(s);
     this.skyEnv = new SkyEnvironment(this.renderer, s);
     this.post = new PostProcess(this.renderer);
+    this.weather = new WeatherSystem(s);
+    this.weather.locked = this.shotMode;
     this.world = buildWorld(s);
     this.vehicles = new VehicleManager(s);
     // Riptide speedboats moored at the pier, in the harbor basin and on the bay
@@ -264,13 +268,14 @@ export class Game {
     this.fx.tracers.update(dt);
     this.world.update(this.time, dt);
     this.camera.update(dt, p, this.time);
+    this.weather.update(dt, this.time, this.threeCamera);
     // radio and engine audio
     if (this.vehicleAudio) {
       let near = Infinity, count = 0;
       for (const v of this.vehicles.list) if (v.sirenOn) { count++; near = Math.min(near, Math.hypot(v.pos.x - p.pos.x, v.pos.z - p.pos.z)); }
       this.vehicleAudio.update(p, near, count);
       this.radio.update(!!p.vehicle && !this.dialogue.open);
-      this.ambience.update(dt, p, this.time);
+      this.ambience.update(dt, p, this.time, this.weather.rainAmount || 0);
     }
     this.districtTimer = (this.districtTimer || 0) - dt;
     if (this.districtTimer <= 0 && this.running) {
@@ -306,7 +311,7 @@ export class Game {
     if (this.police.heli) blips.push({ x: this.police.heli.pos.x, z: this.police.heli.pos.z, kind: 'heli' });
     const heading = v ? v.heading : this.camera.yaw;
     return {
-      money: this.state.money, snapMoney: this.shotMode, hour: this.state.hour, stars: this.wanted.stars, starsFlash: this.wanted.flash,
+      money: this.state.money, snapMoney: this.shotMode, weatherIcon: this.weather.icon, hour: this.state.hour, stars: this.wanted.stars, starsFlash: this.wanted.flash,
       health: p.health, armor: p.armor, weapon: p.weapon, clip: p.clip[p.weapon], ammo: p.ammo[p.weapon],
       vehicle: v, aiming: p.aiming && !v,
       map: { x: p.pos.x, z: p.pos.z, heading, arrowRel: (v ? 0 : p.heading - heading), speed: v ? Math.abs(v.speed) : 0, blips, time: this.time,
@@ -318,8 +323,10 @@ export class Game {
 
   render() {
     fitToWindow(this.renderer, this.threeCamera);
-    const state = skyStateAt(this.state.hour);
+    const state = this.weather.apply(skyStateAt(this.state.hour));
     const focus = this.player.pos;
+    const wet = this.weather.rainAmount || 0;
+    for (const m of roadMaterials) m.roughness = 0.92 - wet * 0.6;
     updateLighting(this.lights, this.scene, state, focus, this.drawDistance || 900);
     updateSkyDome(this.sky, state, this.threeCamera, this.time);
     this.skyEnv.update(state);

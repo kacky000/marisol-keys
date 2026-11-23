@@ -90,8 +90,9 @@ Any static file server works too: the game is just the files under `game/`.
   district pop-ups; a phone with the illustrated island map, story list, jobs and assets; title
   screen over a live flyover; pause, settings, controls; save and continue via localStorage.
 - **Look and sound** — golden-hour sky shader with clouds, sky-lit reflections, soft shadows,
-  ACES tone mapping, animated sea with sun glints and surf, a day/night cycle with street lamps
-  and glowing signs; WebAudio engine notes, tyre squeal, sirens, gunshots and three radio stations
+  ACES tone mapping, animated sea with sun glints and surf, a day/night cycle with street lamps,
+  lit windows and glowing signs, tropical weather (passing cloud, storms with rain, wet reflective
+  streets, lightning and thunder); WebAudio engine notes, tyre squeal, sirens, gunshots and three radio stations
   (Tidal 101.3, Static 88 FM, Reef Room Radio) composing their own music.
 
 ## Source layout

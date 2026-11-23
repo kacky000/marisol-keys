@@ -25,8 +25,10 @@ export class SkyEnvironment {
   }
 
   update(state, force = false) {
-    if (!force && Math.abs(state.hour - this.lastHour) < 0.25) return;
+    const cover = state.cloudCover || 0;
+    if (!force && Math.abs(state.hour - this.lastHour) < 0.25 && Math.abs(cover - (this.lastCover || 0)) < 0.08) return;
     this.lastHour = state.hour;
+    this.lastCover = cover;
     updateSkyDome(this.dome, state, this.origin, 0);
     this.ground.material.color.copy(state.horizon).multiplyScalar(0.35);
     const old = this.target;

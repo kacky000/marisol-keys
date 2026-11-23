@@ -9,7 +9,8 @@ import { addCollider } from '../world/collisionWorld.js';
 import { laneTexture, crosswalkTexture, junctionTexture, causewayDeckTexture } from './roadTextures.js';
 
 const ROAD_Y = 0.03;
-export const RAMP = 40;   // size of the ferry-ramp plaza at each causeway's mainland end
+export const RAMP = 40;
+export const roadMaterials = [];   // the weather makes these glossy when the streets are wet   // size of the ferry-ramp plaza at each causeway's mainland end
 const CAP = 6;
 
 export function buildRoadMeshes(group) {
@@ -49,6 +50,7 @@ export function buildRoadMeshes(group) {
   const mat = (map) => new THREE.MeshStandardMaterial({ map, roughness: 0.92, metalness: 0, vertexColors: true });
   const laneMat = mat(laneTexture());
   for (const [batch, m] of [[lanes, laneMat], [caps, mat(crosswalkTexture())], [junctions, mat(junctionTexture())], [deck, mat(causewayDeckTexture())]]) {
+    roadMaterials.push(m);
     const mesh = batch.toMesh(m, { cast: false });
     mesh.name = 'road';
     group.add(mesh);

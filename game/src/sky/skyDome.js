@@ -17,6 +17,7 @@ uniform vec3 uHorizon;
 uniform vec3 uSunDir;
 uniform vec3 uSunColor;
 uniform float uTime;
+uniform float uCloud;
 varying vec3 vDir;
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float noise(vec2 p) {
@@ -38,10 +39,10 @@ void main() {
   // clouds: a band of soft cumulus above the horizon
   if (d.y > 0.0) {
     vec2 uv = d.xz / (d.y + 0.15) * 1.6 + vec2(uTime * 0.004, 0.0);
-    float c = smoothstep(0.52, 0.8, fbm(uv));
-    c *= smoothstep(0.0, 0.08, d.y) * (1.0 - smoothstep(0.35, 0.8, d.y));
+    float c = smoothstep(0.52 - uCloud * 0.4, 0.8 - uCloud * 0.3, fbm(uv));
+    c *= smoothstep(0.0, 0.08, d.y) * (1.0 - smoothstep(0.35 + uCloud * 0.6, 0.8 + uCloud * 0.4, d.y));
     float daylight = clamp(dot(uZenith, vec3(0.3, 0.5, 0.2)) * 4.6, 0.1, 1.0);
-    vec3 cloudCol = mix(vec3(1.0, 0.97, 0.94), uSunColor, 0.35) * (0.8 + 0.4 * pow(s, 3.0)) * daylight;
+    vec3 cloudCol = mix(vec3(1.0, 0.97, 0.94), uSunColor, 0.35) * (0.8 + 0.4 * pow(s, 3.0)) * daylight * (1.0 - uCloud * 0.55);
     col = mix(col, cloudCol, c * 0.85);
   }
   gl_FragColor = vec4(col, 1.0);
@@ -57,6 +58,7 @@ export function createSkyDome() {
       uSunDir: { value: new THREE.Vector3(0, 1, 0) },
       uSunColor: { value: new THREE.Color('#ffffff') },
       uTime: { value: 0 },
+      uCloud: { value: 0 },
     },
     vertexShader: vertex,
     fragmentShader: fragment,
@@ -77,5 +79,6 @@ export function updateSkyDome(dome, state, camera, time) {
   u.uSunDir.value.copy(state.sunDir);
   u.uSunColor.value.copy(state.sunColor);
   u.uTime.value = time;
+  u.uCloud.value = state.cloudCover || 0;
   dome.position.copy(camera.position);
 }

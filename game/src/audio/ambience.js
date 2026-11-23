@@ -24,6 +24,7 @@ export class Ambience {
     this.surf = loop(500, 0.7);
     this.hum = loop(180, 0.5);
     this.wind = loop(900, 0.4, 'bandpass');
+    this.rain = loop(3200, 0.3, 'highpass');
     this.stepTimer = 0;
     this.gullTimer = 4;
   }
@@ -53,10 +54,11 @@ export class Ambience {
     src.start(t, Math.random()); src.stop(t + 0.1);
   }
 
-  update(dt, player, time) {
+  update(dt, player, time, rain = 0) {
     if (!this.ok) return;
     const ctx = audioContext();
     const t = ctx.currentTime;
+    this.rain.g.gain.setTargetAtTime(rain * 0.4, t, 0.5);
     const beachX = 13 * BLOCK;
     const toSea = Math.min(Math.abs(player.pos.x - beachX), Math.abs(player.pos.z - 14 * BLOCK) + 40, Math.abs(player.pos.x - 2 * BLOCK) + 30);
     const sea = Math.max(0, 1 - toSea / 160);
