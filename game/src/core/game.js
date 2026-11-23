@@ -177,6 +177,12 @@ export class Game {
     this.camera.sens = 0.0024 * (s.sens / 100);
     this.camera.invertY = s.invert;
     this.renderer.shadowMap.enabled = s.shadows;
+    if (this.post) {
+      this.post.enabled = s.post !== false;
+      // without the grade pass, the renderer does the tone mapping itself
+      this.renderer.toneMapping = this.post.enabled ? THREE.NoToneMapping : THREE.ACESFilmicToneMapping;
+      this.scene.traverse((o) => { if (o.material) for (const m of [].concat(o.material)) m.needsUpdate = true; });
+    }
     this.drawDistance = s.draw;
     applyVolumes(s);
   }
@@ -196,6 +202,7 @@ export class Game {
     p.placeAt(this.state.position.x, this.state.position.z, this.state.position.heading);
     this.shops.lastDay = Math.floor((this.state.hour - 8) / 24);
     this.pages.refresh();
+    this.shops.spawnGarageCar();
     this.running = true;
     this.hud.show(true);
     this.camera.yaw = p.heading;

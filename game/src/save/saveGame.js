@@ -36,7 +36,7 @@ export function loadGame() {
 
 export const hasSave = () => { try { return !!localStorage.getItem(KEY); } catch { return false; } };
 
-export const DEFAULT_SETTINGS = { volume: 70, radio: 50, sens: 100, draw: 900, shadows: true, invert: false };
+export const DEFAULT_SETTINGS = { volume: 70, radio: 50, sens: 100, draw: 900, shadows: true, invert: false, post: true };
 
 export function loadSettings() {
   try { return { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}') }; } catch { return { ...DEFAULT_SETTINGS }; }

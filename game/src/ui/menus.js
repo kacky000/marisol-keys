@@ -49,7 +49,7 @@ export class Menus {
       el.addEventListener('input', () => { s[key] = el.type === 'checkbox' ? el.checked : conv(el.value); saveSettings(s); game.applySettings(); });
     };
     bind('set-volume', 'volume'); bind('set-radio', 'radio'); bind('set-sens', 'sens'); bind('set-draw', 'draw');
-    bind('set-shadows', 'shadows'); bind('set-invert', 'invert');
+    bind('set-shadows', 'shadows'); bind('set-invert', 'invert'); bind('set-post', 'post');
   }
 
   show(id) {

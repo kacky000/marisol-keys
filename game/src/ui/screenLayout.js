@@ -87,6 +87,7 @@ function menuMarkup() {
     <label>Mouse sensitivity <input type="range" id="set-sens" min="10" max="300"></label>
     <label>Draw distance <input type="range" id="set-draw" min="200" max="900"></label>
     <label><input type="checkbox" id="set-shadows"> Soft shadows</label>
+    <label><input type="checkbox" id="set-post"> Bloom &amp; colour grade</label>
     <label><input type="checkbox" id="set-invert"> Invert mouse Y</label>
     <button data-act="back">Back</button>
   </div>

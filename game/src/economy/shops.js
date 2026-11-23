@@ -29,6 +29,14 @@ export class Shops {
     this.signs = new PropertySigns(game.scene, PROPERTIES);
   }
 
+  // The stored car waits at the safehouse kerb when the game starts.
+  spawnGarageCar() {
+    const g = this.game, c = g.state.garageCar;
+    if (!c || (this.garageCar && !this.garageCar.removed)) return;
+    this.garageCar = g.vehicles.spawn(c.type, PLACES.safehouse.x - 6, 8 * 64 + 3.5, Math.PI / 2, { paint: c.paint });
+    this.garageCar.persistent = true;
+  }
+
   blips() {
     const out = SHOPS.map((s) => ({ x: s.x, z: s.z, kind: 'shop', letter: s.letter }));
     out.push({ x: PLACES.safehouse.x, z: PLACES.safehouse.z, kind: 'safehouse' });
@@ -54,8 +62,20 @@ export class Shops {
       if (s.id === 'garage' && p.vehicle) this.garage();
       if (s.id === 'threads' && !p.vehicle) clothingStore(g, wasPressed);
     }
-    // safehouse: save and sleep until the next morning
+    // safehouse: save and sleep until the next morning; park a car in its garage
     const sh = PLACES.safehouse;
+    if (p.vehicle && !p.vehicle.spec.boat && !p.vehicle.spec.police && Math.hypot(p.pos.x - sh.x, p.pos.z - sh.z) < 9 && Math.abs(p.vehicle.speed) < 3) {
+      g.hud.prompt('<kbd>E</kbd> Keep this car in the safehouse garage');
+      if (wasPressed('KeyE')) {
+        const v = p.vehicle;
+        g.state.garageCar = { type: v.type, paint: v.paint };
+        v.persistent = true;
+        this.garageCar = v;
+        g.save();
+        g.hud.toast(`<b>${v.spec.name}</b> stored — it will be waiting here`);
+        emit('sound', { name: 'cash' });
+      }
+    }
     if (!p.vehicle && Math.hypot(p.pos.x - sh.x, p.pos.z - sh.z) < 3 && !g.missions.active) {
       if (g.wanted.stars > 0) g.hud.prompt('Lose the police before resting at the safehouse');
       else {

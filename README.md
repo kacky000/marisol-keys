@@ -86,8 +86,8 @@ Any static file server works too: the game is just the files under `game/`.
   time trial, Vigilante runs in a stolen MKPD cruiser, Keys Tactical gun shop and body armour, Pastel Paint & Body resprays that shake the
   police, Sunwake Threads (five outfits for Tessa), four stunt-jump ramps that pay for airtime, Sunbelt Garage repairs and three tiers each of engine, tyre and armour tuning, police
   bribe stars that knock a star off, a phone map you can click to drop a GPS waypoint, four properties that pay out every game day, twenty hidden
-  Tide Book pages, respawning health / armour / ammo / cash pickups, and a safehouse that saves
-  and sleeps to the next morning.
+  Tide Book pages, respawning health / armour / ammo / cash pickups, and a safehouse that saves,
+  sleeps to the next morning and keeps your favourite car in its garage.
 - **HUD and menus** — rotating minimap drawn from the city plan with a GPS route, search circle
   and blips; health, armour, money, stars, weapon and ammo, objective and timer, speedometer,
   district pop-ups; a phone with the illustrated island map, story list, jobs and assets; title
