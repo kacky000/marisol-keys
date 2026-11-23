@@ -196,6 +196,7 @@ export class Game {
     this.vehicleAudio ??= new VehicleAudio();
     this.ambience ??= new Ambience();
     const loaded = continueSave ? loadGame() : null;
+    this.resetSession();
     this.state = loaded || newGameState();
     const p = this.player;
     p.owned = new Set(this.state.weapons.owned);
@@ -216,6 +217,28 @@ export class Game {
   }
 
   save() { saveGame(this.state, this.player); }
+
+  // Clears whatever the last session left running (after Quit to Title): missions, jobs, police,
+  // the wanted level, the player's car and any open dialogue.
+  resetSession() {
+    const p = this.player;
+    if (this.missions.active) { this.missions.cleanupMission(); this.missions.active = null; }
+    if (this.activities.active) this.activities.end(null);
+    this.events.stop();
+    this.wanted.clear();
+    this.police.clearAll(p);
+    if (p.vehicle) { p.vehicle.driver = null; p.vehicle = null; }
+    p.enter = null;
+    p.dead = false;
+    p.health = 100;
+    p.armor = 50;
+    p.rig.visible = true;
+    p.controlsLocked = false;
+    this.downTimer = 0;
+    this.camera.fixed = null;
+    this.dialogue.close();
+    document.body.classList.remove('busted', 'wasted');
+  }
 
   setPaused(v) {
     this.paused = v;
