@@ -64,10 +64,10 @@ export class MeshBatch {
   }
 
   // Vertical cylinder (open bottom) with facade uvs wrapped around it, optional flat cap.
-  cylinder(cx, y0, cz, r, h, color, { segments = 16, cap = true, capColor = null } = {}) {
+  cylinder(cx, y0, cz, r, h, color, { segments = 16, cap = true, capColor = null, ao = null } = {}) {
     const tu = this.tileU, tv = this.tileV;
     const v0 = y0 / tv, v1 = (y0 + h) / tv;
-    const ao = y0 < 1 ? Math.max(0.55, 1 - 6 / (h + 8)) : 0.92;
+    ao ??= y0 < 1 ? Math.max(0.55, 1 - 6 / (h + 8)) : 0.92;
     const foot = color.clone().multiplyScalar(ao);
     for (let k = 0; k < segments; k++) {
       const a0 = (k / segments) * Math.PI * 2, a1 = ((k + 1) / segments) * Math.PI * 2;

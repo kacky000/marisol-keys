@@ -26,8 +26,9 @@ export function randomOutfit(rng) {
 
 function limb(parts, w, h, d, colors) {
   // colors: array of [fromFraction, toFraction, color] down the limb (0 = joint)
+  // rounded limb: an eight-sided tube per colour band, tapering slightly toward the end
   const b = new MeshBatch();
-  for (const [a, z, c] of colors) b.orientedBox(0, -h * (a + z) / 2, 0, w, h * (z - a), d, 0, tint(c));
+  for (const [a, z, c] of colors) b.cylinder(0, -h * z, 0, (w + d) / 4 * (1 - a * 0.18), h * (z - a), tint(c), { segments: 8, ao: 1 });
   const m = new THREE.Mesh(b.toGeometry(), mat);
   m.castShadow = true;
   return m;
@@ -39,14 +40,17 @@ export function buildHuman(o) {
   hips.position.y = 0.95;
   root.add(hips);
   const body = new MeshBatch();
-  body.orientedBox(0, 0.34, 0, 0.46, 0.62, 0.26, 0, tint(o.shirt));       // torso
-  body.orientedBox(0, 0.02, 0, 0.42, 0.12, 0.24, 0, tint(o.pants));       // belt line
-  body.orientedBox(0, 0.72, 0, 0.12, 0.1, 0.12, 0, tint(o.skin));         // neck
-  body.orientedBox(0, 0.9, 0, 0.26, 0.28, 0.27, 0, tint(o.skin));         // head
+  body.orientedBox(0, 0.47, 0, 0.5, 0.36, 0.27, 0, tint(o.shirt));        // chest and shoulders
+  body.orientedBox(0, 0.2, 0, 0.41, 0.22, 0.24, 0, tint(o.shirt));        // waist
+  body.cylinder(0.0, 0.62, 0.0, 0.17, 0.05, tint(o.shirt), { segments: 10, ao: 1 }); // collar
+  body.orientedBox(0, 0.03, 0, 0.42, 0.12, 0.25, 0, tint(o.pants));       // belt line
+  body.cylinder(0, 0.66, 0, 0.065, 0.12, tint(o.skin), { segments: 8, ao: 1 });       // neck
+  body.cylinder(0, 0.76, 0, 0.14, 0.28, tint(o.skin), { segments: 12, ao: 1 });      // head
+  body.orientedBox(0, 0.86, -0.135, 0.05, 0.07, 0.04, 0, tint(o.skin));               // nose
   const hs = o.hairStyle || 'short';
   if (hs !== 'bald') {
-    body.orientedBox(0, 1.05, 0.02, 0.28, hs === 'curly' ? 0.14 : 0.08, 0.29, 0, tint(o.hair));   // hair top
-    body.orientedBox(0, 0.95, 0.12, 0.28, 0.2, 0.06, 0, tint(o.hair));    // hair back
+    body.cylinder(0, 0.98, 0.01, 0.152, hs === 'curly' ? 0.13 : 0.08, tint(o.hair), { segments: 12, ao: 1 });   // hair cap
+    body.orientedBox(0, 0.92, 0.1, 0.29, 0.2, 0.1, 0, tint(o.hair));    // hair back
   }
   if (hs === 'long') { body.orientedBox(0, 0.72, 0.13, 0.3, 0.42, 0.07, 0, tint(o.hair)); body.orientedBox(0, 0.86, 0, 0.31, 0.22, 0.24, 0, tint(o.hair)); }
   if (hs === 'bob') body.orientedBox(0, 0.88, 0.02, 0.32, 0.22, 0.3, 0, tint(o.hair));

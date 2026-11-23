@@ -189,7 +189,7 @@ export const SCENES = {
       p.syncRig();
       game.boardMarker.update(1.2);
       game.hud.showDistrict({ name: 'Sunwake Beach', sub: 'BOARDWALK & SURF' });
-      return { pos: new THREE.Vector3(12 * B + 5.2, p.pos.y + 2.2, 9 * B - 1.5), look: new THREE.Vector3(12 * B + 22, p.pos.y + 0.9, 9 * B + 7) };
+      return { pos: new THREE.Vector3(12 * B + 7.3, p.pos.y + 2.0, 9 * B - 0.6), look: new THREE.Vector3(12 * B + 22, p.pos.y + 1.0, 9 * B + 6.5) };
     },
   },
 

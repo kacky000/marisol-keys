@@ -305,7 +305,8 @@ export class Game {
     if (this.police.heli) this.police.heli.night = state.night > 0.3;
     // street lamps near the player light up at night
     const lamps = state.night > 0.3 ? lampHeads.map((l) => [l, l.distanceToSquared(focus)]).sort((a, b) => a[1] - b[1]).slice(0, this.nightLights.length) : [];
-    this.nightLights.forEach((l, k) => { if (lamps[k]) { l.position.copy(lamps[k][0]); l.intensity = 30 * state.night; } else l.intensity = 0; });
+    // (toggling visibility only at dusk and dawn keeps daytime shaders free of these lights)
+    this.nightLights.forEach((l, k) => { l.visible = !!lamps[k]; if (lamps[k]) { l.position.copy(lamps[k][0]); l.intensity = 30 * state.night; } });
     this.post.render(this.scene, this.threeCamera, { exposure, bloom: 0.45 + state.night * 0.5 });
   }
 
