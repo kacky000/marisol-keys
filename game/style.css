@@ -63,7 +63,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #0b2233; fon
 #hud-toast { position: absolute; left: 280px; bottom: 34px; display: flex; flex-direction: column; gap: 6px; }
 #hud-toast div { background: var(--ink); border-left: 4px solid var(--lagoon); padding: 7px 14px; font-size: 15px; border-radius: 6px; max-width: 360px; animation: toastIn 0.25s ease-out; }
 @keyframes toastIn { from { transform: translateX(-20px); opacity: 0; } }
-#hud-radio { position: absolute; left: 50%; top: 92px; transform: translateX(-50%); font-weight: 800; letter-spacing: 3px; font-size: 15px; color: #fff; background: var(--ink); padding: 6px 18px; border-radius: 20px; border: 2px solid var(--coral); }
+#hud-radio { position: absolute; left: 50%; top: 92px; transform: translateX(-50%); font-weight: 800; letter-spacing: 1.5px; white-space: nowrap; font-size: 14px; color: #fff; background: var(--ink); padding: 6px 18px; border-radius: 20px; border: 2px solid var(--coral); }
 #hud-prompt { position: absolute; left: 50%; bottom: 120px; transform: translateX(-50%); background: var(--ink); padding: 8px 18px; border-radius: 8px; font-size: 16px; }
 #hud-prompt kbd { display: inline-block; background: var(--paper); color: var(--deep); border-radius: 4px; padding: 0 7px; font-weight: 800; margin-right: 6px; }
 #hud-crosshair { position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px 0 0 -13px; border: 2px solid rgba(255,255,255,0.9); border-radius: 50%; box-shadow: 0 0 3px #000; }

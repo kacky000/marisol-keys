@@ -47,6 +47,8 @@ Any static file server works too: the game is just the files under `game/`.
 | Q | buy armour at Keys Tactical | next radio station |
 | H | — | horn |
 | C | — | look behind |
+| V | camera distance | camera distance, hood cam |
+| G | — | siren (in an MKPD cruiser) |
 | M or Tab | phone: map, story, jobs, assets | same |
 | Esc or P | pause menu (save, settings, controls) | same |
 

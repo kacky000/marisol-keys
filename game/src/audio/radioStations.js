@@ -4,9 +4,12 @@
 import { audioContext, bus, envGain, noiseBuffer } from './audioEngine.js';
 
 export const STATIONS = [
-  { name: 'TIDAL 101.3 — Sunset Synthwave', bpm: 96, root: 45, scale: [0, 3, 5, 7, 10], lead: 'sawtooth', bass: 'square', drums: 'four' },
-  { name: 'STATIC 88 FM — Pirate Reggaeton', bpm: 92, root: 50, scale: [0, 2, 3, 7, 8], lead: 'square', bass: 'sine', drums: 'dembow' },
-  { name: 'REEF ROOM RADIO — Steel Pan Lounge', bpm: 104, root: 55, scale: [0, 2, 4, 7, 9], lead: 'triangle', bass: 'triangle', drums: 'shaker' },
+  { name: 'TIDAL 101.3 — Sunset Synthwave', bpm: 96, root: 45, scale: [0, 3, 5, 7, 10], lead: 'sawtooth', bass: 'square', drums: 'four',
+    songs: ['Neon Pelicans — "Coral Static"', 'Glasswater Drive — "Last Ferry Out"', 'The Undertow — "Pastel Heat"', 'Miss Mirador — "Halcyon Nights"'] },
+  { name: 'STATIC 88 FM — Pirate Reggaeton', bpm: 92, root: 50, scale: [0, 2, 3, 7, 8], lead: 'square', bass: 'sine', drums: 'dembow',
+    songs: ['DJ Sardina — "Canal Bounce"', 'Lantern Kids — "No Signal"', 'Priya L. live mix — "Tide Book Dub"', 'Rayo Sound — "Quay Road"'] },
+  { name: 'REEF ROOM RADIO — Steel Pan Lounge', bpm: 104, root: 55, scale: [0, 2, 4, 7, 9], lead: 'triangle', bass: 'triangle', drums: 'shaker',
+    songs: ['The Lifeguards — "Tower Three"', 'Seagrape Trio — "Low Tide Waltz"', 'Captain Calypso — "Marlin Diner"', 'Sunwake Steel — "Boardwalk 6am"'] },
   { name: 'RADIO OFF', off: true },
 ];
 
@@ -30,7 +33,11 @@ export class Radio {
     const ctx = audioContext();
     if (ctx) this.nextStep = ctx.currentTime + 0.6;
     this.jingle();
-    return STATIONS[this.index].name;
+    const st = STATIONS[this.index];
+    if (st.off) return st.name;
+    // each tune-in lands on a different invented track
+    this.track = ((this.track || 0) + 1) % st.songs.length;
+    return `${st.name} · ${st.songs[this.track]}`;
   }
 
   jingle() {

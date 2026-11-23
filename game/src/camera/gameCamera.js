@@ -3,7 +3,7 @@
 
 import * as THREE from 'three';
 import { raycastStatic } from '../world/collisionWorld.js';
-import { mouseState, isDown } from '../core/input.js';
+import { mouseState, isDown, wasPressed } from '../core/input.js';
 import { clamp, damp, dampAngle, wrapAngle } from '../core/mathUtil.js';
 
 export class GameCamera {
@@ -48,6 +48,16 @@ export class GameCamera {
     this.recoil = damp(this.recoil, 0, 18, dt);
 
     const v = player.vehicle || (player.enter && player.enter.mode === 'in' && player.enter.t > 0.5 ? player.enter.vehicle : null);
+    // V cycles the view: standard, far, and close (a hood camera in vehicles)
+    if (wasPressed('KeyV')) this.view = ((this.view || 0) + 1) % 3;
+    const view = this.view || 0;
+    if (v && view === 2 && player.vehicle) {
+      const f = v.forward();
+      this.cam.position.set(v.pos.x + f.x * v.spec.len * 0.18, v.pos.y + v.spec.height + 0.25, v.pos.z + f.z * v.spec.len * 0.18);
+      this.cam.lookAt(v.pos.x + f.x * 30, v.pos.y + v.spec.height * 0.8, v.pos.z + f.z * 30);
+      this.yaw = v.heading;
+      return;
+    }
     let pivot, dist, side = 0, fovTarget = 62;
     if (v) {
       const sp = Math.abs(v.speed);
@@ -58,11 +68,12 @@ export class GameCamera {
         this.pitch = damp(this.pitch, -0.2, 2, dt);
       }
       pivot = new THREE.Vector3(v.pos.x, v.pos.y + v.spec.height + 0.6, v.pos.z);
-      dist = v.spec.len * 0.9 + 4.2 + sp * 0.05;
+      dist = (v.spec.len * 0.9 + 4.2 + sp * 0.05) * (view === 1 ? 1.6 : 1);
+      if (view === 1) pivot.y += 1.5;
       fovTarget = 62 + Math.min(18, sp * 0.35);
     } else {
       pivot = new THREE.Vector3(player.pos.x, player.pos.y + 1.65, player.pos.z);
-      dist = player.aiming ? 2.6 : 4.4;
+      dist = player.aiming ? 2.6 : view === 1 ? 6.8 : view === 2 ? 2.9 : 4.4;
       side = player.aiming ? 0.75 : 0.35;
     }
     this.distance = damp(this.distance, dist, 6, dt);
