@@ -43,6 +43,14 @@ export function buildStreetFurniture(kit) {
         lampHeads.push(new THREE.Vector3(hx, WALK_Y + 6.9, hz));
         addCollider(x - 0.2, z - 0.2, x + 0.2, z + 0.2, 7.5, -5, 'lamp');
       }
+      // shade trees line the quieter neighbourhood streets, between the lamps
+      if (!palmRow && (bl === 'R' || bl === 'C' || bl === 'V')) {
+        for (const s of [28, 52]) {
+          if (s > e.len - 10) continue;
+          const tx = a.x + ux * s + rx * side * (ROAD_HALF + 2.2), tz = a.z + uz * s + rz * side * (ROAD_HALF + 2.2);
+          if (hash2(Math.round(tx), Math.round(tz), 5) < 0.75 && !nearRampLane(tx, tz)) kit.trees.push({ x: tx, z: tz, size: 0.9 + hash2(Math.round(tz), 4) * 0.4, flowering: hash2(Math.round(tx), 8) < 0.25 });
+        }
+      }
       if (palmRow) {
         for (let s = 12; s < e.len - 10; s += 12) {
           kit.palms.push({ x: a.x + ux * s + rx * side * (ROAD_HALF + 2.4), z: a.z + uz * s + rz * side * (ROAD_HALF + 2.4), h: 11 + hash2(s, side) * 4, lean: 0.15 });
