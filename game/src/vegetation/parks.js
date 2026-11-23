@@ -3,6 +3,7 @@
 import { tint } from '../core/meshBatch.js';
 import { WALK_Y } from '../world/terrain.js';
 import { addCollider } from '../world/collisionWorld.js';
+import { nearRampLane } from '../activities/stuntJumps.js';
 
 const FLOWERS = ['#ff5d8f', '#ffb703', '#f15bb5', '#ffffff', '#e76f51'];
 
@@ -22,8 +23,12 @@ export function buildParkBlock(kit, block, rng) {
     const qx = cx + sx * 11, qz = cz + sz * 11;
     for (let k = 0; k < 5; k++) {
       const bx = qx + rng.range(-6, 6), bz = qz + rng.range(-6, 6);
+      if (nearRampLane(bx, bz)) continue;
       kit.trim.box(bx, y, bz, rng.range(1.2, 2.2), rng.range(0.8, 1.4), rng.range(1.2, 2.2), tint(rng.chance(0.4) ? rng.pick(FLOWERS) : '#3f8a3c'));
     }
-    for (let k = 0; k < 2; k++) kit.palms.push({ x: qx + rng.range(-7, 7), z: qz + rng.range(-7, 7), h: rng.range(9, 14), lean: rng.range(-0.3, 0.3) });
+    for (let k = 0; k < 2; k++) {
+      const px = qx + rng.range(-7, 7), pz = qz + rng.range(-7, 7);
+      if (!nearRampLane(px, pz)) kit.palms.push({ x: px, z: pz, h: rng.range(9, 14), lean: rng.range(-0.3, 0.3) });
+    }
   }
 }

@@ -110,12 +110,41 @@ export class Vehicle {
 
     this.collideWithCity(time);
     const gy = groundHeight(this.pos.x, this.pos.z);
-    this.pos.y += (Math.max(gy, -3) - this.pos.y) * Math.min(1, dt * 12);
-    if (gy < -1.5 && !this.wrecked && !s.boat) this.sink();
+    this.updateVertical(dt, Math.max(gy, -3), vF);
+    if (gy < -1.5 && !this.wrecked && !s.boat && !this.airborne) this.sink();
 
     if (this.health <= 0 && !this.wrecked) this.explode();
     if (this.wrecked) this.burning = Math.max(0, this.burning - dt);
     this.syncMesh(dt, vF, time);
+  }
+
+  // Ground following with ramps: climbing a ramp builds vertical speed, and when the ground
+  // falls away the car flies under gravity until it lands (hard landings hurt).
+  updateVertical(dt, gy, vF) {
+    this.vy ??= 0;
+    this.lastGy ??= gy;
+    const groundVel = dt > 0 ? (gy - this.lastGy) / dt : 0;
+    this.lastGy = gy;
+    this.rampVy = Math.max(groundVel, (this.rampVy || 0) * Math.exp(-dt * 6));
+    if (this.airborne) {
+      this.vy -= 16 * dt; // arcade gravity: a little floaty for long jumps
+      this.pos.y += this.vy * dt;
+      this.pitch = clamp(this.vy * 0.025, -0.35, 0.3);
+      if (this.pos.y <= gy) {
+        const impact = -this.vy;
+        this.pos.y = gy; this.vy = 0; this.airborne = false;
+        if (impact > 9) this.damage((impact - 9) * (impact - 9) * 6, 'landing');
+        emit('vehicle:landed', { vehicle: this, impact });
+      }
+      return;
+    }
+    if (gy < this.pos.y - 0.45 && this.rampVy > 1.5 && Math.abs(vF) > 8) {
+      this.airborne = true;
+      this.vy = this.rampVy;
+      return;
+    }
+    this.pos.y += (gy - this.pos.y) * Math.min(1, dt * 12);
+    this.pitch = Math.abs(vF) > 1 ? clamp(Math.atan2(groundVel, Math.abs(vF)), -0.3, 0.35) : 0;
   }
 
   // Front and rear circles pushed out of buildings; bounce and take damage from hard hits.
@@ -171,7 +200,7 @@ export class Vehicle {
   syncMesh(dt, vF, time) {
     const m = this.mesh;
     m.position.copy(this.pos);
-    m.rotation.set(0, -this.heading, 0);
+    m.rotation.set(this.spec.boat ? 0 : (this.pitch || 0), -this.heading, 0);
     // body roll in turns and pitch under braking
     const roll = clamp(-this.yawRate * vF * 0.004, -0.08, 0.08);
     if (this.spec.bike) m.rotation.z = clamp(this.yawRate * vF * 0.03, -0.6, 0.6);

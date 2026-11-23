@@ -12,6 +12,7 @@ export const BLIP_STYLE = {
   heli: { color: '#3f7bff', shape: 'heli' },
   health: { color: '#ff4d6d', shape: 'letter' },
   waypoint: { color: '#b06bff', shape: 'diamond' },
+  stunt: { color: '#ffb347', shape: 'letter' },
   safehouse: { color: '#19c3b4', shape: 'house' },
 };
 

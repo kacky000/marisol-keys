@@ -21,6 +21,7 @@ import { SideJobs } from '../activities/sideJobs.js';
 import { StreetEvents } from '../activities/streetEvents.js';
 import { TidePages } from '../activities/tidePages.js';
 import { Pickups } from '../activities/pickups.js';
+import { StuntJumps } from '../activities/stuntJumps.js';
 import { Shops, tuningFor } from '../economy/shops.js';
 import { playerTuning } from '../vehicles/vehicle.js';
 // effects
@@ -95,6 +96,7 @@ export class Game {
     this.contacts = new ContactCast(this);
     this.pickups = new Pickups(this);
     this.events = new StreetEvents(this);
+    this.stunts = new StuntJumps(this);
     this.phone = new PhoneScreen(this);
     this.damageFx = startDamageEffects(this);
     this.radio = new Radio();
@@ -253,6 +255,7 @@ export class Game {
       this.pages.update(dt, this.time);
       this.pickups.update(dt, this.time);
       this.events.update(dt);
+      this.stunts.update(dt);
     }
     this.contacts.update(dt);
     this.dialogue.update(dt);
@@ -293,7 +296,7 @@ export class Game {
   hudSnapshot() {
     const p = this.player;
     const v = p.vehicle;
-    const blips = [...this.missions.blips(), ...this.activities.blips(), ...this.shops.blips(), ...this.pickups.blips(), ...this.events.blips()];
+    const blips = [...this.missions.blips(), ...this.activities.blips(), ...this.shops.blips(), ...this.pickups.blips(), ...this.events.blips(), ...this.stunts.blips()];
     if (this.waypoint) {
       if (Math.hypot(p.pos.x - this.waypoint.x, p.pos.z - this.waypoint.z) < 15) { this.waypoint = null; this.hud.toast('Waypoint reached'); }
       else blips.push({ ...this.waypoint, kind: 'waypoint' });

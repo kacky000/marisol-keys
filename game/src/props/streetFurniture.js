@@ -7,6 +7,7 @@ import { ROAD_HALF, BLOCK, blockLetter } from '../world/cityPlan.js';
 import { WALK_Y } from '../world/terrain.js';
 import { addCollider } from '../world/collisionWorld.js';
 import { hash2 } from '../core/rng.js';
+import { nearRampLane } from '../activities/stuntJumps.js';
 
 export const lampHeads = [];   // world positions of lamp bulbs (night glow)
 
@@ -34,6 +35,7 @@ export function buildStreetFurniture(kit) {
       }
       for (let s = 16; s < e.len - 14; s += 24) {
         const x = a.x + ux * s + rx * side * (ROAD_HALF + 0.9), z = a.z + uz * s + rz * side * (ROAD_HALF + 0.9);
+        if (nearRampLane(x, z)) continue;
         poles.box(x, WALK_Y, z, 0.25, 7.5, 0.25, tint('#5d6066'));
         const hx = x - rx * side * 1.6, hz = z - rz * side * 1.6;
         poles.box((x + hx) / 2, WALK_Y + 7.3, (z + hz) / 2, Math.abs(hx - x) + 0.2, 0.18, Math.abs(hz - z) + 0.2, tint('#5d6066'));
@@ -49,6 +51,7 @@ export function buildStreetFurniture(kit) {
       // benches, bins and the odd bus shelter
       const r = hash2(Math.round(px), Math.round(pz), 3);
       const bx = px + rx * side * 1.2, bz = pz + rz * side * 1.2;
+      if (nearRampLane(bx, bz)) continue; // keep stunt-jump runways clear
       if (r < 0.25) {
         // bus shelter
         const yaw = Math.atan2(rx * side, rz * side);

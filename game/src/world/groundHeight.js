@@ -3,8 +3,14 @@
 import { groundAt, BLOCK, blockLetter } from './cityPlan.js';
 import { WALK_Y } from './terrain.js';
 import { BOARDWALK, PIER } from '../props/beachfront.js';
+import { rampHeight } from '../activities/stuntJumps.js';
 
+// Stunt ramps rise above whatever surface they sit on.
 export function groundHeight(x, z) {
+  return Math.max(surfaceHeight(x, z), rampHeight(x, z));
+}
+
+function surfaceHeight(x, z) {
   if (x >= PIER.x0 && x <= PIER.x1 && Math.abs(z - PIER.z) <= PIER.half) return 1.2;
   const kind = groundAt(x, z);
   if (kind === 'road') return 0.03;
