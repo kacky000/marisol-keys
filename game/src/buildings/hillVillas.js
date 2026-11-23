@@ -31,8 +31,10 @@ export function buildVillaBlock(kit, block, rng) {
     kit.glow.box(vx, y0 + 0.31, vz + d / 2 + 4, w * 0.7, 0.02, 4.4, tint('#3fd0e8'));
     kit.palms.push({ x: vx - w / 2 - 2, z: vz + d / 2 + 3, h: rng.range(10, 13), lean: 0.25, y: y0 }, { x: vx + w / 2 + 2, z: vz - d / 2, h: rng.range(9, 12), lean: -0.2, y: y0 });
   }
-  // hedge walls along the street
+  // hedge walls along the street, a shade tree and flowering shrubs in the garden
   kit.trim.box(cx, y0, iz1 - 0.8, ix1 - ix0 - 6, 1.4, 1.2, tint('#3f7f3a'));
+  kit.trees.push({ x: ix0 + 5 + rng.range(0, 4), z: iz1 - 6, y: y0, size: rng.range(1.2, 1.6), flowering: rng.chance(0.5) });
+  for (let k = 0; k < 4; k++) kit.shrubs.push({ x: rng.range(ix0 + 3, ix1 - 3), z: iz1 - rng.range(3, 5), y: y0, size: rng.range(0.8, 1.2), flowering: rng.chance(0.5) });
 }
 
 // The green hills rising north of the villas, a backdrop for the skyline.

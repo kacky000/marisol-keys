@@ -58,7 +58,10 @@ export function buildNeighbourhoodBlock(kit, block, rng) {
       const cx = ix0 + cw * (c + 0.5), cz = iz0 + rh * (r + 0.5);
       const inner = r > 0 && r < rows - 1 && c > 0 && c < cols - 1;
       if (inner || rng.chance(0.12)) {
-        kit.palms.push({ x: cx + rng.range(-3, 3), z: cz + rng.range(-3, 3), h: rng.range(8, 12), lean: rng.range(-0.3, 0.3) });
+        // a little garden: a palm or a shade tree with shrubs around it
+        if (rng.chance(0.5)) kit.palms.push({ x: cx + rng.range(-3, 3), z: cz + rng.range(-3, 3), h: rng.range(8, 12), lean: rng.range(-0.3, 0.3) });
+        else kit.trees.push({ x: cx + rng.range(-2, 2), z: cz + rng.range(-2, 2), size: rng.range(1.2, 1.7), flowering: rng.chance(0.3) });
+        for (let k = 0; k < 3; k++) kit.shrubs.push({ x: cx + rng.range(-5, 5), z: cz + rng.range(-5, 5), size: rng.range(0.8, 1.3), flowering: rng.chance(0.35) });
         continue;
       }
       apartment(kit, block, cx, cz, cw - rng.range(1.5, 3.5), rh - rng.range(1.5, 3.5), rng);

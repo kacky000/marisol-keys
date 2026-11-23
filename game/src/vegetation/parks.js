@@ -24,8 +24,11 @@ export function buildParkBlock(kit, block, rng) {
     for (let k = 0; k < 5; k++) {
       const bx = qx + rng.range(-6, 6), bz = qz + rng.range(-6, 6);
       if (nearRampLane(bx, bz)) continue;
-      kit.trim.box(bx, y, bz, rng.range(1.2, 2.2), rng.range(0.8, 1.4), rng.range(1.2, 2.2), tint(rng.chance(0.4) ? rng.pick(FLOWERS) : '#3f8a3c'));
+      kit.shrubs.push({ x: bx, z: bz, y, size: rng.range(0.9, 1.5), flowering: rng.chance(0.4) });
     }
+    const tx = qx + rng.range(-4, 4), tz = qz + rng.range(-4, 4);
+    if (!nearRampLane(tx, tz)) kit.trees.push({ x: tx, z: tz, y, size: rng.range(1.1, 1.5), flowering: rng.chance(0.35) });
+    void FLOWERS;
     for (let k = 0; k < 2; k++) {
       const px = qx + rng.range(-7, 7), pz = qz + rng.range(-7, 7);
       if (!nearRampLane(px, pz)) kit.palms.push({ x: px, z: pz, h: rng.range(9, 14), lean: rng.range(-0.3, 0.3) });

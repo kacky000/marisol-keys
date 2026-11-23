@@ -22,6 +22,8 @@ export function createBuildingKit() {
     shop: new MeshBatch({ tileU: 6, tileV: 3.6 }),
     signs: [],     // { x, y, z, yaw, w, h, brand }
     palms: [],      // { x, z, h, lean }
+    trees: [],      // broadleaf shade trees { x, z, size, flowering }
+    shrubs: [],     // rounded bushes { x, z, size, flowering }
     rooftops: [],   // { x, y, z, w, d }
     tallest: [],
   };

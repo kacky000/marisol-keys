@@ -18,6 +18,7 @@ import { buildVillaBlock, buildHills } from '../buildings/hillVillas.js';
 import { buildSignMeshes, addBillboard } from '../buildings/signage.js';
 import { buildParkBlock } from '../vegetation/parks.js';
 import { buildPalms } from '../vegetation/palms.js';
+import { buildShadeTrees } from '../vegetation/shadeTrees.js';
 import { buildStreetFurniture } from '../props/streetFurniture.js';
 import { buildBeachfront } from '../props/beachfront.js';
 import { createOcean, createSurf } from '../water/ocean.js';
@@ -60,6 +61,7 @@ export function buildWorld(scene) {
   buildKitMeshes(kit, group);
   const signMaterial = buildSignMeshes(kit.signs, group);
   buildPalms(kit.palms, group);
+  buildShadeTrees(kit.trees, kit.shrubs, group);
 
   const ocean = createOcean();
   group.add(ocean.mesh);
