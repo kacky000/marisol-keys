@@ -47,6 +47,7 @@ import { on } from './events.js';
 import { rng } from './rng.js';
 // interface
 import { Hud } from '../ui/hud.js';
+import { startTutorialTips } from '../ui/tutorialTips.js';
 import { DialogueBox } from '../ui/dialogueBox.js';
 import { PhoneScreen } from '../ui/phoneScreen.js';
 import { Menus } from '../ui/menus.js';
@@ -109,6 +110,7 @@ export class Game {
     this.radio = new Radio();
     this.dispatch = new DispatchRadio(this);
     startCrimeWatch(this);
+    startTutorialTips(this);
     this.bindEvents();
     this.nightLights = this.makeNightLights();
     if (!this.shotMode) {
