@@ -30,6 +30,8 @@ import { SideJobs } from '../activities/sideJobs.js';
 import { Shops } from '../economy/shops.js';
 import { TidePages } from '../activities/tidePages.js';
 import { ContactCast } from '../story/contactCharacters.js';
+import { Pickups } from '../activities/pickups.js';
+import { StreetEvents } from '../activities/streetEvents.js';
 import { Hud } from '../ui/hud.js';
 import { DialogueBox } from '../ui/dialogueBox.js';
 import { PhoneScreen } from '../ui/phoneScreen.js';
@@ -82,6 +84,8 @@ export class Game {
     this.shops = new Shops(this);
     this.pages = new TidePages(this);
     this.contacts = new ContactCast(this);
+    this.pickups = new Pickups(this);
+    this.events = new StreetEvents(this);
     this.phone = new PhoneScreen(this);
     this.damageFx = startDamageEffects(this);
     this.radio = new Radio();
@@ -109,7 +113,7 @@ export class Game {
 
   get targets() {
     return {
-      people: [...this.peds.peds, ...this.police.officers, ...this.missions.enemies, this.player],
+      people: [...this.peds.peds, ...this.police.officers, ...this.missions.enemies, ...(this.events ? this.events.people : []), this.player],
       vehicles: this.vehicles.list,
     };
   }
@@ -230,6 +234,8 @@ export class Game {
       this.activities.update(dt);
       this.shops.update(dt);
       this.pages.update(dt, this.time);
+      this.pickups.update(dt, this.time);
+      this.events.update(dt);
     }
     this.contacts.update(dt);
     this.dialogue.update(dt);
@@ -270,7 +276,7 @@ export class Game {
   hudSnapshot() {
     const p = this.player;
     const v = p.vehicle;
-    const blips = [...this.missions.blips(), ...this.activities.blips(), ...this.shops.blips()];
+    const blips = [...this.missions.blips(), ...this.activities.blips(), ...this.shops.blips(), ...this.pickups.blips(), ...this.events.blips()];
     for (const u of this.police.units) if (!u.vehicle.wrecked && !u.vehicle.removed) blips.push({ x: u.vehicle.pos.x, z: u.vehicle.pos.z, kind: 'police' });
     for (const o of this.police.officers) if (o.alive) blips.push({ x: o.pos.x, z: o.pos.z, kind: 'police' });
     if (this.police.heli) blips.push({ x: this.police.heli.pos.x, z: this.police.heli.pos.z, kind: 'heli' });

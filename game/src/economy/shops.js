@@ -27,6 +27,7 @@ export class Shops {
 
   blips() {
     const out = SHOPS.map((s) => ({ x: s.x, z: s.z, kind: 'shop', letter: s.letter }));
+    out.push({ x: PLACES.safehouse.x, z: PLACES.safehouse.z, kind: 'safehouse' });
     for (const p of PROPERTIES) out.push({ x: p.x, z: p.z, kind: 'property', color: this.game.state.properties.includes(p.id) ? '#7bd389' : '#ff8fb1' });
     return out;
   }
@@ -46,6 +47,21 @@ export class Shops {
       if (s.id === 'guns' && !p.vehicle) this.gunShop();
       if (s.id === 'paint' && p.vehicle) this.paintShop();
       if (s.id === 'garage' && p.vehicle) this.garage();
+    }
+    // safehouse: save and sleep until the next morning
+    const sh = PLACES.safehouse;
+    if (!p.vehicle && Math.hypot(p.pos.x - sh.x, p.pos.z - sh.z) < 3 && !g.missions.active) {
+      if (g.wanted.stars > 0) g.hud.prompt('Lose the police before resting at the safehouse');
+      else {
+        g.hud.prompt('<kbd>E</kbd> Save the game and rest until 08:00');
+        if (wasPressed('KeyE')) {
+          g.state.hour = Math.ceil((g.state.hour - 8) / 24) * 24 + 8;
+          p.health = 100;
+          g.save();
+          g.hud.bigMessage('GAME SAVED', 'Old Keys safehouse · a new day on the Keys', 3);
+          emit('sound', { name: 'passed' });
+        }
+      }
     }
     for (const q of PROPERTIES) {
       if (g.state.properties.includes(q.id) || p.vehicle) continue;

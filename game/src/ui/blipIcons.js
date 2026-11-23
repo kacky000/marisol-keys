@@ -10,6 +10,8 @@ export const BLIP_STYLE = {
   job: { color: '#7bd389', shape: 'letter' },
   property: { color: '#ff8fb1', shape: 'house' },
   heli: { color: '#3f7bff', shape: 'heli' },
+  health: { color: '#ff4d6d', shape: 'letter' },
+  safehouse: { color: '#19c3b4', shape: 'house' },
 };
 
 export function drawBlip(g, b, x, y, size, time = 0) {
@@ -40,7 +42,8 @@ export function drawBlip(g, b, x, y, size, time = 0) {
       break;
     default:
       g.beginPath(); g.arc(0, 0, size * 0.85, 0, Math.PI * 2); g.fill(); g.stroke();
-      g.fillStyle = b.kind === 'shop' ? '#0b2233' : '#1b1b1b';
+      if (b.kind === 'health') b = { ...b, letter: '+' };
+      g.fillStyle = b.kind === 'shop' ? '#0b2233' : b.kind === 'health' ? '#ffffff' : '#1b1b1b';
       g.font = `900 ${Math.round(size * 1.1)}px Arial`;
       g.textAlign = 'center'; g.textBaseline = 'middle';
       g.fillText(b.letter || '?', 0, size * 0.06);

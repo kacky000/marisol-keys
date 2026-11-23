@@ -124,7 +124,7 @@ export function eachBlock(fn) {
 
 // Points of interest used by missions, shops, activities and the map screen.
 export const PLACES = {
-  safehouse: { x: 7 * BLOCK + 32, z: 8 * BLOCK + 13, label: 'Bait & Tackle Safehouse' },
+  safehouse: { x: 7 * BLOCK + 26, z: 8 * BLOCK + 9.5, label: 'Old Keys Safehouse' },
   ozzieShop: { x: 3 * BLOCK - 4, z: 13 * BLOCK + 50, label: "Ozzie's Bait Shop" },
   coralRoom: { x: 11 * BLOCK - 3, z: 4 * BLOCK + 30, label: 'The Coral Room' },
   boardwalk: { x: 12 * BLOCK + 12, z: 7 * BLOCK + 20, label: 'Sunwake Boardwalk' },
