@@ -23,6 +23,7 @@ import { buildStreetFurniture } from '../props/streetFurniture.js';
 import { buildBeachfront } from '../props/beachfront.js';
 import { createOcean, createSurf } from '../water/ocean.js';
 import { buildBoats } from '../water/boats.js';
+import { Seagulls } from '../props/seagulls.js';
 import { createRng, hash2 } from '../core/rng.js';
 import { MeshBatch } from '../core/meshBatch.js';
 
@@ -68,6 +69,7 @@ export function buildWorld(scene) {
   const surf = createSurf(13 * BLOCK + 6, 1 * BLOCK - 20, 14 * BLOCK + 20);
   group.add(surf);
   const rockBoats = buildBoats(group);
+  const gulls = new Seagulls(group);
   scene.add(group);
   return {
     group,
@@ -81,6 +83,7 @@ export function buildWorld(scene) {
       ocean.uniforms.uTime.value = time;
       surf.userData.update(time);
       rockBoats(time);
+      gulls.update(time);
     },
   };
 }
