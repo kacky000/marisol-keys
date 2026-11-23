@@ -136,9 +136,9 @@ export class Shops {
   // tuning travels with Tessa (Sunbelt's mechanics tune whatever she drives).
   garage() {
     const g = this.game, v = g.player.vehicle;
-    if (v.health < v.spec.health) {
+    if (v.health < v.spec.health || v.tyresBurst) {
       g.hud.prompt('<kbd>E</kbd> Repair at Sunbelt Garage — $150');
-      if (wasPressed('KeyE') && g.state.money >= 150) { g.state.money -= 150; v.health = v.spec.health; g.hud.toast('Vehicle repaired'); emit('sound', { name: 'cash' }); }
+      if (wasPressed('KeyE') && g.state.money >= 150) { g.state.money -= 150; v.health = v.spec.health; v.tyresBurst = false; g.hud.toast('Vehicle repaired · new tyres'); emit('sound', { name: 'cash' }); }
       return;
     }
     const up = g.state.upgrades;

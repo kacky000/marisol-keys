@@ -86,8 +86,44 @@ export class PoliceDispatch {
       const ox = x + (horizontal ? side * 3 : 0), oz = z + (horizontal ? 0 : side * 3);
       this.spawnOfficer(ox, oz);
     }
+    // a spike strip across the whole road, a little before the cruisers
+    const sx = cx + (horizontal ? side * 9 : 0), sz = cz + (horizontal ? 0 : side * 9);
+    block.strip = this.makeSpikeStrip(sx, sz, horizontal);
     this.roadblocks.push(block);
     emit('police:roadblock', { x: cx, z: cz });
+  }
+
+  makeSpikeStrip(x, z, horizontal) {
+    const g = new THREE.Group();
+    const base = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.06, 14), new THREE.MeshStandardMaterial({ color: '#2a2a2e', roughness: 0.6 }));
+    g.add(base);
+    const spikeMat = new THREE.MeshStandardMaterial({ color: '#d8dde3', metalness: 0.9, roughness: 0.25 });
+    for (let k = -6.6; k <= 6.6; k += 0.6) {
+      const spike = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.16, 4), spikeMat);
+      spike.position.set(0, 0.1, k);
+      g.add(spike);
+    }
+    g.position.set(x, 0.05, z);
+    g.rotation.y = horizontal ? 0 : Math.PI / 2;
+    this.scene.add(g);
+    return { mesh: g, x, z, horizontal };
+  }
+
+  // Bursts the tyres of the player's car when it rolls over a strip.
+  checkSpikeStrips(player) {
+    const v = player.vehicle;
+    if (!v || v.tyresBurst || v.spec.boat) return;
+    for (const b of this.roadblocks) {
+      const s = b.strip;
+      if (!s) continue;
+      const along = s.horizontal ? Math.abs(v.pos.x - s.x) : Math.abs(v.pos.z - s.z);
+      const across = s.horizontal ? Math.abs(v.pos.z - s.z) : Math.abs(v.pos.x - s.x);
+      if (along < 1.2 && across < 7) {
+        v.tyresBurst = true;
+        emit('sound', { name: 'crash' });
+        emit('hud:prompt', { html: '<b>Tyres shredded</b> by a spike strip — Sunbelt Garage can fix them' });
+      }
+    }
   }
 
   canAnyoneSee(player) {
@@ -163,6 +199,7 @@ export class PoliceDispatch {
     if (this.bustTimer > 2.2) { this.bustTimer = 0; emit('player:down', { cause: 'busted' }); }
 
     // tidy up: far, dead or no longer needed units
+    this.checkSpikeStrips(player);
     this.cleanup(player, stars);
   }
 
@@ -182,6 +219,7 @@ export class PoliceDispatch {
     this.roadblocks = this.roadblocks.filter((b) => {
       if (b.timer > 0 && stars > 0) return true;
       for (const c of b.cars) if (c !== player.vehicle && far(c.pos, 60)) this.vehicles.remove(c);
+      if (b.strip) this.scene.remove(b.strip.mesh);
       return false;
     });
   }
@@ -189,7 +227,10 @@ export class PoliceDispatch {
   clearAll(player) {
     for (const u of this.units) if (u.vehicle !== player.vehicle) this.vehicles.remove(u.vehicle);
     for (const o of this.officers) o.dispose();
-    for (const b of this.roadblocks) for (const c of b.cars) if (c !== player.vehicle) this.vehicles.remove(c);
+    for (const b of this.roadblocks) {
+      for (const c of b.cars) if (c !== player.vehicle) this.vehicles.remove(c);
+      if (b.strip) this.scene.remove(b.strip.mesh);
+    }
     this.units = []; this.officers = []; this.roadblocks = [];
     if (this.heli) { this.heli.dispose(); this.heli = null; }
   }

@@ -60,7 +60,7 @@ export class Vehicle {
 
     // engine and brakes
     const tune = this.driver === 'player' ? playerTuning : STOCK;
-    const top = s.maxSpeed * tune.speed * (this.health < s.health * 0.25 ? 0.6 : 1);
+    const top = s.maxSpeed * tune.speed * (this.health < s.health * 0.25 ? 0.6 : 1) * (this.tyresBurst ? 0.55 : 1);
     if (inp.throttle > 0) {
       const fall = 1 - clamp(vF / top, 0, 1) ** 2;
       vF += inp.throttle * s.accel * tune.accel * fall * dt;
@@ -82,7 +82,8 @@ export class Vehicle {
     this.heading = wrapAngle(this.heading + this.yawRate * dt);
 
     // lateral grip: handbrake lets the tail slide (drift)
-    const grip = inp.handbrake ? 1.1 : s.grip * tune.grip;
+    const grip = inp.handbrake ? 1.1 : s.grip * tune.grip * (this.tyresBurst ? 0.55 : 1);
+    if (this.tyresBurst && Math.abs(vF) > 6) this.yawRate += Math.sin(time * 23) * 0.02; // rims shimmy
     vR -= vR * Math.min(1, grip * dt);
 
     const nf = this.forward(), nr = this.right();
