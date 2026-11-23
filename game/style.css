@@ -88,6 +88,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #0b2233; fon
 #phone .phone-title { font-family: var(--display); font-size: 20px; letter-spacing: 3px; color: var(--amber); }
 #phone .phone-tabs b { margin-left: 8px; padding: 4px 14px; border-radius: 14px; font-size: 14px; cursor: pointer; pointer-events: auto; background: rgba(255,255,255,0.08); }
 #phone .phone-tabs b.on { background: var(--coral); color: #fff; }
+#phone .phone-ticker { display: flex; gap: 12px; align-items: center; padding: 5px 22px; background: rgba(255,107,90,0.16); border-top: 1px solid rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.08); white-space: nowrap; overflow: hidden; font-size: 13px; }
+#phone .phone-ticker b { font-family: var(--display); letter-spacing: 2px; color: var(--coral); flex: none; }
+#phone .phone-ticker span { color: #fff6ea; opacity: 0.92; }
 #phone .phone-body { flex: 1; display: flex; gap: 14px; padding: 12px; min-height: 0; }
 #phone-map { height: 100%; aspect-ratio: 1; border-radius: 14px; }
 #phone-side { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 6px; }

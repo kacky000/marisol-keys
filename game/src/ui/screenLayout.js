@@ -41,6 +41,7 @@ function phoneMarkup() {
 <div id="phone" class="hidden">
   <div class="phone-status"></div>
   <div class="phone-header"><span class="phone-title">KEYS·MAP</span><span class="phone-tabs"><b data-tab="map">Map</b><b data-tab="story">Story</b><b data-tab="jobs">Jobs</b><b data-tab="assets">Assets</b></span></div>
+  <div class="phone-ticker"><b>KEYS HERALD</b><span></span></div>
   <div class="phone-body">
     <canvas id="phone-map" width="900" height="900"></canvas>
     <div id="phone-side"></div>

@@ -9,6 +9,7 @@ import { PROPERTIES } from '../economy/shops.js';
 import { formatMoney } from '../core/mathUtil.js';
 import { planRoute } from '../roads/routePlanner.js';
 import { DISTRICTS } from '../world/cityPlan.js';
+import { headlines } from '../story/newsHeadlines.js';
 import { formatClock } from '../sky/timeOfDay.js';
 
 const MAP_VIEW = { x0: -70, z0: 15, span: 1010 };
@@ -43,6 +44,8 @@ export class PhoneScreen {
     const g = this.game;
     const status = this.el.querySelector('.phone-status');
     if (status) status.textContent = `${formatClock(g.state.hour)}   ▂▄▆█ KEYSNET 5G   87%`;
+    const ticker = this.el.querySelector('.phone-ticker span');
+    if (ticker) ticker.textContent = headlines(g.state).join('   •   ');
     this.el.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle('on', b.dataset.tab === this.tab || (this.tab === 'map' && b.dataset.tab === 'map')));
     const ctx = this.canvas.getContext('2d');
     const { project } = paintIllustratedMap(ctx, this.canvas.width, MAP_VIEW);
