@@ -11,6 +11,7 @@ import { planRoute } from '../roads/routePlanner.js';
 import { DISTRICTS } from '../world/cityPlan.js';
 import { headlines } from '../story/newsHeadlines.js';
 import { formatClock } from '../sky/timeOfDay.js';
+import { completionGoals, completionPercent } from '../progress/completion.js';
 
 const MAP_VIEW = { x0: -70, z0: 15, span: 1010 };
 
@@ -150,11 +151,16 @@ export class PhoneScreen {
         <div class="row"><span class="num">T</span><span class="what"><b>Keys Tactical</b>Guns, ammo and armour</span></div>
         <div class="row"><span class="num">P</span><span class="what"><b>Pastel Paint &amp; Body</b>Respray to lose the police · $250</span></div>`;
     } else {
-      const rows = PROPERTIES.map((p) => `<div class="row ${st.properties.includes(p.id) ? 'done' : ''}"><span class="num">${st.properties.includes(p.id) ? '✓' : '⌂'}</span><span class="what"><b>${p.name}</b>+${formatMoney(p.income)} a day</span><span class="pay">${formatMoney(p.price)}</span></div>`).join('');
-      this.side.innerHTML = `<h3>ASSETS</h3><div class="progress">CASH ${formatMoney(st.money)}</div>${rows}
+      const rows = `<div class="story-list assets-list">${PROPERTIES.map((p) => `<div class="row ${st.properties.includes(p.id) ? 'done' : ''}"><span class="num">${st.properties.includes(p.id) ? '✓' : '⌂'}</span><span class="what"><b>${p.name}</b><span class="who">+${formatMoney(p.income)} A DAY</span></span><span class="pay">${formatMoney(p.price)}</span></div>`).join('')}</div>`;
+      const pct = completionPercent(st);
+      const goals = completionGoals(st).map(([label, done, total]) => {
+        const full = done >= total;
+        return `<span class="goal ${full ? 'done' : ''}">${full ? '✓' : '·'} ${label} <i>${Math.min(done, total)}/${total}</i></span>`;
+      }).join('');
+      this.side.innerHTML = `<h3>ASSETS</h3><div class="progress">CASH ${formatMoney(st.money)} · ISLAND ${pct}% COMPLETE<i style="--p:${pct}%"></i></div>${rows}
         <div class="row"><span class="num">🔧</span><span class="what"><b>Sunbelt tuning</b>Engine ${'★'.repeat(st.upgrades.engine)}${'☆'.repeat(3 - st.upgrades.engine)} · Tyres ${'★'.repeat(st.upgrades.tyres)}${'☆'.repeat(3 - st.upgrades.tyres)} · Armour ${'★'.repeat(st.upgrades.armor)}${'☆'.repeat(3 - st.upgrades.armor)}</span></div>
-        <div class="row"><span class="num">📄</span><span class="what"><b>Tide Book pages</b>Loose pages hidden around the island</span><span class="pay">${(st.pages || []).length}/20</span></div>
-        <div class="row"><span class="what"><b>Stats</b>Missions ${st.stats.missions} · Fares ${st.stats.fares} · Deliveries ${st.stats.deliveries}</span></div>`;
+        <div class="row"><span class="what"><b>Stats</b>Missions ${st.stats.missions} · Fares ${st.stats.fares} · Deliveries ${st.stats.deliveries} · Jumps ${st.stats.jumps || 0} · Takedowns ${st.stats.kills}</span></div>
+        <h3 class="sub">ONE HUNDRED PERCENT</h3><div class="goals">${goals}</div>`;
     }
   }
 }

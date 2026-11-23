@@ -105,8 +105,13 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #0b2233; fon
 #phone-side .row .what { flex: 1; }
 #phone-side .row .what b { display: block; font-size: 14px; }
 #phone-side .row .pay { color: var(--cash); font-weight: 800; }
+#phone-side .goals { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 10px; font-size: 12px; }
+#phone-side .goal { color: #d9e6ee; }
+#phone-side .goal i { color: var(--amber); font-style: normal; font-weight: 700; }
+#phone-side .goal.done { color: #7fe0a0; }
 #phone-side .story-list { display: flex; flex-direction: column; gap: 4px; }
 #phone-side .story-list .row { padding: 3px 9px; }
+#phone-side .assets-list .row .what b { display: inline; margin-right: 8px; }
 #phone-side .story-list .row .what b { font-size: 13.5px; display: inline; }
 #phone-side .story-list .row .who { margin-left: 8px; }
 #phone-side .story-list .row canvas { width: 24px !important; height: 24px !important; }
