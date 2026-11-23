@@ -65,6 +65,11 @@ function tug() {
 
 const MAKERS = { sailboat, speedboat, yacht, tug };
 
+// The drivable Riptide speedboat model (its bow faces -Z like every vehicle).
+export function speedboatBatch(paint) {
+  return speedboat({ pick: (list) => (list.includes(paint) ? paint : list[0]) });
+}
+
 // [type, x, z, heading, cruising radius (0 = moored)]
 const FLEET = [
   ['yacht', 900, 380, 0.3, 0], ['sailboat', 940, 520, 1.2, 60], ['speedboat', 880, 640, -0.4, 90], ['sailboat', 1000, 300, 2.0, 0],

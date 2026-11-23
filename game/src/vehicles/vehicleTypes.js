@@ -36,6 +36,11 @@ export const VEHICLE_TYPES = {
     maxSpeed: 34, accel: 9, brake: 20, grip: 6, steer: 0.55, health: 1400, mass: 1.6,
     cabin: { front: 1.9, back: -2.6, top: 2.4, slopeF: 0.55, slopeB: 0.0 }, paints: ['#ffffff', '#ff6b35'],
   },
+  boat: {
+    name: 'Riptide 22 Speedboat', len: 7, width: 2.3, height: 1.4, wheelbase: 3, wheelR: 0.3,
+    maxSpeed: 40, accel: 12, brake: 10, grip: 2.2, steer: 0.55, health: 1000, mass: 1.2,
+    boat: true, paints: ['#ffffff', '#1d3557', '#e63946'],
+  },
   bike: {
     name: 'Zephyr 400', len: 2.1, width: 0.7, height: 1.1, wheelbase: 1.45, wheelR: 0.33,
     maxSpeed: 50, accel: 18, brake: 28, grip: 8.5, steer: 0.5, health: 500, mass: 0.35,

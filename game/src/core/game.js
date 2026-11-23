@@ -28,6 +28,7 @@ import { DispatchRadio } from '../police/dispatchRadio.js';
 import { MissionRunner } from '../missions/missionRunner.js';
 import { SideJobs } from '../activities/sideJobs.js';
 import { Shops } from '../economy/shops.js';
+import { TidePages } from '../activities/tidePages.js';
 import { Hud } from '../ui/hud.js';
 import { DialogueBox } from '../ui/dialogueBox.js';
 import { PhoneScreen } from '../ui/phoneScreen.js';
@@ -61,6 +62,10 @@ export class Game {
     this.post = new PostProcess(this.renderer);
     this.world = buildWorld(s);
     this.vehicles = new VehicleManager(s);
+    // Riptide speedboats moored at the pier, in the harbor basin and on the bay
+    for (const [x, z, h, paint] of [[852, 486.5, Math.PI / 2, '#ffffff'], [876, 486.5, Math.PI / 2, '#e63946'], [300, 925, 0, '#1d3557'], [96, 600, Math.PI, '#ffffff']]) {
+      this.vehicles.spawn('boat', x, z, h, { paint }).persistent = true;
+    }
     this.traffic = new TrafficSystem(this.vehicles, rng);
     this.peds = new PedSystem(s, rng);
     this.player = new Player(s);
@@ -73,6 +78,7 @@ export class Game {
     this.missions = new MissionRunner(this);
     this.activities = new SideJobs(this);
     this.shops = new Shops(this);
+    this.pages = new TidePages(this);
     this.phone = new PhoneScreen(this);
     this.damageFx = startDamageEffects(this);
     this.radio = new Radio();
@@ -112,6 +118,7 @@ export class Game {
     });
     on('wanted:evaded', () => { this.hud.bigMessage('LOST THEM', 'The MKPD gave up the search', 2.5); this.police.clearAll(this.player); });
     on('player:hurt', () => this.hud.flashHit());
+    on('hud:prompt', ({ html }) => this.hud.toast(html));
     on('player:carjack', ({ vehicle, door }) => {
       const ped = this.peds.spawnAt(door.x, door.z);
       ped.flee(vehicle.pos.x, vehicle.pos.z, 10);
@@ -149,6 +156,7 @@ export class Game {
     for (const w of p.owned) p.reload(w, true);
     p.placeAt(this.state.position.x, this.state.position.z, this.state.position.heading);
     this.shops.lastDay = Math.floor((this.state.hour - 8) / 24);
+    this.pages.refresh();
     this.running = true;
     this.hud.show(true);
     this.camera.yaw = p.heading;
@@ -217,6 +225,7 @@ export class Game {
       this.missions.update(dt);
       this.activities.update(dt);
       this.shops.update(dt);
+      this.pages.update(dt, this.time);
     }
     this.dialogue.update(dt);
     this.damageFx(dt);

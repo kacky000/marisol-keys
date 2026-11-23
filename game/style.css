@@ -104,7 +104,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #0b2233; fon
 
 /* ---------- menus ---------- */
 .screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(6,16,26,0.55); }
-#menu-start { background: #000; justify-content: flex-start; }
+#menu-start { background: transparent; justify-content: flex-start; }
 #title-art { position: absolute; inset: 0; width: 100%; height: 100%; }
 .menu-col { position: relative; margin-left: 7vw; display: flex; flex-direction: column; gap: 10px; width: 330px; }
 .title-logo { margin-bottom: 22px; transform: rotate(-5deg); line-height: 0.85; filter: drop-shadow(0 6px 0 rgba(0,0,0,0.4)); }

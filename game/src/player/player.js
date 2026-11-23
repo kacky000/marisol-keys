@@ -11,6 +11,18 @@ import { emit } from '../core/events.js';
 import { dampAngle } from '../core/mathUtil.js';
 import { fireWeapon } from '../combat/gunplay.js';
 
+// Nearest dry footing within a few metres of a boat (quay, pier or beach), or null.
+function landingSpot(x, z) {
+  for (const r of [3, 4.5, 6, 7.5]) {
+    for (let k = 0; k < 16; k++) {
+      const a = (k / 16) * Math.PI * 2;
+      const px = x + Math.cos(a) * r, pz = z + Math.sin(a) * r;
+      if (groundHeight(px, pz) > -0.4) return { x: px, z: pz };
+    }
+  }
+  return null;
+}
+
 export const TESSA_OUTFIT = { skin: '#d9a07a', shirt: '#19c3b4', pants: '#3a3f4a', hair: '#2b1b12', shorts: false, hat: null, shades: true, shoes: '#f5f5f5', build: 1.0, longSleeves: false };
 
 export class Player {
@@ -233,7 +245,7 @@ export class Player {
     const e = this.enter;
     const v = e.vehicle;
     e.t += dt;
-    const door = v.doorPoint(e.side);
+    const door = e.target || v.doorPoint(e.side);
     if (e.mode === 'in') {
       if (e.t < 0.45) {
         // walk to the door
@@ -299,13 +311,19 @@ export class Player {
     if (this.aiming && mouse.left && this.cooldown <= 0) this.fire(ctx);
     if (!locked && (wasPressed('Digit2'))) this.selectWeapon('pistol');
     if (!locked && (wasPressed('Digit3'))) this.selectWeapon('smg');
-    if (!locked && wasPressed('KeyF') && Math.abs(v.speed) < 9) {
+    let shore = null;
+    if (v.spec.boat && !locked && wasPressed('KeyF')) {
+      shore = landingSpot(v.pos.x, v.pos.z);
+      if (!shore) emit('hud:prompt', { html: 'Bring the boat alongside a quay or the beach to get out' });
+    }
+    if (!locked && wasPressed('KeyF') && Math.abs(v.speed) < 9 && (!v.spec.boat || shore)) {
+      if (shore) v.vel.set(0, 0);
       this.vehicle = null;
       v.driver = null;
       v.input.throttle = 0; v.input.brake = 0.4; v.input.steer = 0; v.input.handbrake = true;
       this.rig.visible = true;
       this.rig.rotation.z = 0;
-      this.enter = { mode: 'out', vehicle: v, t: 0, side: -1 };
+      this.enter = { mode: 'out', vehicle: v, t: 0, side: -1, target: shore };
       emit('player:exiting', { vehicle: v });
     }
     if (v.wrecked && v.health <= 0 && !this.dead) {

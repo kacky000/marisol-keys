@@ -40,7 +40,8 @@ void main() {
     vec2 uv = d.xz / (d.y + 0.15) * 1.6 + vec2(uTime * 0.004, 0.0);
     float c = smoothstep(0.52, 0.8, fbm(uv));
     c *= smoothstep(0.0, 0.08, d.y) * (1.0 - smoothstep(0.35, 0.8, d.y));
-    vec3 cloudCol = mix(vec3(1.0, 0.97, 0.94), uSunColor, 0.35) * (0.8 + 0.4 * pow(s, 3.0));
+    float daylight = clamp(dot(uZenith, vec3(0.3, 0.5, 0.2)) * 4.6, 0.1, 1.0);
+    vec3 cloudCol = mix(vec3(1.0, 0.97, 0.94), uSunColor, 0.35) * (0.8 + 0.4 * pow(s, 3.0)) * daylight;
     col = mix(col, cloudCol, c * 0.85);
   }
   gl_FragColor = vec4(col, 1.0);

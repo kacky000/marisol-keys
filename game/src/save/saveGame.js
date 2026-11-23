@@ -9,6 +9,7 @@ export function newGameState() {
     story: 0,
     hour: 17.6,
     properties: [],
+    pages: [],
     weapons: { owned: ['fists', 'pistol'], ammo: { pistol: 60, smg: 0, shotgun: 0 } },
     position: { x: 3 * 64 - 9.5, z: 13 * 64 + 28, heading: 0 },
     stats: { missions: 0, fares: 0, deliveries: 0, races: 0, bestRace: null, kills: 0, stars: 0 },

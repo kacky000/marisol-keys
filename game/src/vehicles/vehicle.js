@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { VEHICLE_TYPES } from './vehicleTypes.js';
 import { buildVehicleMesh } from './vehicleMesh.js';
 import { resolveCircle } from '../world/collisionWorld.js';
-import { groundHeight } from '../world/groundHeight.js';
+import { groundHeight, navigable } from '../world/groundHeight.js';
 import { clamp, wrapAngle } from '../core/mathUtil.js';
 import { emit } from '../core/events.js';
 
@@ -35,6 +35,7 @@ export class Vehicle {
     this.lastImpact = 0;
     this.doorOpen = 0;
     this.mesh.position.copy(this.pos);
+    this.mesh.rotation.order = 'YXZ'; // yaw, then pitch and roll in the vehicle's own frame
     this.mesh.rotation.y = -heading;
   }
 
@@ -80,9 +81,26 @@ export class Vehicle {
 
     const nf = this.forward(), nr = this.right();
     this.vel.set(nf.x * vF + nr.x * vR, nf.z * vF + nr.z * vR);
+    const px = this.pos.x, pz = this.pos.z;
     this.pos.x += this.vel.x * dt;
     this.pos.z += this.vel.y * dt;
     this.drifting = inp.handbrake && Math.abs(vF) > 8 || Math.abs(vR) > 4;
+
+    if (s.boat) {
+      // boats bounce off the shore, ride the swell and pitch up with speed
+      const bow = { x: this.pos.x + nf.x * s.len * 0.45, z: this.pos.z + nf.z * s.len * 0.45 };
+      if (!navigable(this.pos.x, this.pos.z) || !navigable(bow.x, bow.z)) {
+        this.pos.x = px; this.pos.z = pz;
+        const impact = Math.abs(vF);
+        this.vel.multiplyScalar(-0.25);
+        if (impact > 8 && time - this.lastImpact > 0.4) { this.damage(impact * impact * 0.5, 'crash'); this.lastImpact = time; }
+      }
+      this.pos.y = -0.62 + Math.sin(time * 1.6 + this.id) * 0.07;
+      if (this.health <= 0 && !this.wrecked) this.explode();
+      this.syncMesh(dt, vF, time);
+      this.mesh.rotation.x = Math.min(0.12, Math.abs(vF) * 0.004) + Math.sin(time * 1.3 + this.id) * 0.02;
+      return;
+    }
 
     this.collideWithCity(time);
     const gy = groundHeight(this.pos.x, this.pos.z);

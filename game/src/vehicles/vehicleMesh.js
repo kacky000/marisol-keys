@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { MeshBatch, tint } from '../core/meshBatch.js';
 import { canvasTexture } from '../core/canvasTexture.js';
+import { speedboatBatch } from '../water/boats.js';
 
 const bodyMat = new THREE.MeshPhysicalMaterial({ vertexColors: true, metalness: 0.3, roughness: 0.35, clearcoat: 1, clearcoatRoughness: 0.08, side: THREE.DoubleSide });
 const glowMat = new THREE.MeshStandardMaterial({ vertexColors: true, emissive: '#ffffff', emissiveIntensity: 3.2, roughness: 0.3 });
@@ -107,6 +108,17 @@ export function buildVehicleMesh(type, spec, paint) {
   const wheels = [];
   const lightbar = [];
 
+  if (spec.boat) {
+    const hullMesh = speedboatBatch(paint).toMesh(bodyMat);
+    hullMesh.position.y = 0.35;
+    group.add(hullMesh);
+    glow.orientedBox(0, 1.05, -2.6, 0.2, 0.12, 0.1, 0, tint('#fff3cf'));
+    glow.orientedBox(0.9, 1.0, 2.9, 0.12, 0.12, 0.12, 0, tint('#ff1a1a'));
+    glow.orientedBox(-0.9, 1.0, 2.9, 0.12, 0.12, 0.12, 0, tint('#20ff60'));
+    group.add(glow.toMesh(glowMat, { cast: false }));
+    group.userData = { wheels, lightbar, body: hullMesh };
+    return group;
+  }
   if (spec.bike) buildBike(group, body, glow, spec, paintC, wheels);
   else if (spec.bus) buildBus(body, glow, spec, paintC, W, L);
   else {

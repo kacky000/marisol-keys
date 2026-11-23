@@ -16,7 +16,7 @@ export function paintTitleOverlay(canvas) {
   g.fillStyle = left;
   g.fillRect(0, 0, w, h);
   // striped sun
-  const cx = w * 0.79, cy = h * 0.34, r = h * 0.2;
+  const cx = w * 0.84, cy = h * 0.2, r = h * 0.13;
   g.save();
   g.beginPath(); g.arc(cx, cy, r, 0, Math.PI * 2); g.clip();
   const sun = g.createLinearGradient(0, cy - r, 0, cy + r);

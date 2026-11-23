@@ -25,3 +25,18 @@ export function groundHeight(x, z) {
 }
 
 export const isWater = (x, z) => groundHeight(x, z) < -0.6;
+
+// Water a boat can sail: open sea and the bay, under the causeways, but not over the beach shallows or the pier.
+export function navigable(x, z) {
+  if (x >= PIER.x0 - 1 && x <= PIER.x1 + 1 && Math.abs(z - PIER.z) <= PIER.half + 1.2) return false;
+  const i = Math.floor(x / BLOCK), j = Math.floor(z / BLOCK);
+  const l = blockLetter(i, j);
+  if (l === 'S') return x > (i + 1) * BLOCK + 10;
+  if (l !== '~') return false;
+  if (blockLetter(i - 1, j) === 'S' && x < i * BLOCK + 10) return false;
+  // keep clear of quay roads along the shore (they overhang the water by half a road)
+  const lx = x - i * BLOCK, lz = z - j * BLOCK;
+  const nearShore = (lx < 9 && blockLetter(i - 1, j) !== '~') || (lx > BLOCK - 9 && blockLetter(i + 1, j) !== '~' && blockLetter(i + 1, j) !== 'S')
+    || (lz < 9 && blockLetter(i, j - 1) !== '~') || (lz > BLOCK - 9 && blockLetter(i, j + 1) !== '~');
+  return !nearShore;
+}
