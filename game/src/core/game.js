@@ -1,5 +1,6 @@
-// The game: owns every system, runs the fixed-order update each frame, handles wasted/busted
-// respawns, pause, phone, radio, saving, and the title-screen flyover.
+// The game: owns every system, runs the fixed-order update each frame, and handles pause,
+// phone, radio, saving and the title-screen flyover. Event wiring lives in eventWiring.js and
+// the wasted/busted flow in player/downAndOut.js.
 
 import * as THREE from 'three';
 // story and missions
@@ -13,6 +14,7 @@ import { startCrimeWatch } from '../police/crimeWatch.js';
 import { DispatchRadio } from '../police/dispatchRadio.js';
 // the player, vehicles, traffic and people
 import { Player } from '../player/player.js';
+import { playerDown, respawn } from '../player/downAndOut.js';
 import { VehicleManager } from '../vehicles/vehicleManager.js';
 import { TrafficSystem } from '../traffic/trafficSystem.js';
 import { LaneDriver } from '../traffic/laneDriver.js';
@@ -39,7 +41,6 @@ import { PostProcess } from '../fx/postProcess.js';
 import { renderFrame } from '../fx/frameRenderer.js';
 // the island, sky and light
 import { buildWorld } from '../world/worldBuilder.js';
-import { RESPAWN } from '../buildings/landmarkSigns.js';
 import { districtAtPoint, PLACES } from '../world/cityPlan.js';
 import { createSkyDome } from '../sky/skyDome.js';
 import { createLighting } from '../sky/sunLight.js';
@@ -48,6 +49,7 @@ import { WeatherSystem } from '../weather/weatherSystem.js';
 // engine plumbing
 import { initInput, endInputFrame, wasPressed, menuPressed, setInputEnabled, pointerLocked } from './input.js';
 import { on } from './events.js';
+import { wireGameEvents } from './eventWiring.js';
 import { rng } from './rng.js';
 // interface
 import { Hud } from '../ui/hud.js';
@@ -57,7 +59,6 @@ import { PhoneScreen } from '../ui/phoneScreen.js';
 import { Menus } from '../ui/menus.js';
 import { newGameState, saveGame, loadGame, loadSettings } from '../save/saveGame.js';
 import { startAudio, applyVolumes } from '../audio/audioEngine.js';
-import { playSound } from '../audio/soundEffects.js';
 import { VehicleAudio } from '../audio/vehicleAudio.js';
 import { Radio } from '../audio/radioStations.js';
 import { Ambience } from '../audio/ambience.js';
@@ -119,7 +120,7 @@ export class Game {
     this.dispatch = new DispatchRadio(this);
     startCrimeWatch(this);
     startTutorialTips(this);
-    this.bindEvents();
+    wireGameEvents(this);
     this.nightLights = this.makeNightLights();
     if (!this.shotMode) {
       initInput(this.renderer.domElement);
@@ -157,31 +158,6 @@ export class Game {
       people: [...this.peds.peds, ...this.police.officers, ...this.missions.enemies, ...(this.events ? this.events.people : []), ...(this.gangs ? this.gangs.people : []), this.player],
       vehicles: this.vehicles.list,
     };
-  }
-
-  bindEvents() {
-    on('sound', ({ name }) => playSound(name));
-    on('wanted:changed', ({ stars, before }) => {
-      if (stars > before) { playSound('wanted'); if (before === 0) this.hud.toast('<b>MKPD</b> is on to you'); }
-    });
-    on('wanted:evaded', () => { this.hud.bigMessage('LOST THEM', 'The MKPD gave up the search', 2.5); this.police.clearAll(this.player); });
-    on('player:hurt', () => { this.hud.flashHit(); this.player.sinceHurt = 0; });
-    on('player:shot', ({ hits }) => { if (hits.length) this.hud.hitMarker(); });
-    on('hud:prompt', ({ html }) => this.hud.toast(html));
-    on('player:carjack', ({ vehicle, door }) => {
-      const ped = this.peds.spawnAt(door.x, door.z);
-      ped.flee(vehicle.pos.x, vehicle.pos.z, 10);
-      playSound('door');
-      this.traffic.release(vehicle);
-    });
-    on('player:entered', ({ vehicle }) => {
-      this.traffic.release(vehicle);
-      if (vehicle.spec.police) vehicle.sirenOn = false;
-      this.hud.setRadio(this.radio.tune(this.radio.index));
-      playSound('door');
-    });
-    on('player:down', ({ cause }) => this.playerDown(cause));
-    on('ped:killed', ({ source }) => { if (source?.byPlayer) this.state.stats.kills++; });
   }
 
   applySettings() {
@@ -263,32 +239,9 @@ export class Game {
     this.menus.openTitle();
   }
 
-  playerDown(cause) {
-    if (this.downTimer) return;
-    const busted = cause === 'busted';
-    this.hud.bigMessage(busted ? 'BUSTED' : 'WASTED', busted ? 'Captain Hale sends his regards' : 'Sunwake Medical patched you up', 3.5);
-    this.downTimer = 3.5;
-    this.downBusted = busted;
-    document.body.classList.add(busted ? 'busted' : 'wasted');
-  }
+  playerDown(cause) { playerDown(this, cause); }
 
-  respawn() {
-    const p = this.player;
-    const spot = this.downBusted ? RESPAWN.precinct : RESPAWN.hospital;
-    this.state.money = Math.max(0, this.state.money - (this.downBusted ? 300 : 150));
-    if (this.downBusted) { p.ammo.smg = Math.floor(p.ammo.smg / 2); p.ammo.shotgun = Math.floor(p.ammo.shotgun / 2); }
-    p.dead = false;
-    p.health = 100;
-    p.armor = Math.max(p.armor, 0);
-    if (p.vehicle) { p.vehicle.driver = null; p.vehicle = null; }
-    p.enter = null;
-    p.rig.visible = true;
-    p.placeAt(spot.x, spot.z, 0);
-    this.wanted.clear();
-    this.police.clearAll(p);
-    this.downTimer = 0;
-    document.body.classList.remove('busted', 'wasted');
-  }
+  respawn() { respawn(this); }
 
   update(dt) {
     this.time += dt;
