@@ -55,6 +55,20 @@ export class Ped {
   }
 
   update(dt) {
+    if (this.fling) {
+      // thrown by a car: fly, tumble, land
+      const f = this.fling;
+      f.t += dt;
+      f.vy -= 18 * dt;
+      this.pos.x += f.vx * dt; this.pos.z += f.vz * dt; this.pos.y += f.vy * dt;
+      resolveCircle(this.pos, 0.35, this.pos.y);
+      const gy = groundHeight(this.pos.x, this.pos.z);
+      poseHuman(this.rig, 'flee', 3, dt);
+      this.rig.position.set(this.pos.x, this.pos.y, this.pos.z);
+      this.rig.rotation.set(-f.t * 7, -this.heading, 0, 'YXZ');
+      if (this.pos.y <= gy && f.vy < 0) { this.pos.y = gy; this.fling = null; this.rig.rotation.set(0, 0, 0); }
+      return;
+    }
     if (this.state === 'dead') {
       this.deadTimer += dt;
       poseHuman(this.rig, 'dead', 0, dt);
@@ -222,6 +236,8 @@ export class PedSystem {
         if (Math.abs(along) < v.spec.len / 2 + 0.3 && side < v.spec.width / 2 + 0.3) {
           p.pos.x += f.x * 1.5; p.pos.z += f.z * 1.5;
           p.heading = Math.atan2(f.x, -f.z);
+          // thrown ahead of the bumper, faster cars throw further and higher
+          if (sp > 7) p.fling = { vx: v.vel.x * 0.7, vz: v.vel.y * 0.7, vy: 2 + sp * 0.18, t: 0 };
           p.hurt(sp * 9, { x: v.pos.x, z: v.pos.z, vehicle: v, byPlayer: v === player.vehicle });
           emit('ped:runover', { ped: p, vehicle: v });
         } else if (along > 0 && along < 14 && side < 3 && p.state !== 'flee' && v === player.vehicle && sp > 8) {
