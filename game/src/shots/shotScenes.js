@@ -334,20 +334,20 @@ export const SCENES = {
       p.health = 64;
       p.armor = 35;
       p.aiming = true;
-      const enemies = [[5 * B + 26, 13 * B + 55, 'smg'], [5 * B + 33, 13 * B + 51, 'pistol'], [5 * B + 41, 13 * B + 57, 'smg'], [5 * B + 47, 13 * B + 52.5, 'pistol'], [5 * B + 22, 13 * B + 47, 'pistol']];
+      const enemies = [[5 * B + 19, 13 * B + 54.5, 'smg'], [5 * B + 24, 13 * B + 49.5, 'pistol'], [5 * B + 31, 13 * B + 56, 'smg'], [5 * B + 38, 13 * B + 51.5, 'pistol'], [5 * B + 17, 13 * B + 46.5, 'pistol']];
       for (const [x, z, w] of enemies) {
         const e = new Gunman(game.scene, x, z, GANG_OUTFITS[Math.floor(rng.next() * 3)], 'gang', w);
         e.mode = 'attack';
         e.preferRange = 30;
         game.missions.enemies.push(e);
       }
-      for (const [x, z, h] of [[5 * B + 17, 13 * B + 53, 0.4], [5 * B + 30, 13 * B + 48, 2.2]]) {
+      for (const [x, z, h] of [[5 * B + 14, 13 * B + 52.5, 0.4], [5 * B + 27, 13 * B + 47.5, 2.2]]) {
         const dead = new Gunman(game.scene, x, z, GANG_OUTFITS[1], 'gang', 'pistol');
         dead.state = 'dead';
         dead.heading = h;
         game.missions.enemies.push(dead);
       }
-      const wreck = car(game, 'pickup', 5 * B + 37, 13 * B + 54.5, 1.2, 0, '#2c3e50');
+      const wreck = car(game, 'pickup', 5 * B + 29, 13 * B + 53, 1.2, 0, '#2c3e50');
       wreck.explode();
       wreck.burning = 99;
       car(game, 'van', 5 * B + 52, 13 * B + 47.5, 1.57, 0, '#ffffff');
