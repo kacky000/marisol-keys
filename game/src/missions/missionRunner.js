@@ -9,6 +9,7 @@ import { edges, nodes, lanePoint } from '../roads/roadNetwork.js';
 import { emit, on } from '../core/events.js';
 import { rng } from '../core/rng.js';
 import { CAST } from '../story/cast.js';
+import { wasPressed } from '../core/input.js';
 
 export class MissionRunner {
   constructor(game) {
@@ -58,6 +59,20 @@ export class MissionRunner {
         this.contactMarker.forMission = m.id;
       }
       this.contactMarker.update(g.time);
+      // a failed mission can be retried on the spot for a few seconds
+      if (this.retryTimer > 0) {
+        this.retryTimer -= dt;
+        g.hud.prompt('<kbd>E</kbd> Retry the mission');
+        if (wasPressed('KeyE') && !g.player.dead && !g.downTimer) {
+          this.retryTimer = 0;
+          if (g.player.vehicle) { g.player.vehicle.driver = null; g.player.vehicle = null; g.player.rig.visible = true; }
+          g.wanted.clear();
+          g.police.clearAll(g.player);
+          g.player.placeAt(c.x - 1.5, c.z + 1.5, 0);
+          this.start(g.state.story);
+          return;
+        }
+      }
       const d = Math.hypot(g.player.pos.x - c.x, g.player.pos.z - c.z);
       if (d < 2.2 && !g.player.vehicle && g.wanted.stars === 0 && this.cooldown <= 0 && !g.activities.active) this.start(g.state.story);
       return;
@@ -276,7 +291,8 @@ export class MissionRunner {
     this.cleanupMission();
     this.active = null;
     this.cooldown = 6;
-    g.hud.bigMessage('MISSION FAILED', reason, 4);
+    this.retryTimer = 9;
+    g.hud.bigMessage('MISSION FAILED', `${reason} · press E to retry`, 4);
     emit('mission:failed', { mission: m, reason });
     emit('sound', { name: 'failed' });
   }
