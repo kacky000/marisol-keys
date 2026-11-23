@@ -21,7 +21,8 @@ import { SideJobs } from '../activities/sideJobs.js';
 import { StreetEvents } from '../activities/streetEvents.js';
 import { TidePages } from '../activities/tidePages.js';
 import { Pickups } from '../activities/pickups.js';
-import { Shops } from '../economy/shops.js';
+import { Shops, tuningFor } from '../economy/shops.js';
+import { playerTuning } from '../vehicles/vehicle.js';
 // effects
 import { ParticleFX } from '../fx/particles.js';
 import { TracerFX } from '../fx/tracers.js';
@@ -228,6 +229,7 @@ export class Game {
     if (this.paused || (this.phone.open && !this.shotMode)) return;
     if (this.running) this.state.hour += dt / 120; // a full day every 48 minutes
     const p = this.player;
+    Object.assign(playerTuning, tuningFor(this.state.upgrades));
     if (this.downTimer > 0) { this.downTimer -= dt; if (this.downTimer <= 0) this.respawn(); }
     p.update(dt, { camera: this.camera, vehicles: this.vehicles, targets: this.targets, fx: this.fx, time: this.time });
     this.traffic.update(dt, this.time, p);
@@ -285,6 +287,10 @@ export class Game {
     const p = this.player;
     const v = p.vehicle;
     const blips = [...this.missions.blips(), ...this.activities.blips(), ...this.shops.blips(), ...this.pickups.blips(), ...this.events.blips()];
+    if (this.waypoint) {
+      if (Math.hypot(p.pos.x - this.waypoint.x, p.pos.z - this.waypoint.z) < 15) { this.waypoint = null; this.hud.toast('Waypoint reached'); }
+      else blips.push({ ...this.waypoint, kind: 'waypoint' });
+    }
     for (const u of this.police.units) if (!u.vehicle.wrecked && !u.vehicle.removed) blips.push({ x: u.vehicle.pos.x, z: u.vehicle.pos.z, kind: 'police' });
     for (const o of this.police.officers) if (o.alive) blips.push({ x: o.pos.x, z: o.pos.z, kind: 'police' });
     if (this.police.heli) blips.push({ x: this.police.heli.pos.x, z: this.police.heli.pos.z, kind: 'heli' });

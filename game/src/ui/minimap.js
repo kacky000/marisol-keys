@@ -34,7 +34,8 @@ export class Minimap {
     g.translate(-p.x, -p.y);
     g.drawImage(map, 0, 0);
     // GPS route to the first objective blip
-    const goal = view.blips.find((b) => b.kind === 'objective' || b.kind === 'contact' || b.kind === 'vehicle');
+    const goal = view.blips.find((b) => b.kind === 'objective') || view.blips.find((b) => b.kind === 'waypoint')
+      || view.blips.find((b) => b.kind === 'contact' || b.kind === 'vehicle');
     this.routeTimer -= dt;
     if (goal && (this.routeTimer <= 0 || this.routeFor !== goal)) {
       this.routeTimer = 1;

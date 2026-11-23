@@ -106,10 +106,38 @@ export class Shops {
     }
   }
 
+  // Sunbelt Garage: repairs, then three tiers each of engine, armour plating and tyres. The
+  // tuning travels with Tessa (Sunbelt's mechanics tune whatever she drives).
   garage() {
     const g = this.game, v = g.player.vehicle;
-    if (v.health >= v.spec.health) return;
-    g.hud.prompt('<kbd>E</kbd> Repair at Sunbelt Garage — $150');
-    if (wasPressed('KeyE') && g.state.money >= 150) { g.state.money -= 150; v.health = v.spec.health; g.hud.toast('Vehicle repaired'); emit('sound', { name: 'cash' }); }
+    if (v.health < v.spec.health) {
+      g.hud.prompt('<kbd>E</kbd> Repair at Sunbelt Garage — $150');
+      if (wasPressed('KeyE') && g.state.money >= 150) { g.state.money -= 150; v.health = v.spec.health; g.hud.toast('Vehicle repaired'); emit('sound', { name: 'cash' }); }
+      return;
+    }
+    const up = g.state.upgrades;
+    const next = UPGRADES.find((u) => up[u.id] < 3);
+    if (!next) { g.hud.prompt('Sunbelt Garage — fully tuned'); return; }
+    const level = up[next.id] + 1, price = next.price * level;
+    g.hud.prompt(`<kbd>E</kbd> Install ${next.name} ${'I'.repeat(level)} — $${price.toLocaleString('en-US')} (${next.effect})`);
+    if (wasPressed('KeyE')) {
+      if (g.state.money < price) { g.hud.toast('Not enough money'); return; }
+      g.state.money -= price;
+      up[next.id] = level;
+      g.hud.bigMessage(`${next.name.toUpperCase()} ${'I'.repeat(level)}`, 'Sunbelt Garage tuning installed', 2.5);
+      emit('sound', { name: 'cash' });
+    }
   }
+}
+
+export const UPGRADES = [
+  { id: 'engine', name: 'Street Engine', price: 1200, effect: '+top speed, +acceleration' },
+  { id: 'tyres', name: 'Grip Tyres', price: 800, effect: '+cornering' },
+  { id: 'armor', name: 'Armour Plating', price: 1000, effect: '-crash and bullet damage' },
+];
+
+// Multipliers the vehicle physics reads for whatever Tessa drives.
+export function tuningFor(upgrades) {
+  const u = upgrades || { engine: 0, tyres: 0, armor: 0 };
+  return { speed: 1 + u.engine * 0.08, accel: 1 + u.engine * 0.14, grip: 1 + u.tyres * 0.12, armor: 1 + u.armor * 0.45 };
 }

@@ -10,6 +10,8 @@ import { formatMoney } from '../core/mathUtil.js';
 import { planRoute } from '../roads/routePlanner.js';
 import { formatClock } from '../sky/timeOfDay.js';
 
+const MAP_VIEW = { x0: -70, z0: 15, span: 1010 };
+
 export class PhoneScreen {
   constructor(game) {
     this.game = game;
@@ -18,6 +20,15 @@ export class PhoneScreen {
     this.side = document.getElementById('phone-side');
     this.tab = 'story';
     this.el.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => { this.tab = b.dataset.tab; this.render(); }));
+    // click the map to drop a GPS waypoint, right-click to clear it
+    this.canvas.addEventListener('mousedown', (e) => {
+      const k = this.canvas.width / this.canvas.clientWidth;
+      const s = this.canvas.width / MAP_VIEW.span;
+      if (e.button === 2) game.waypoint = null;
+      else game.waypoint = { x: MAP_VIEW.x0 + (e.offsetX * k) / s, z: MAP_VIEW.z0 + (e.offsetY * k) / s };
+      game.hud.toast(game.waypoint ? 'Waypoint set — follow the purple route' : 'Waypoint cleared');
+      this.render();
+    });
   }
 
   get open() { return !this.el.classList.contains('hidden'); }
@@ -33,7 +44,8 @@ export class PhoneScreen {
     if (status) status.textContent = `${formatClock(g.state.hour)}   ▂▄▆█ KEYSNET 5G   87%`;
     this.el.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle('on', b.dataset.tab === this.tab || (this.tab === 'map' && b.dataset.tab === 'map')));
     const ctx = this.canvas.getContext('2d');
-    const { project } = paintIllustratedMap(ctx, this.canvas.width, { x0: -70, z0: 15, span: 1010 });
+    const { project } = paintIllustratedMap(ctx, this.canvas.width, MAP_VIEW);
+    if (g.waypoint) { const [wx, wy] = project(g.waypoint.x, g.waypoint.z); drawBlip(ctx, { kind: 'waypoint' }, wx, wy, 15); }
     // GPS preview: dotted route from Tessa to the next story contact
     const next = STORY[g.state.story];
     if (next && !g.missions.active) {
@@ -126,6 +138,7 @@ export class PhoneScreen {
     } else {
       const rows = PROPERTIES.map((p) => `<div class="row ${st.properties.includes(p.id) ? 'done' : ''}"><span class="num">${st.properties.includes(p.id) ? '✓' : '⌂'}</span><span class="what"><b>${p.name}</b>+${formatMoney(p.income)} a day</span><span class="pay">${formatMoney(p.price)}</span></div>`).join('');
       this.side.innerHTML = `<h3>ASSETS</h3><div class="progress">CASH ${formatMoney(st.money)}</div>${rows}
+        <div class="row"><span class="num">🔧</span><span class="what"><b>Sunbelt tuning</b>Engine ${'★'.repeat(st.upgrades.engine)}${'☆'.repeat(3 - st.upgrades.engine)} · Tyres ${'★'.repeat(st.upgrades.tyres)}${'☆'.repeat(3 - st.upgrades.tyres)} · Armour ${'★'.repeat(st.upgrades.armor)}${'☆'.repeat(3 - st.upgrades.armor)}</span></div>
         <div class="row"><span class="num">📄</span><span class="what"><b>Tide Book pages</b>Loose pages hidden around the island</span><span class="pay">${(st.pages || []).length}/20</span></div>
         <div class="row"><span class="what"><b>Stats</b>Missions ${st.stats.missions} · Fares ${st.stats.fares} · Deliveries ${st.stats.deliveries}</span></div>`;
     }

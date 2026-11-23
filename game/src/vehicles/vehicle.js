@@ -11,6 +11,10 @@ import { emit } from '../core/events.js';
 
 let nextId = 1;
 
+// Garage tuning applied to whichever vehicle the player drives (set by the game each frame).
+export const playerTuning = { speed: 1, accel: 1, grip: 1, armor: 1 };
+const STOCK = { speed: 1, accel: 1, grip: 1, armor: 1 };
+
 export class Vehicle {
   constructor(type, x, z, heading, { paint = null, rng = Math.random } = {}) {
     this.id = nextId++;
@@ -55,10 +59,11 @@ export class Vehicle {
     let vR = this.vel.x * r.x + this.vel.y * r.z;
 
     // engine and brakes
-    const top = s.maxSpeed * (this.health < s.health * 0.25 ? 0.6 : 1);
+    const tune = this.driver === 'player' ? playerTuning : STOCK;
+    const top = s.maxSpeed * tune.speed * (this.health < s.health * 0.25 ? 0.6 : 1);
     if (inp.throttle > 0) {
       const fall = 1 - clamp(vF / top, 0, 1) ** 2;
-      vF += inp.throttle * s.accel * fall * dt;
+      vF += inp.throttle * s.accel * tune.accel * fall * dt;
     }
     if (inp.brake > 0) {
       if (vF > 0.5) vF = Math.max(0, vF - s.brake * inp.brake * dt);
@@ -77,7 +82,7 @@ export class Vehicle {
     this.heading = wrapAngle(this.heading + this.yawRate * dt);
 
     // lateral grip: handbrake lets the tail slide (drift)
-    const grip = inp.handbrake ? 1.1 : s.grip;
+    const grip = inp.handbrake ? 1.1 : s.grip * tune.grip;
     vR -= vR * Math.min(1, grip * dt);
 
     const nf = this.forward(), nr = this.right();
@@ -142,7 +147,8 @@ export class Vehicle {
 
   damage(amount, cause) {
     if (this.wrecked) return;
-    this.health -= amount / (this.spec.mass || 1);
+    const armor = this.driver === 'player' ? playerTuning.armor : 1;
+    this.health -= amount / (this.spec.mass || 1) / armor;
     emit('vehicle:damaged', { vehicle: this, amount, cause });
   }
 
