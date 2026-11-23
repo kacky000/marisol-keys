@@ -15,7 +15,8 @@ export function initInput(canvas) {
   addEventListener('keyup', (e) => down.delete(e.code));
   addEventListener('blur', () => down.clear());
   canvas.addEventListener('mousedown', (e) => {
-    if (enabled && !locked && canvas.requestPointerLock) canvas.requestPointerLock();
+    // the click that captures the mouse should not also fire a shot
+    if (enabled && !locked && canvas.requestPointerLock) { canvas.requestPointerLock(); return; }
     if (e.button === 0) { mouse.left = true; mouse.leftPressed = true; }
     if (e.button === 2) mouse.right = true;
   });
