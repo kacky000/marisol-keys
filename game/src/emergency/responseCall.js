@@ -79,6 +79,16 @@ export class ResponseCall {
   arrive() {
     const v = this.v, f = v.forward(), r = v.right();
     this.stage = 'work';
+    // passers-by stop to watch the crew for a while
+    let watchers = 0;
+    for (const ped of this.game.peds.peds) {
+      if (watchers >= 4 || !ped.alive || ped.kind !== 'civilian' || ped.state !== 'walk') continue;
+      if (Math.hypot(ped.pos.x - this.scene.x, ped.pos.z - this.scene.z) > 28) continue;
+      ped.state = 'idle';
+      ped.idleTimer = 10 + watchers * 2;
+      ped.heading = Math.atan2(this.scene.x - ped.pos.x, -(this.scene.z - ped.pos.z));
+      watchers++;
+    }
     for (const side of [-1, 1]) {
       const x = v.pos.x - f.x * (v.spec.len / 2 + 0.8) + r.x * side * 0.6, z = v.pos.z - f.z * (v.spec.len / 2 + 0.8) + r.z * side * 0.6;
       this.crew.push(new CrewMember(this.game.scene, x, z, { ...this.outfit, skin: side < 0 ? '#c98d66' : '#f1c7a5' }));
