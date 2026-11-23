@@ -3,6 +3,7 @@
 
 import * as THREE from 'three';
 import { buildHuman, poseHuman, randomOutfit } from './humanModel.js';
+import { buildDog, poseDog, buildLead, setLead } from './dogModel.js';
 import { BLOCK, ROAD_HALF, blockLetter, isUrban } from '../world/cityPlan.js';
 import { groundHeight } from '../world/groundHeight.js';
 import { resolveCircle } from '../world/collisionWorld.js';
@@ -248,7 +249,37 @@ export class PedSystem {
     return p;
   }
 
+  // Give a ped a dog on a lead.
+  addDog(p) {
+    p.dog = { rig: buildDog(this.rng), lead: buildLead(), x: p.pos.x + 1, z: p.pos.z + 1, heading: p.heading };
+    this.scene.add(p.dog.rig, p.dog.lead);
+  }
+
+  // The dog trots behind and to the right of its owner, sits when they stop, runs when they run.
+  updateDog(p, dt) {
+    const d = p.dog;
+    const fx = Math.sin(p.heading), fz = -Math.cos(p.heading);
+    const tx = p.pos.x - fx * 1.1 - fz * 0.7, tz = p.pos.z - fz * 1.1 + fx * 0.7;
+    const dx = tx - d.x, dz = tz - d.z, dist = Math.hypot(dx, dz);
+    let speed = 0;
+    if (dist > 0.15) {
+      speed = Math.min(dist * 3, 7);
+      const step = Math.min(dist, speed * dt);
+      d.x += (dx / dist) * step; d.z += (dz / dist) * step;
+      d.heading = Math.atan2(dx, -dz);
+    } else d.heading += wrapAngle(p.heading - d.heading) * Math.min(1, dt * 3);
+    const y = groundHeight(d.x, d.z);
+    d.rig.position.set(d.x, y, d.z);
+    d.rig.rotation.y = -d.heading;
+    poseDog(d.rig, p.alive ? speed : 0, dt);
+    const s = d.rig.userData.body.scale.x;
+    const rx = Math.cos(p.heading), rz = Math.sin(p.heading);
+    setLead(d.lead, { x: p.pos.x + rx * 0.32, y: p.pos.y + (p.alive ? 0.85 : 0.2), z: p.pos.z + rz * 0.32 },
+      { x: d.x + Math.sin(d.heading) * 0.3 * s, y: y + 0.55 * s, z: d.z - Math.cos(d.heading) * 0.3 * s });
+  }
+
   remove(p) {
+    if (p.dog) { this.scene.remove(p.dog.rig, p.dog.lead); p.dog = null; }
     p.dispose();
     const i = this.peds.indexOf(p);
     if (i >= 0) this.peds.splice(i, 1);
@@ -281,6 +312,7 @@ export class PedSystem {
     const px = player.pos.x, pz = player.pos.z;
     for (const p of [...this.peds]) {
       p.update(dt);
+      if (p.dog) this.updateDog(p, dt);
       const d2 = (p.pos.x - px) ** 2 + (p.pos.z - pz) ** 2;
       if (!p.persistent && (d2 > 190 * 190 || (!p.alive && p.deadTimer > 40))) this.remove(p);
     }
@@ -314,6 +346,7 @@ export class PedSystem {
         const jogger = !pt.sunbathe && !pt.wade && this.rng.next() < 0.1;
         const ped = this.spawnAt(pt.x, pt.z, jogger ? joggerOutfit(this.rng) : null);
         if (jogger) { ped.jogger = true; ped.speed = 3.1 + this.rng.next() * 0.6; }
+        else if (!pt.sunbathe && !pt.wade && this.rng.next() < 0.09) { this.addDog(ped); ped.speed = Math.min(ped.speed, 1.3); }
         if (pt.sunbathe) { ped.state = 'sunbathe'; ped.outfit.shorts = true; }
         if (pt.wade) { ped.state = 'wade'; ped.heading = Math.PI / 2 + (this.rng.next() - 0.5); }
       }
