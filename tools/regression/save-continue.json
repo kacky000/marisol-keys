@@ -1,0 +1,3 @@
+[
+ {"eval": "window.__errs = []; addEventListener('error', (e) => __errs.push(String(e.message))); marisol.menus.act('new'); marisol.intro.stop(); marisol.debugStep(5); { const g = marisol; g.state.money = 4321; g.state.stats.patients = 2; g.state.story = 3; g.player.placeAt(9 * 64 + 30, 7 * 64 + 9.5); g.debugStep(30); g.save(); g.quitToTitle(); g.debugStep(10); g.menus.act('continue'); g.debugStep(120); JSON.stringify({ expect: 'money 4321, story 3, patients 2', money: g.state.money, story: g.state.story, patients: g.state.stats.patients, running: g.running, active: !!g.missions.active, errors: __errs }) }"}
+]

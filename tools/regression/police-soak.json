@@ -1,0 +1,4 @@
+[
+ {"eval": "window.__errs = []; addEventListener('error', (e) => __errs.push(String(e.message))); marisol.menus.act('new'); marisol.intro.stop(); marisol.player.placeAt(7 * 64 + 20, 8 * 64 + 9.5); marisol.debugStep(200); marisol.wanted.setStars(5); 'five stars'"},
+ {"eval": "{ const g = marisol, p = g.player, out = []; for (let k = 0; k < 12; k++) { g.debugStep(300); out.push({ stars: g.wanted.stars, hp: Math.round(p.health), dead: p.dead, finite: Number.isFinite(p.pos.x + p.pos.z) }); if (p.dead) g.debugStep(400); g.wanted.setStars(5); } JSON.stringify({ expect: 'no errors, finite positions, respawns after deaths', errors: __errs.slice(0, 5), out }) }"}
+]

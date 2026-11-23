@@ -125,6 +125,13 @@ own music.
 `economy/`, `progress/`, `ui/`, `audio/`, `save/`, `core/` and `shots/`. three.js is the only library
 (`game/vendor/three.module.min.js`).
 
+## Testing
+
+`bash tools/regression/run.sh` (with the local server running) plays the real game in headless
+Chrome: it drives all ten story missions to the end, holds a five-star police siege through
+several deaths and respawns, saves and continues, and follows an ambulance call from dispatch to
+departure — each script prints its result and any page errors.
+
 ## Screenshots
 
 `index.html?shot=<sunset|boardwalk|quay|map>&seed=1` builds a scripted scene with the real game
