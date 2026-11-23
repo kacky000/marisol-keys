@@ -75,6 +75,14 @@ export class Hud {
     this.districtTimer = 4;
   }
 
+  // Crosshair kicks red when a round connects.
+  hitMarker() {
+    const el = $('hud-crosshair');
+    el.classList.add('hit');
+    clearTimeout(this.hitTimer);
+    this.hitTimer = setTimeout(() => el.classList.remove('hit'), 120);
+  }
+
   flashHit() {
     const el = $('hud-hitflash');
     el.style.boxShadow = 'inset 0 0 160px rgba(255,0,0,0.55)';

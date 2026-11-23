@@ -5,6 +5,7 @@ import * as THREE from 'three';
 // story and missions
 import { MissionRunner } from '../missions/missionRunner.js';
 import { ContactCast } from '../story/contactCharacters.js';
+import { IntroCinematic } from '../story/introCinematic.js';
 // police and the wanted level
 import { WantedLevel } from '../police/wantedLevel.js';
 import { PoliceDispatch } from '../police/policeDispatch.js';
@@ -101,6 +102,7 @@ export class Game {
     this.pickups = new Pickups(this);
     this.events = new StreetEvents(this);
     this.stunts = new StuntJumps(this);
+    this.intro = new IntroCinematic(this);
     this.phone = new PhoneScreen(this);
     this.damageFx = startDamageEffects(this);
     this.radio = new Radio();
@@ -146,7 +148,8 @@ export class Game {
       if (stars > before) { playSound('wanted'); if (before === 0) this.hud.toast('<b>MKPD</b> is on to you'); }
     });
     on('wanted:evaded', () => { this.hud.bigMessage('LOST THEM', 'The MKPD gave up the search', 2.5); this.police.clearAll(this.player); });
-    on('player:hurt', () => this.hud.flashHit());
+    on('player:hurt', () => { this.hud.flashHit(); this.player.sinceHurt = 0; });
+    on('player:shot', ({ hits }) => { if (hits.length) this.hud.hitMarker(); });
     on('hud:prompt', ({ html }) => this.hud.toast(html));
     on('player:carjack', ({ vehicle, door }) => {
       const ped = this.peds.spawnAt(door.x, door.z);
@@ -190,8 +193,8 @@ export class Game {
     this.running = true;
     this.hud.show(true);
     this.camera.yaw = p.heading;
-    this.hud.bigMessage('MARISOL KEYS', loaded ? 'Welcome back' : 'Find Ozzie at the bait shop — follow the yellow route', 4);
-    if (!loaded) this.hud.toast('Tip: press <b>M</b> for the map, <b>F</b> to take a car');
+    if (loaded) this.hud.bigMessage('MARISOL KEYS', 'Welcome back', 4);
+    else this.intro.start();
     this.renderer.domElement.focus();
   }
 
@@ -267,6 +270,10 @@ export class Game {
     this.fx.particles.update(dt);
     this.fx.tracers.update(dt);
     this.world.update(this.time, dt);
+    this.intro.update(dt);
+    // out of combat for a while, Tessa patches herself up to half health
+    p.sinceHurt = (p.sinceHurt || 0) + dt;
+    if (p.sinceHurt > 6 && p.health < 50 && !p.dead) p.health = Math.min(50, p.health + 3 * dt);
     this.camera.update(dt, p, this.time);
     this.weather.update(dt, this.time, this.threeCamera);
     // radio and engine audio

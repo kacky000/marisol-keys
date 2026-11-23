@@ -78,7 +78,7 @@ Any static file server works too: the game is just the files under `game/`.
   Calderón, Priya Lund, Lulu Marchetti, Gideon "Gull" Moreau and Captain Rourke Hale: drives,
   races, rooftop relays, harbor shoot-outs, a stolen evidence van, a downtown takedown and a
   four-star run across the causeway. Contacts wait in person at their spots and face-to-face
-  scenes cut to a two-shot camera; MKPD dispatch chatter narrates every pursuit.
+  scenes cut to a two-shot camera; a new game opens with a letterboxed glide down from the skyline; MKPD dispatch chatter narrates every pursuit.
 - **Side jobs and progression** — Keys Cab fares, Sunrise Couriers deliveries, the Night Sprint
   time trial, Vigilante runs in a stolen MKPD cruiser, Keys Tactical gun shop and body armour, Pastel Paint & Body resprays that shake the
   police, four stunt-jump ramps that pay for airtime, Sunbelt Garage repairs and three tiers each of engine, tyre and armour tuning, police

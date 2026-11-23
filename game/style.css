@@ -135,6 +135,12 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #0b2233; fon
 .controls-grid b { display: inline-block; min-width: 110px; color: var(--lagoon); }
 
 #error-box { position: fixed; left: 10px; top: 10px; right: 10px; z-index: 99; white-space: pre-wrap; font: 14px monospace; color: #fff; background: rgba(160,20,20,0.9); padding: 10px; border-radius: 8px; }
+#intro .bar { position: fixed; left: 0; right: 0; height: 12vh; background: #05080c; z-index: 20; }
+#intro .bar.top { top: 0; }
+#intro .bar.bottom { bottom: 0; display: flex; align-items: center; justify-content: center; }
+#intro .intro-caption { font-family: Georgia, serif; font-style: italic; font-size: 24px; color: #fff6ea; letter-spacing: 1px; }
+#intro .intro-skip { position: absolute; right: 24px; bottom: 14px; font-size: 11px; letter-spacing: 3px; opacity: 0.5; }
+#hud-crosshair.hit { border-color: #ff4d4d; transform: scale(1.25); transition: transform 0.08s; }
 #loading { position: fixed; inset: 0; background: radial-gradient(circle at 50% 70%, #ff8a5c, #5b2a5e 55%, #0b2233); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; z-index: 50; }
 #loading .load-logo { font-family: var(--display); font-size: 54px; letter-spacing: 4px; color: #fff; text-shadow: 0 5px 0 rgba(0,0,0,0.35); }
 #loading .load-bar { width: 320px; height: 8px; border-radius: 4px; background: rgba(0,0,0,0.35); overflow: hidden; }
