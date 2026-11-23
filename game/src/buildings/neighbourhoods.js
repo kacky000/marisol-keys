@@ -29,6 +29,24 @@ function apartment(kit, block, cx, cz, w, d, rng) {
     const az = side === 's' ? cz + d / 2 + 0.8 : side === 'n' ? cz - d / 2 - 0.8 : cz;
     kit.trim.box(ax, WALK_Y + 2.6, az, along ? w * 0.8 : 1.6, 0.2, along ? 1.6 : d * 0.8, tint(rng.pick(['#e0533d', '#2f8f83', '#f2b134', '#3a6fd1'])));
   }
+  addBalconies(kit, cx, cz, w, d, h, side, rng);
+}
+
+// Street-side balconies on the upper floors: a slab, a white rail and the odd potted plant.
+function addBalconies(kit, cx, cz, w, d, h, side, rng) {
+  if (h < 7 || rng.chance(0.3)) return;
+  const along = side === 'n' || side === 's';
+  const face = along ? w : d;
+  const bw = Math.min(face * 0.7, 9), depth = 1.1;
+  const nx = side === 'e' ? 1 : side === 'w' ? -1 : 0, nz = side === 's' ? 1 : side === 'n' ? -1 : 0;
+  const fx = cx + nx * ((along ? d : w) / 2 + depth / 2), fz = cz + nz * ((along ? d : w) / 2 + depth / 2);
+  const rail = tint('#f6f3ee'), slab = tint('#e4ddd2');
+  for (let y = WALK_Y + 3.4; y < WALK_Y + h - 2; y += 3) {
+    kit.trim.box(fx, y, fz, along ? bw : depth, 0.16, along ? depth : bw, slab);
+    const ox = fx + nx * (depth / 2 - 0.05), oz = fz + nz * (depth / 2 - 0.05);
+    kit.trim.box(ox, y + 0.16, oz, along ? bw : 0.06, 0.9, along ? 0.06 : bw, rail);
+    if (rng.chance(0.4)) kit.trim.box(fx + (along ? rng.range(-bw / 3, bw / 3) : 0), y + 0.16, fz + (along ? 0 : rng.range(-bw / 3, bw / 3)), 0.5, 0.8, 0.5, tint(rng.pick(['#3f8a3c', '#5aa04a', '#ff6b8b'])));
+  }
 }
 
 export function buildNeighbourhoodBlock(kit, block, rng) {
