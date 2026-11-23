@@ -53,7 +53,7 @@ function crowd(game, points) {
 export const SCENES = {
   // 1. Golden-hour police chase up Marisol Boulevard toward the Glasswater towers.
   cover: {
-    hour: 18.15,
+    hour: 17.75,
     setup(game) {
       game.peds.target = 0;
       game.traffic.target = 0;
@@ -136,24 +136,24 @@ export const SCENES = {
       game.peds.target = 0;
       game.traffic.target = 0;
       const p = game.player;
-      p.placeAt(5 * B + 14, 13 * B + 19.5, Math.PI / 2 - 0.15);
+      // an aisle between two container rows of Crane Yard 7, looking east toward the cranes
+      p.placeAt(5 * B + 14, 13 * B + 26, Math.PI / 2 - 0.1);
       p.giveWeapon('smg', 200);
       p.weapon = 'smg';
       p.health = 72;
       p.armor = 40;
       p.aiming = true;
-      const enemies = [[5 * B + 36, 13 * B + 17, 'smg'], [5 * B + 44, 13 * B + 22, 'pistol'], [5 * B + 30, 13 * B + 31, 'smg'], [5 * B + 52, 13 * B + 30, 'pistol']];
+      const enemies = [[5 * B + 25, 13 * B + 24.4, 'smg'], [5 * B + 31, 13 * B + 27.6, 'pistol'], [5 * B + 39, 13 * B + 25.2, 'smg'], [5 * B + 46, 13 * B + 27, 'pistol']];
       for (const [x, z, w] of enemies) {
         const e = new Gunman(game.scene, x, z, GANG_OUTFITS[Math.floor(rng.next() * 3)], 'gang', w);
         e.mode = 'attack';
         e.preferRange = 30;
         game.missions.enemies.push(e);
       }
-      const dead = new Gunman(game.scene, 5 * B + 24, 13 * B + 22, GANG_OUTFITS[1], 'gang', 'pistol');
+      const dead = new Gunman(game.scene, 5 * B + 20, 13 * B + 27, GANG_OUTFITS[1], 'gang', 'pistol');
       dead.state = 'dead';
       dead.heading = 1.2;
       game.missions.enemies.push(dead);
-      car(game, 'pickup', 5 * B + 58, 13 * B + 18, -1.3, 0, '#2c3e50');
       game.state.story = 4;
       game.state.money = 6200;
       game.missions.active = STORY[4];
@@ -189,7 +189,7 @@ export const SCENES = {
       game.fx.particles.update(0.016);
       game.fx.tracers.update(0.01);
       game.hud.showDistrict({ name: 'Saltgate Harbor', sub: 'CRANE YARD 7' });
-      return { pos: new THREE.Vector3(p.pos.x - 4.2, p.pos.y + 2.3, p.pos.z - 1.4), look: new THREE.Vector3(p.pos.x + 20, p.pos.y + 2.5, p.pos.z + 6) };
+      return { pos: new THREE.Vector3(p.pos.x - 3.4, p.pos.y + 2.4, p.pos.z + 1.5), look: new THREE.Vector3(p.pos.x + 20, p.pos.y + 1.9, p.pos.z - 1.2) };
     },
   },
 

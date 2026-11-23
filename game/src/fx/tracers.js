@@ -6,8 +6,8 @@ export class TracerFX {
   constructor(scene) {
     this.scene = scene;
     this.lines = [];
-    this.mat = new THREE.MeshBasicMaterial({ color: '#ffe9a8', transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false });
-    this.geo = new THREE.CylinderGeometry(0.035, 0.035, 1, 4, 1, true);
+    this.mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(2.6, 1.9, 0.9), transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false });
+    this.geo = new THREE.CylinderGeometry(0.03, 0.03, 1, 5, 1, true);
     this.geo.rotateX(Math.PI / 2);
     this.flashes = [];
     for (let k = 0; k < 4; k++) {
@@ -18,13 +18,17 @@ export class TracerFX {
     this.flashIndex = 0;
   }
 
+  // A bright streak about two thirds of the way along the bullet's path, at most 9 m long.
   shoot(from, to, life = 0.09, color = null) {
-    const len = from.distanceTo(to);
+    const total = from.distanceTo(to);
+    const len = Math.min(9, total * 0.4);
+    const end = from.clone().lerp(to, 0.68);
+    const start = end.clone().lerp(from, Math.min(1, len / Math.max(0.001, end.distanceTo(from))));
     const mesh = new THREE.Mesh(this.geo, color ? this.mat.clone() : this.mat);
-    if (color) mesh.material.color.set(color);
-    mesh.position.copy(from).lerp(to, 0.5);
-    mesh.scale.set(1, 1, len);
-    mesh.lookAt(to);
+    if (color) mesh.material.color.set(color).multiplyScalar(2.5);
+    mesh.position.copy(start).lerp(end, 0.5);
+    mesh.scale.set(1, 1, start.distanceTo(end));
+    mesh.lookAt(end);
     this.scene.add(mesh);
     this.lines.push({ mesh, t: life, life });
   }
@@ -32,7 +36,7 @@ export class TracerFX {
   flash(pos) {
     const f = this.flashes[this.flashIndex++ % this.flashes.length];
     f.light.position.copy(pos);
-    f.light.intensity = 40;
+    f.light.intensity = 25;
     f.t = 0.06;
   }
 

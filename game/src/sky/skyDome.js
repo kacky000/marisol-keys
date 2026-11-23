@@ -28,7 +28,9 @@ float fbm(vec2 p) { float v = 0.0, a = 0.5; for (int i = 0; i < 5; i++) { v += a
 void main() {
   vec3 d = normalize(vDir);
   float h = clamp(d.y, -0.2, 1.0);
-  vec3 col = mix(uHorizon, uZenith, pow(max(h, 0.0), 0.55));
+  vec3 col = mix(uHorizon, uZenith, pow(max(h, 0.0), 0.38));
+  // a thin hot band right at the horizon
+  col += uHorizon * 0.35 * exp(-max(h, 0.0) * 28.0);
   col = mix(col, uHorizon * 0.8, smoothstep(0.0, -0.2, h));
   float s = max(dot(d, normalize(uSunDir)), 0.0);
   col += uSunColor * (pow(s, 6.0) * 0.35 + pow(s, 60.0) * 0.6);

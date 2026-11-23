@@ -1,64 +1,101 @@
-// Procedural vehicle models: painted lower body, sloped glass cabin, bumpers, lights, wheels that
-// steer and spin, plus police light bars, taxi roof signs, bus window bands and the motorbike.
+// Procedural vehicle models: clear-coated bodies with chamfered shoulders, wheel arches, sloped
+// glass cabins, chrome trim, bright head and tail lights that bloom, wheels that steer and spin,
+// plus police light bars and push bars, taxi signs and checker bands, bus window bands, spoilers
+// and the motorbike.
 
 import * as THREE from 'three';
 import { MeshBatch, tint } from '../core/meshBatch.js';
 import { canvasTexture } from '../core/canvasTexture.js';
 
-const bodyMat = new THREE.MeshStandardMaterial({ vertexColors: true, metalness: 0.45, roughness: 0.32, side: THREE.DoubleSide });
-const glowMat = new THREE.MeshStandardMaterial({ vertexColors: true, emissive: '#ffffff', emissiveIntensity: 1.2, roughness: 0.3 });
+const bodyMat = new THREE.MeshPhysicalMaterial({ vertexColors: true, metalness: 0.3, roughness: 0.35, clearcoat: 1, clearcoatRoughness: 0.08, side: THREE.DoubleSide });
+const glowMat = new THREE.MeshStandardMaterial({ vertexColors: true, emissive: '#ffffff', emissiveIntensity: 3.2, roughness: 0.3 });
 glowMat.onBeforeCompile = (s) => { s.fragmentShader = s.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance *= diffuseColor.rgb;'); };
-const tireMat = new THREE.MeshStandardMaterial({ color: '#1b1b1d', roughness: 0.9 });
-const rimMat = new THREE.MeshStandardMaterial({ color: '#cfd3d8', metalness: 0.8, roughness: 0.3 });
-const redLight = new THREE.MeshBasicMaterial({ color: '#ff2a2a' });
-const blueLight = new THREE.MeshBasicMaterial({ color: '#2a6bff' });
-const GLASS = '#1d2b38';
+const tireMat = new THREE.MeshStandardMaterial({ color: '#18181a', roughness: 0.92 });
+const rimMat = new THREE.MeshStandardMaterial({ color: '#d7dbe0', metalness: 0.9, roughness: 0.25 });
+const redLight = new THREE.MeshBasicMaterial({ color: new THREE.Color(7, 0.35, 0.3) });
+const blueLight = new THREE.MeshBasicMaterial({ color: new THREE.Color(0.3, 0.9, 8) });
+const GLASS = '#16222e';
+const tireGeo = new THREE.CylinderGeometry(1, 1, 1, 16);
+tireGeo.rotateZ(Math.PI / 2);
+const rimGeo = new THREE.CylinderGeometry(0.62, 0.62, 1.04, 10);
+rimGeo.rotateZ(Math.PI / 2);
 
 let decalTex = null;
 function policeDecal() {
   decalTex ??= canvasTexture(256, 64, (g, w, h) => {
     g.fillStyle = '#132a4a'; g.fillRect(0, 0, w, h);
-    g.fillStyle = '#ff7a59'; g.fillRect(0, h - 10, w, 6);
-    g.fillStyle = '#ffffff'; g.font = '900 36px "Arial Black", Arial'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText('MKPD', w / 2, h / 2 - 4);
+    g.fillStyle = '#ff7a59'; g.fillRect(0, h - 12, w, 7);
+    g.fillStyle = '#ffffff'; g.font = '900 34px "Arial Black", Arial'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText('MKPD', w / 2 - 30, h / 2 - 4);
+    g.font = '700 14px Arial';
+    g.fillText('MARISOL KEYS', w / 2 + 70, h / 2 - 2);
   }, { repeat: false, seed: 61 });
   return decalTex;
 }
 
-// Cabin prism with slanted windshield and rear glass.
-function cabin(batch, W, beltY, c, paint) {
+// Cabin prism with slanted windshield and rear glass, chrome window line and B-pillars.
+function cabin(batch, W, beltY, c, paint, roofPaint = paint) {
   const zf = -c.front, zb = -c.back;
   const tf = zf + c.slopeF, tb = zb - c.slopeB;
-  const hw = W / 2, tw = W * 0.42;
-  const glass = tint(GLASS), roof = tint(paint);
-  const P = (x, y, z) => [x, y, z];
-  // windshield
-  batch.quad(P(-hw, beltY, zf), P(hw, beltY, zf), P(tw, c.top, tf), P(-tw, c.top, tf), [0, 0.6, -0.8], [[0, 0], [1, 0], [1, 1], [0, 1]], glass);
-  // rear glass
-  batch.quad(P(hw, beltY, zb), P(-hw, beltY, zb), P(-tw, c.top, tb), P(tw, c.top, tb), [0, 0.6, 0.8], [[0, 0], [1, 0], [1, 1], [0, 1]], glass);
-  // roof
-  batch.quad(P(-tw, c.top, tb), P(tw, c.top, tb), P(tw, c.top, tf), P(-tw, c.top, tf), [0, 1, 0], [[0, 0], [1, 0], [1, 1], [0, 1]], roof);
-  // sides (glass with a painted roof rail)
-  batch.quad(P(hw, beltY, zb), P(hw, beltY, zf), P(tw, c.top, tf), P(tw, c.top, tb), [1, 0.2, 0], [[0, 0], [1, 0], [1, 1], [0, 1]], glass);
-  batch.quad(P(-hw, beltY, zf), P(-hw, beltY, zb), P(-tw, c.top, tb), P(-tw, c.top, tf), [-1, 0.2, 0], [[0, 0], [1, 0], [1, 1], [0, 1]], glass);
-  // B-pillar
+  const hw = W / 2, tw = W * 0.43;
+  const glass = tint(GLASS), roof = tint(roofPaint), body = tint(paint);
+  const uv = [[0, 0], [1, 0], [1, 1], [0, 1]];
+  batch.quad([-hw, beltY, zf], [hw, beltY, zf], [tw, c.top, tf], [-tw, c.top, tf], [0, 0.6, -0.8], uv, glass);
+  batch.quad([hw, beltY, zb], [-hw, beltY, zb], [-tw, c.top, tb], [tw, c.top, tb], [0, 0.6, 0.8], uv, glass);
+  batch.quad([-tw, c.top, tb], [tw, c.top, tb], [tw, c.top, tf], [-tw, c.top, tf], [0, 1, 0], uv, roof);
+  batch.quad([hw, beltY, zb], [hw, beltY, zf], [tw, c.top, tf], [tw, c.top, tb], [1, 0.25, 0], uv, glass);
+  batch.quad([-hw, beltY, zf], [-hw, beltY, zb], [-tw, c.top, tb], [-tw, c.top, tf], [-1, 0.25, 0], uv, glass);
   const zm = (zf + zb) / 2;
-  batch.orientedBox(hw - 0.02, (beltY + c.top) / 2, zm, 0.06, c.top - beltY, 0.18, 0, roof);
-  batch.orientedBox(-hw + 0.02, (beltY + c.top) / 2, zm, 0.06, c.top - beltY, 0.18, 0, roof);
+  for (const s of [-1, 1]) {
+    batch.orientedBox(s * (hw + tw) / 2, (beltY + c.top) / 2, zm, (hw - tw) + 0.06, c.top - beltY, 0.16, 0, body);
+    batch.orientedBox(s * (hw - 0.01), beltY + 0.02, (zf + zb) / 2, 0.04, 0.04, zb - zf, 0, tint('#c9ced4'));
+  }
 }
 
-function wheel(r, w) {
+function addWheel(group, wheels, x, y, z, r, w, front) {
   const g = new THREE.Group();
-  const tire = new THREE.Mesh(new THREE.CylinderGeometry(r, r, w, 14), tireMat);
-  tire.rotation.z = Math.PI / 2;
-  const rim = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.6, r * 0.6, w + 0.02, 8), rimMat);
-  rim.rotation.z = Math.PI / 2;
   const spin = new THREE.Group();
+  const tire = new THREE.Mesh(tireGeo, tireMat);
+  tire.scale.set(w, r, r);
+  const rim = new THREE.Mesh(rimGeo, rimMat);
+  rim.scale.set(w, r, r);
+  tire.castShadow = true;
   spin.add(tire, rim);
   g.add(spin);
-  tire.castShadow = true;
-  g.userData.spin = spin;
-  return g;
+  g.position.set(x, y, z);
+  g.userData = { spin, front };
+  wheels.push(g);
+  group.add(g);
+}
+
+function buildBike(group, body, glow, spec, paintC, wheels) {
+  const dark = tint('#222428'), chrome = tint('#c9ccd1');
+  body.orientedBox(0, 0.78, -0.1, 0.36, 0.38, 0.9, 0, paintC);
+  body.orientedBox(0, 0.62, 0.15, 0.26, 0.3, 0.8, 0, dark);
+  body.orientedBox(0, 0.96, 0.4, 0.3, 0.12, 0.7, 0, dark);
+  body.orientedBox(0, 0.88, 0.82, 0.22, 0.14, 0.5, 0, paintC);
+  body.orientedBox(0, 1.12, -0.62, 0.78, 0.05, 0.05, 0, chrome);
+  body.orientedBox(0, 0.86, -0.58, 0.07, 0.56, 0.07, 0, chrome);
+  body.orientedBox(0.18, 0.5, 0.55, 0.12, 0.12, 0.7, 0, chrome);
+  body.orientedBox(0, 1.02, -0.74, 0.3, 0.22, 0.12, 0, paintC);
+  glow.orientedBox(0, 1.0, -0.81, 0.16, 0.12, 0.04, 0, tint('#fff3cf'));
+  glow.orientedBox(0, 0.92, 1.08, 0.16, 0.07, 0.04, 0, tint('#ff1a1a'));
+  for (const z of [-spec.wheelbase / 2, spec.wheelbase / 2]) addWheel(group, wheels, 0, spec.wheelR, z, spec.wheelR, 0.16, z < 0);
+}
+
+function buildBus(body, glow, spec, paintC, W, L) {
+  const clearance = spec.wheelR * 0.7, H = spec.height;
+  body.orientedBox(0, clearance + (H - clearance) / 2, 0, W, H - clearance, L, 0, paintC);
+  body.orientedBox(0, H * 0.62, 0, W + 0.04, 1.05, L - 0.8, 0, tint(GLASS));
+  body.orientedBox(0, H * 0.43, 0, W + 0.05, 0.22, L, 0, tint('#ffd23f'));
+  body.orientedBox(0, H * 0.36, 0, W + 0.05, 0.08, L, 0, tint('#ff6b5a'));
+  body.orientedBox(0, H - 0.02, 0, W - 0.4, 0.3, L * 0.5, 0, tint('#e8e8e8'));
+  body.orientedBox(0, H * 0.6, -L / 2 - 0.01, W - 0.2, 1.5, 0.05, 0, tint(GLASS));
+  glow.orientedBox(0, H - 0.35, -L / 2 - 0.03, 1.8, 0.32, 0.05, 0, tint('#ffb020'));
+  for (const s of [-1, 1]) {
+    glow.orientedBox(s * (W / 2 - 0.3), clearance + 0.45, -L / 2 - 0.02, 0.4, 0.18, 0.05, 0, tint('#fff3cf'));
+    glow.orientedBox(s * (W / 2 - 0.3), clearance + 0.5, L / 2 + 0.02, 0.3, 0.4, 0.05, 0, tint('#ff1a1a'));
+  }
 }
 
 export function buildVehicleMesh(type, spec, paint) {
@@ -66,85 +103,85 @@ export function buildVehicleMesh(type, spec, paint) {
   const body = new MeshBatch();
   const glow = new MeshBatch();
   const L = spec.len, W = spec.width;
-  const paintC = tint(paint), dark = tint('#2a2c30'), chrome = tint('#c9ccd1');
+  const paintC = tint(paint), dark = tint('#1f2125'), chrome = tint('#cfd4da'), black = tint('#0e0f11');
   const wheels = [];
   const lightbar = [];
 
-  if (spec.bike) {
-    body.orientedBox(0, 0.75, 0, 0.35, 0.45, 1.3, 0, paintC);         // tank & frame
-    body.orientedBox(0, 0.95, 0.35, 0.3, 0.12, 0.7, 0, dark);         // seat
-    body.orientedBox(0, 1.1, -0.65, 0.75, 0.06, 0.06, 0, chrome);     // handlebar
-    body.orientedBox(0, 0.85, -0.6, 0.08, 0.5, 0.08, 0, chrome);      // fork
-    body.orientedBox(0, 0.55, 0.55, 0.2, 0.2, 0.6, 0, chrome);        // exhaust
-    glow.orientedBox(0, 0.98, -0.78, 0.18, 0.14, 0.08, 0, tint('#fff6d0'));
-    glow.orientedBox(0, 0.85, 0.82, 0.16, 0.08, 0.05, 0, tint('#ff2020'));
-    for (const z of [-spec.wheelbase / 2, spec.wheelbase / 2]) {
-      const wgrp = wheel(spec.wheelR, 0.16);
-      wgrp.position.set(0, spec.wheelR, z);
-      wgrp.userData.front = z < 0;
-      wheels.push(wgrp);
-      group.add(wgrp);
+  if (spec.bike) buildBike(group, body, glow, spec, paintC, wheels);
+  else if (spec.bus) buildBus(body, glow, spec, paintC, W, L);
+  else {
+    const clearance = spec.wheelR * 0.62;
+    const belt = spec.height * (type === 'sports' ? 0.55 : 0.6);
+    const sideH = belt - clearance;
+    // main body with a chamfered shoulder, nose and tail slightly tucked
+    body.orientedBox(0, clearance + sideH * 0.42, 0, W, sideH * 0.84, L - 0.1, 0, paintC);
+    body.orientedBox(0, belt - sideH * 0.09, 0, W - 0.14, sideH * 0.18, L - 0.3, 0, paintC);
+    body.orientedBox(0, clearance + sideH * 0.4, -L / 2 + 0.05, W - 0.2, sideH * 0.7, 0.16, 0, paintC);
+    // lower skirt and wheel arches (dark openings around the tyres)
+    body.orientedBox(0, clearance + 0.07, 0, W + 0.02, 0.14, L * 0.55, 0, dark);
+    for (const sz of [-1, 1]) body.orientedBox(0, spec.wheelR * 1.02, sz * spec.wheelbase / 2, W + 0.03, spec.wheelR * 1.05, spec.wheelR * 2.25, 0, black);
+    // bumpers, grille, plate
+    body.orientedBox(0, clearance + 0.13, -L / 2 - 0.03, W + 0.03, 0.24, 0.14, 0, dark);
+    body.orientedBox(0, clearance + 0.13, L / 2 + 0.03, W + 0.03, 0.24, 0.14, 0, dark);
+    body.orientedBox(0, belt - 0.22, -L / 2 - 0.04, W * 0.42, 0.16, 0.05, 0, black);
+    body.orientedBox(0, clearance + 0.32, L / 2 + 0.05, 0.5, 0.14, 0.02, 0, tint('#f2f2ea'));
+    const roofPaint = spec.police ? '#f4f4f2' : paint;
+    cabin(body, W * 0.94, belt, spec.cabin, paint, roofPaint);
+    // mirrors
+    for (const s of [-1, 1]) body.orientedBox(s * (W / 2 + 0.11), belt + 0.12, -spec.cabin.front + 0.18, 0.2, 0.13, 0.12, 0, paintC);
+    // lights: wide tail-light strip, headlight pair, amber corner markers
+    glow.orientedBox(0, belt - 0.14, L / 2 + 0.01, W * 0.86, 0.1, 0.05, 0, tint('#ff1414'));
+    for (const s of [-1, 1]) {
+      glow.orientedBox(s * (W / 2 - 0.3), belt - 0.16, -L / 2 - 0.02, 0.44, 0.13, 0.05, 0, tint('#fff6dc'));
+      glow.orientedBox(s * (W / 2 - 0.04), belt - 0.18, -L / 2 + 0.15, 0.05, 0.08, 0.22, 0, tint('#ffa020'));
     }
-  } else {
-    const clearance = spec.wheelR * 0.75;
-    const belt = spec.bus ? spec.height * 0.45 : spec.height * 0.62;
-    if (spec.bus) {
-      body.orientedBox(0, clearance + (spec.height - clearance) / 2, 0, W, spec.height - clearance, L, 0, paintC);
-      body.orientedBox(0, belt + 0.9, 0, W + 0.04, 1.0, L - 0.6, 0, tint(GLASS));
-      body.orientedBox(0, belt + 0.25, 0, W + 0.05, 0.2, L, 0, tint('#ffd23f'));
-      body.orientedBox(0, spec.height - 0.05, 0, W - 0.3, 0.12, L - 1, 0, tint('#e8e8e8'));
-      body.orientedBox(0, belt + 0.9, -L / 2 - 0.01, W - 0.3, 1.4, 0.05, 0, tint(GLASS));
-      glow.orientedBox(0, spec.height - 0.35, -L / 2 - 0.03, 1.6, 0.3, 0.05, 0, tint('#ffb020'));
-    } else {
-      // lower body: main slab + slightly narrower top edge, front and rear bumpers
-      body.orientedBox(0, clearance + (belt - clearance) / 2, 0, W, belt - clearance, L, 0, paintC);
-      body.orientedBox(0, belt + 0.02, -L * 0.32, W * 0.94, 0.06, L * 0.3, 0, paintC); // hood crown
-      body.orientedBox(0, clearance + 0.12, -L / 2 - 0.05, W + 0.04, 0.26, 0.16, 0, dark);
-      body.orientedBox(0, clearance + 0.12, L / 2 + 0.05, W + 0.04, 0.26, 0.16, 0, dark);
-      body.orientedBox(0, clearance + 0.25, -L / 2 - 0.02, W * 0.4, 0.18, 0.06, 0, tint('#111')); // grille
-      cabin(body, W * 0.96, belt, spec.cabin, paint);
-      if (spec.bed) {
-        body.orientedBox(W / 2 - 0.06, belt + 0.25, spec.cabin.back * -1 + 1.0, 0.1, 0.5, 2.0, 0, paintC);
-        body.orientedBox(-W / 2 + 0.06, belt + 0.25, spec.cabin.back * -1 + 1.0, 0.1, 0.5, 2.0, 0, paintC);
-        body.orientedBox(0, belt + 0.25, L / 2 - 0.05, W, 0.5, 0.1, 0, paintC);
-      }
-      // mirrors
-      for (const s of [-1, 1]) body.orientedBox(s * (W / 2 + 0.12), belt + 0.1, -spec.cabin.front + 0.15, 0.22, 0.14, 0.12, 0, paintC);
-      // lights
+    if (type === 'sports') {
+      body.orientedBox(0, belt + 0.28, L / 2 - 0.25, W * 0.9, 0.06, 0.38, 0, black);
+      for (const s of [-1, 1]) body.orientedBox(s * W * 0.32, belt + 0.12, L / 2 - 0.25, 0.06, 0.24, 0.2, 0, black);
+      body.orientedBox(0, belt + 0.01, -L * 0.28, 0.5, 0.03, L * 0.32, 0, black); // hood stripe
+    }
+    if (spec.bed) {
+      const bz = -spec.cabin.back + (L / 2 + spec.cabin.back) / 2 + 0.1;
+      const bl = L / 2 + spec.cabin.back - 0.2;
+      body.orientedBox(0, belt - 0.02, bz, W - 0.24, 0.04, bl, 0, black);
+      for (const s of [-1, 1]) body.orientedBox(s * (W / 2 - 0.06), belt + 0.22, bz, 0.1, 0.44, bl, 0, paintC);
+      body.orientedBox(0, belt + 0.22, L / 2 - 0.06, W, 0.44, 0.1, 0, paintC);
+      body.orientedBox(0, spec.cabin.top + 0.04, -spec.cabin.back - 0.3, W * 0.8, 0.06, 0.06, 0, chrome);
+    }
+    if (spec.police) {
+      // navy doors, push bar, light bar
+      for (const s of [-1, 1]) body.orientedBox(s * (W / 2 + 0.006), clearance + sideH * 0.45, 0.05, 0.01, sideH * 0.8, L * 0.46, 0, tint('#132a4a'));
+      body.orientedBox(0, clearance + 0.35, -L / 2 - 0.2, W * 0.7, 0.4, 0.1, 0, black);
+      const y = spec.cabin.top + 0.1, z = (-spec.cabin.front + spec.cabin.slopeF - spec.cabin.back - spec.cabin.slopeB) / 2;
+      body.orientedBox(0, y - 0.07, z, 1.5, 0.08, 0.36, 0, black);
+      const r = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.14, 0.3), redLight);
+      const b = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.14, 0.3), blueLight);
+      r.position.set(-0.38, y, z); b.position.set(0.38, y, z);
+      group.add(r, b);
+      lightbar.push(r, b);
+      const decal = new THREE.MeshBasicMaterial({ map: policeDecal() });
       for (const s of [-1, 1]) {
-        glow.orientedBox(s * (W / 2 - 0.3), belt - 0.15, -L / 2 - 0.01, 0.42, 0.16, 0.06, 0, tint('#fff4d6'));
-        glow.orientedBox(s * (W / 2 - 0.3), belt - 0.12, L / 2 + 0.01, 0.42, 0.14, 0.06, 0, tint('#ff1a1a'));
-      }
-      if (spec.police) {
-        for (const s of [-1, 1]) body.orientedBox(s * (W / 2 + 0.005), clearance + (belt - clearance) * 0.5, 0.1, 0.01, (belt - clearance) * 0.8, L * 0.5, 0, tint('#132a4a'));
-        const r = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.16, 0.3), redLight);
-        const b = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.16, 0.3), blueLight);
-        const y = spec.cabin.top + 0.1, z = (-spec.cabin.front + spec.cabin.slopeF - spec.cabin.back - spec.cabin.slopeB) / 2;
-        r.position.set(-0.32, y, z); b.position.set(0.32, y, z);
-        group.add(r, b);
-        lightbar.push(r, b);
-        // door decals
-        const decal = new THREE.MeshBasicMaterial({ map: policeDecal(), transparent: false });
-        for (const s of [-1, 1]) {
-          const plane = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.4), decal);
-          plane.position.set(s * (W / 2 + 0.02), clearance + (belt - clearance) * 0.55, 0.1);
-          plane.rotation.y = s * Math.PI / 2;
-          group.add(plane);
-        }
-      }
-      if (spec.taxiSign) {
-        const z = (-spec.cabin.front + spec.cabin.slopeF - spec.cabin.back - spec.cabin.slopeB) / 2;
-        glow.orientedBox(0, spec.cabin.top + 0.15, z, 0.9, 0.28, 0.3, 0, tint('#fff2a0'));
-        for (const s of [-1, 1]) body.orientedBox(s * (W / 2 + 0.005), belt - 0.1, 0, 0.01, 0.14, L * 0.7, 0, tint('#222'));
+        const plane = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 0.48), decal);
+        plane.position.set(s * (W / 2 + 0.02), clearance + sideH * 0.5, 0.05);
+        plane.rotation.y = s * Math.PI / 2;
+        group.add(plane);
       }
     }
-    for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
-      const wgrp = wheel(spec.wheelR, 0.28);
-      wgrp.position.set(sx * (W / 2 - 0.12), spec.wheelR, sz * spec.wheelbase / 2);
-      wgrp.userData.front = sz < 0;
-      wheels.push(wgrp);
-      group.add(wgrp);
+    if (spec.taxiSign) {
+      const z = (-spec.cabin.front + spec.cabin.slopeF - spec.cabin.back - spec.cabin.slopeB) / 2;
+      glow.orientedBox(0, spec.cabin.top + 0.16, z, 0.95, 0.28, 0.32, 0, tint('#fff2a0'));
+      for (const s of [-1, 1]) for (let k = 0; k < 10; k++) {
+        body.orientedBox(s * (W / 2 + 0.005), belt - 0.08, -L * 0.35 + k * L * 0.07, 0.01, 0.12, L * 0.035, 0, k % 2 ? tint('#111') : tint('#fafafa'));
+      }
     }
+    if (type === 'van') {
+      for (const s of [-1, 1]) body.orientedBox(s * (W / 2 + 0.005), spec.height * 0.55, 0.6, 0.01, 0.5, 2.4, 0, tint('#ff6b35'));
+    }
+    const wx = W / 2 - 0.1;
+    for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) addWheel(group, wheels, sx * wx, spec.wheelR, sz * spec.wheelbase / 2, spec.wheelR, 0.3, sz < 0);
+  }
+  if (spec.bus) {
+    for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) addWheel(group, wheels, sx * (W / 2 - 0.2), spec.wheelR, sz * spec.wheelbase / 2, spec.wheelR, 0.34, sz < 0);
   }
   const bodyMesh = body.toMesh(bodyMat);
   const glowMesh = glow.toMesh(glowMat, { cast: false });

@@ -173,7 +173,7 @@ export class Player {
     }
     const state = !this.onGround ? 'jump' : this.aiming ? 'aim' : speed > 5 ? 'run' : speed > 0 ? 'walk' : 'idle';
     this.moveState = state;
-    poseHuman(this.rig, state, speed, dt, this.aiming ? -ctx.camera.pitch * 0.8 : 0);
+    poseHuman(this.rig, state, speed, dt, this.aiming ? ctx.camera.pitch * 0.8 : 0);
     this.rig.userData.gun.visible = !WEAPONS[this.weapon].melee;
     this.syncRig(dt);
   }
@@ -255,7 +255,7 @@ export class Player {
         this.pos.z = door.z + (v.pos.z - door.z) * k * 0.8;
         this.heading = dampAngle(this.heading, v.heading, 10, dt);
         poseHuman(this.rig, 'drive', 0, dt);
-        this.rig.userData.arms[e.side > 0 ? 0 : 1].rotation.x = -1.6 + Math.sin(e.t * 20) * 0.3;
+        this.rig.userData.arms[e.side > 0 ? 0 : 1].rotation.x = 1.6 + Math.sin(e.t * 20) * 0.3;
       } else {
         this.enter = null;
         this.vehicle = v;

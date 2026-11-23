@@ -97,7 +97,7 @@ export class ParticleFX {
   muzzle(x, y, z, dx, dz) {
     for (let k = 0; k < 5; k++) {
       const s = Math.random() * 1.2;
-      this.glow.emit({ x: x + dx * s, y, z: z + dz * s, vx: dx * 4, vz: dz * 4, life: 0.07, size: 0.9 - s * 0.4, color: '#fff2b0', color2: '#ff8a2a' });
+      this.glow.emit({ x: x + dx * s, y, z: z + dz * s, vx: dx * 4, vz: dz * 4, life: 0.07, size: 0.42 - s * 0.2, color: '#fff2b0', color2: '#ff8a2a', alpha: 0.8 });
     }
     this.smoke.emit({ x, y, z, vy: 0.8, life: 0.6, size: 0.4, grow: 1.4, color: '#c9c3bb', alpha: 0.35 });
   }

@@ -12,6 +12,7 @@ import { createSkyDome, updateSkyDome } from '../sky/skyDome.js';
 import { createLighting, updateLighting } from '../sky/sunLight.js';
 import { skyStateAt } from '../sky/timeOfDay.js';
 import { SkyEnvironment } from '../sky/skyEnvironment.js';
+import { PostProcess } from '../fx/postProcess.js';
 import { VehicleManager } from '../vehicles/vehicleManager.js';
 import { TrafficSystem } from '../traffic/trafficSystem.js';
 import { PedSystem } from '../peds/pedSystem.js';
@@ -56,6 +57,7 @@ export class Game {
     s.add(this.sky);
     this.lights = createLighting(s);
     this.skyEnv = new SkyEnvironment(this.renderer, s);
+    this.post = new PostProcess(this.renderer);
     this.world = buildWorld(s);
     this.vehicles = new VehicleManager(s);
     this.traffic = new TrafficSystem(this.vehicles, rng);
@@ -273,13 +275,19 @@ export class Game {
     updateLighting(this.lights, this.scene, state, focus, this.drawDistance || 900);
     updateSkyDome(this.sky, state, this.threeCamera, this.time);
     this.skyEnv.update(state);
-    this.renderer.toneMappingExposure = 1.0 + state.night * 0.25;
+    const exposure = 1.0 + state.night * 0.35;
     this.world.signMaterial.emissiveIntensity = 0.25 + state.night * 1.4;
     if (this.police.heli) this.police.heli.night = state.night > 0.3;
     // street lamps near the player light up at night
     const lamps = state.night > 0.3 ? lampHeads.map((l) => [l, l.distanceToSquared(focus)]).sort((a, b) => a[1] - b[1]).slice(0, this.nightLights.length) : [];
     this.nightLights.forEach((l, k) => { if (lamps[k]) { l.position.copy(lamps[k][0]); l.intensity = 30 * state.night; } else l.intensity = 0; });
-    this.renderer.render(this.scene, this.threeCamera);
+    this.post.render(this.scene, this.threeCamera, { exposure, bloom: 0.45 + state.night * 0.5 });
+  }
+
+  // Advances the simulation without drawing (used by automated play tests).
+  debugStep(frames = 30, dt = 1 / 30) {
+    for (let k = 0; k < frames; k++) { this.update(dt); endInputFrame(); }
+    return { x: this.player.pos.x, z: this.player.pos.z, time: this.time };
   }
 
   // Title screen: a slow helicopter flyover of the island.

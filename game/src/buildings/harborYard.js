@@ -22,14 +22,14 @@ export function buildHarborBlock(kit, block, rng) {
     addSign(kit, cx, cz, ix1 - ix0 - 6, iz1 - iz0 - 10, WALK_Y + 7, 'n', rng.pick(['SALTGATE FREIGHT', 'BRAVO LOGISTICS', 'KESTREL MOTORS']), 12, 2);
     return;
   }
-  // container stacks in rows with forklift aisles
-  for (let row = 0; row < 3; row++) {
-    const z = iz0 + 5 + row * 12;
-    for (let x = ix0 + 4; x < ix1 - 6; x += 7.5) {
-      if (rng.chance(0.18)) continue;
+  // container stacks lying east-west in rows, with forklift aisles between rows and gaps for cover
+  for (let row = 0; row < 5; row++) {
+    const z = iz0 + 3 + row * 8;
+    for (let x = ix0 + 7; x < ix1 - 5; x += 13.6) {
+      if (rng.chance(0.22)) continue;
       const stack = rng.int(1, 3);
       for (let s = 0; s < stack; s++) containers.push({ x, y: WALK_Y + s * 2.6, z, yaw: Math.PI / 2, color: rng.pick(CONTAINER_COLORS) });
-      addCollider(x - 1.25, z - 6.1, x + 1.25, z + 6.1, WALK_Y + stack * 2.6, -5, 'container');
+      addCollider(x - 6.1, z - 1.25, x + 6.1, z + 1.25, WALK_Y + stack * 2.6, -5, 'container');
     }
   }
   if (waterSouth) {

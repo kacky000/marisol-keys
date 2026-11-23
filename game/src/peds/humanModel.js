@@ -66,8 +66,9 @@ export function buildHuman(o) {
     return pivot;
   });
   // held weapon (hidden until armed)
-  const gun = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.12, 0.34), new THREE.MeshStandardMaterial({ color: '#1c1c1f', metalness: 0.6, roughness: 0.4 }));
-  gun.position.set(0, -0.62, -0.12);
+  // the barrel runs along the arm so it points wherever the arm aims
+  const gun = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.38, 0.13), new THREE.MeshStandardMaterial({ color: '#1c1c1f', metalness: 0.6, roughness: 0.4 }));
+  gun.position.set(0, -0.78, -0.04);
   gun.visible = false;
   arms[1].add(gun);
   root.scale.setScalar(o.build || 1);
@@ -86,34 +87,36 @@ export function poseHuman(rig, state, speed, dt, aimPitch = 0) {
   u.hips.rotation.set(0, 0, 0);
   u.legs[0].rotation.set(s, 0, 0);
   u.legs[1].rotation.set(-s, 0, 0);
-  u.arms[0].rotation.set(-s * 0.8, 0, 0.05);
-  u.arms[1].rotation.set(s * 0.8, 0, -0.05);
+  // positive X swings a limb forward (toward -Z, the way the body faces)
+  u.arms[0].rotation.set(-s * 0.8, 0, -0.08);
+  u.arms[1].rotation.set(s * 0.8, 0, 0.08);
   if (state === 'aim') {
-    u.arms[1].rotation.set(-Math.PI / 2 - aimPitch, 0, 0);
-    u.arms[0].rotation.set(-Math.PI / 2.4 - aimPitch, 0, 0.5);
+    // aimPitch: camera pitch, negative when aiming down
+    u.arms[1].rotation.set(Math.PI / 2 + aimPitch, 0, -0.06);
+    u.arms[0].rotation.set(Math.PI / 2.15 + aimPitch, 0, 0.62);
   }
   if (state === 'flee') {
-    u.arms[0].rotation.set(-2.8, 0, 0.3);
-    u.arms[1].rotation.set(-2.8, 0, -0.3);
+    u.arms[0].rotation.set(2.9, 0, -0.25);
+    u.arms[1].rotation.set(2.9, 0, 0.25);
   }
   if (state === 'drive') {
-    u.legs[0].rotation.set(-1.4, 0, 0);
-    u.legs[1].rotation.set(-1.4, 0, 0);
-    u.arms[0].rotation.set(-1.1, 0, 0.2);
-    u.arms[1].rotation.set(-1.1, 0, -0.2);
+    u.legs[0].rotation.set(1.45, 0, 0);
+    u.legs[1].rotation.set(1.45, 0, 0);
+    u.arms[0].rotation.set(1.1, 0, 0.2);
+    u.arms[1].rotation.set(1.1, 0, -0.2);
     u.hips.position.y = 0.55;
   }
   if (state === 'jump') {
-    u.legs[0].rotation.set(-0.6, 0, 0);
-    u.legs[1].rotation.set(0.3, 0, 0);
-    u.arms[0].rotation.set(-0.4, 0, 0.6);
-    u.arms[1].rotation.set(-0.4, 0, -0.6);
+    u.legs[0].rotation.set(0.7, 0, 0);
+    u.legs[1].rotation.set(-0.3, 0, 0);
+    u.arms[0].rotation.set(0.5, 0, -0.6);
+    u.arms[1].rotation.set(0.5, 0, 0.6);
   }
   if (state === 'dead') {
     rig.rotation.x = -Math.PI / 2;
     u.hips.position.y = 0.15;
-    u.arms[0].rotation.set(-2.6, 0, 0.6);
-    u.arms[1].rotation.set(-0.3, 0, -0.9);
-    u.legs[0].rotation.set(0.2, 0, 0.15);
+    u.arms[0].rotation.set(2.6, 0, -0.6);
+    u.arms[1].rotation.set(0.3, 0, 0.9);
+    u.legs[0].rotation.set(0.2, 0, -0.15);
   }
 }
