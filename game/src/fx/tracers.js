@@ -21,8 +21,8 @@ export class TracerFX {
   // A bright streak about two thirds of the way along the bullet's path, at most 9 m long.
   shoot(from, to, life = 0.09, color = null) {
     const total = from.distanceTo(to);
-    const len = Math.min(9, total * 0.4);
-    const end = from.clone().lerp(to, 0.68);
+    const len = Math.min(6, total * 0.35);
+    const end = from.clone().lerp(to, 0.55);
     const start = end.clone().lerp(from, Math.min(1, len / Math.max(0.001, end.distanceTo(from))));
     const mesh = new THREE.Mesh(this.geo, color ? this.mat.clone() : this.mat);
     if (color) mesh.material.color.set(color).multiplyScalar(2.5);

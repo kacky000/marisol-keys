@@ -19,7 +19,7 @@ game's own code in the browser. No asset files, no network requests.
 
 | | |
 |---|---|
-| ![Sunwake boardwalk](screenshots/2-sunwake-boardwalk.jpg) | ![Crane Yard 7 shoot-out](screenshots/3-crane-yard-shootout.jpg) |
+| ![Sunwake boardwalk](screenshots/2-sunwake-boardwalk.jpg) | ![Crane Yard 7 shoot-out](screenshots/3-crane-yard-quay-shootout.jpg) |
 | ![Island map on the phone](screenshots/4-island-map-phone.jpg) | |
 
 ## Run it

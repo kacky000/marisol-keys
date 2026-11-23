@@ -228,9 +228,12 @@ export const SCENES = {
       const ctx = { player: game.player, targets: game.targets, fx: null, alert: true };
       for (const e of game.missions.enemies) { if (e.alive) { e.cooldown = 99; e.think(dt, ctx); } else e.think(dt, ctx); }
     },
-    finalize(game) {
+    finalize(game, cam = {}) {
       const p = game.player;
-      p.heading = Math.PI / 2 - 0.12;
+      // face the middle of the crew
+      const foes = game.missions.enemies.filter((q) => q.alive);
+      const mx = foes.reduce((a, e) => a + e.pos.x, 0) / foes.length, mz = foes.reduce((a, e) => a + e.pos.z, 0) / foes.length;
+      p.heading = Math.atan2(mx - p.pos.x, -(mz - p.pos.z));
       p.aiming = true;
       poseHuman(p.rig, 'aim', 0, 0.016, 0.05);
       p.rig.userData.gun.visible = true;
@@ -247,13 +250,18 @@ export const SCENES = {
         poseHuman(e.rig, 'aim', 0, 0.016);
         e.rig.rotation.y = -e.heading;
         const o = new THREE.Vector3(e.pos.x, e.pos.y + 1.45, e.pos.z);
-        const aim = new THREE.Vector3(p.pos.x + rng.range(-1.5, 1.5), p.pos.y + 1.6 + rng.range(0, 1), p.pos.z + rng.range(-1, 1));
+        // rounds kick up the ground just in front of Tessa (keeps streaks out of the camera)
+        const dx = e.pos.x - p.pos.x, dz = e.pos.z - p.pos.z, dd = Math.hypot(dx, dz) || 1;
+        const aim = new THREE.Vector3(p.pos.x + dx / dd * 2.5 + rng.range(-1, 1), p.pos.y + 0.2, p.pos.z + dz / dd * 2.5 + rng.range(-1, 1));
         fireWeapon(e.weapon, o, aim.sub(o).normalize(), e, { people: [], vehicles: [] }, game.fx);
       }
       game.fx.particles.update(0.016);
       game.fx.tracers.update(0.01);
       game.hud.showDistrict({ name: 'Saltgate Harbor', sub: 'CRANE YARD 7' });
-      return { pos: new THREE.Vector3(p.pos.x - 3.4, p.pos.y + 2.4, p.pos.z + 1.5), look: new THREE.Vector3(p.pos.x + 20, p.pos.y + 1.9, p.pos.z - 1.2) };
+      // over the right shoulder, looking down the line of fire
+      const fx = Math.sin(p.heading), fz = -Math.cos(p.heading), rx = Math.cos(p.heading), rz = Math.sin(p.heading);
+      const { back = 3.6, up = 2.4, side = 0.9 } = cam;
+      return { pos: new THREE.Vector3(p.pos.x - fx * back + rx * side, p.pos.y + up, p.pos.z - fz * back + rz * side), look: new THREE.Vector3(p.pos.x + fx * 20, p.pos.y + 1.4, p.pos.z + fz * 20) };
     },
   },
 
@@ -288,6 +296,51 @@ export const SCENES = {
     finalize(game) {
       const p = game.player.vehicle;
       return { pos: new THREE.Vector3(p.pos.x + 12, 4.5, p.pos.z + 0.8), look: new THREE.Vector3(p.pos.x - 30, 3, p.pos.z) };
+    },
+  },
+
+  // 3b. The same fight out on the quay apron under the gantry cranes.
+  quay: {
+    hour: 16.6,
+    setup(game) {
+      game.peds.target = 0;
+      game.traffic.target = 0;
+      const p = game.player;
+      p.placeAt(5 * B + 8, 13 * B + 50, Math.PI / 2 + 0.15);
+      p.giveWeapon('smg', 200);
+      p.weapon = 'smg';
+      p.health = 64;
+      p.armor = 35;
+      p.aiming = true;
+      const enemies = [[5 * B + 26, 13 * B + 55, 'smg'], [5 * B + 33, 13 * B + 51, 'pistol'], [5 * B + 41, 13 * B + 57, 'smg'], [5 * B + 47, 13 * B + 52.5, 'pistol'], [5 * B + 22, 13 * B + 47, 'pistol']];
+      for (const [x, z, w] of enemies) {
+        const e = new Gunman(game.scene, x, z, GANG_OUTFITS[Math.floor(rng.next() * 3)], 'gang', w);
+        e.mode = 'attack';
+        e.preferRange = 30;
+        game.missions.enemies.push(e);
+      }
+      for (const [x, z, h] of [[5 * B + 17, 13 * B + 53, 0.4], [5 * B + 30, 13 * B + 48, 2.2]]) {
+        const dead = new Gunman(game.scene, x, z, GANG_OUTFITS[1], 'gang', 'pistol');
+        dead.state = 'dead';
+        dead.heading = h;
+        game.missions.enemies.push(dead);
+      }
+      const wreck = car(game, 'pickup', 5 * B + 37, 13 * B + 54.5, 1.2, 0, '#2c3e50');
+      wreck.explode();
+      wreck.burning = 99;
+      car(game, 'van', 5 * B + 52, 13 * B + 47.5, 1.57, 0, '#ffffff');
+      game.state.story = 4;
+      game.state.money = 6200;
+      game.missions.active = STORY[4];
+      game.hud.setObjective('CRANE YARD SEVEN', 'Take out <b>Gull\'s crew</b> · 3/7');
+    },
+    steps: 40,
+    tick(game, dt) {
+      const ctx = { player: game.player, targets: game.targets, fx: null, alert: true };
+      for (const e of game.missions.enemies) { if (e.alive) { e.cooldown = 99; e.think(dt, ctx); } else e.think(dt, ctx); }
+    },
+    finalize(game) {
+      return SCENES.harbor.finalize(game, { back: 4.2, up: 2.7, side: 1.6 });
     },
   },
 
