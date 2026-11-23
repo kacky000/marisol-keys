@@ -63,7 +63,7 @@ Any static file server works too: the game is just the files under `game/`.
 - **Landmarks** — the 206 m Lumen Tower with its crown of light rings, rounded art-deco corner
   towers with neon, Ozzie's Bait & Tackle, The Coral Room, the Sunwake pier café, a skyline of
   invented brands (Mango Bay Cola, Palmetto Bank, Vela Cinema, Hotel Esmeralda...).
-- **Driving** — nine invented vehicles (Solara Vela sedan, Kestrel Strata GT, Mako Tradesman
+- **Driving** — ten invented vehicles (Solara Vela sedan, Kestrel Strata GT, Marisol Spyder convertible, Mako Tradesman
   pickup, Keys Cab, Coastline Transit bus, MKPD Interceptor, Sunrise Courier van, Zephyr 400
   motorbike, Riptide 22 speedboat), arcade physics with handbrake drifts, crashes, damage smoke,
   fire and explosions, a speed-sensitive chase camera. Speedboats sail the bay and the open sea.

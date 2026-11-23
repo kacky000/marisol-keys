@@ -308,7 +308,7 @@ export class Player {
         this.vehicle = v;
         v.driver = 'player';
         v.input.brake = 0;
-        this.rig.visible = !v.spec.bike ? false : true;
+        this.rig.visible = !!(v.spec.bike || v.spec.open || v.spec.boat); // seen riding in open vehicles
         emit('player:entered', { vehicle: v });
       }
     } else {
@@ -339,6 +339,14 @@ export class Player {
       this.rig.userData.hips.position.y = 0.85;
       this.syncRig(dt);
       this.rig.rotation.z = v.mesh.rotation.z;
+    } else if (v.spec.open || v.spec.boat) {
+      // seated at the wheel (driver's side, left)
+      poseHuman(this.rig, 'drive', 0, dt);
+      const r = v.right(), f = v.forward();
+      const seatSide = v.spec.boat ? 0 : -0.42, seatBack = v.spec.boat ? 1.4 : 0.55;
+      this.rig.userData.hips.position.y = v.spec.boat ? 0.9 : 0.7;
+      this.rig.position.set(v.pos.x + r.x * seatSide - f.x * seatBack, v.pos.y + (v.spec.boat ? -0.2 : -0.05), v.pos.z + r.z * seatSide - f.z * seatBack);
+      this.rig.rotation.set(0, -v.heading, 0);
     }
     // drive-by: aim and fire to the sides with the pistol or SMG
     const mouse = mouseState();

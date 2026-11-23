@@ -16,6 +16,12 @@ export const VEHICLE_TYPES = {
     maxSpeed: 38, accel: 11, brake: 22, grip: 6.5, steer: 0.55, health: 1200, mass: 1.4,
     cabin: { front: 0.65, back: -0.75, top: 1.85, slopeF: 0.45, slopeB: 0.05 }, bed: true, paints: ['#c0392b', '#2c3e50', '#d9c9a3', '#3b6e4f', '#ececec'],
   },
+  convertible: {
+    name: 'Marisol Spyder', len: 4.4, width: 1.9, height: 1.2, wheelbase: 2.6, wheelR: 0.35,
+    maxSpeed: 52, accel: 16, brake: 28, grip: 8.4, steer: 0.6, health: 800, mass: 0.95,
+    cabin: { front: 0.25, back: -0.9, top: 1.25, slopeF: 0.5, slopeB: 0.2 }, open: true,
+    paints: ['#ff8fb1', '#8fd3c8', '#fff1a8', '#ffffff', '#ff5a36', '#7a5cff'],
+  },
   taxi: {
     name: 'Keys Cab', len: 4.7, width: 1.9, height: 1.5, wheelbase: 2.75, wheelR: 0.36,
     maxSpeed: 42, accel: 12, brake: 25, grip: 7.2, steer: 0.6, health: 950, mass: 1.0,
@@ -48,6 +54,6 @@ export const VEHICLE_TYPES = {
   },
 };
 
-export const TRAFFIC_MIX = ['sedan', 'sedan', 'sedan', 'sports', 'pickup', 'taxi', 'taxi', 'van', 'bike', 'sedan', 'pickup', 'bus'];
+export const TRAFFIC_MIX = ['sedan', 'sedan', 'sedan', 'sports', 'pickup', 'taxi', 'taxi', 'van', 'bike', 'sedan', 'pickup', 'bus', 'convertible', 'convertible'];
 
 export const kmh = (ms) => Math.round(Math.abs(ms) * 3.6);

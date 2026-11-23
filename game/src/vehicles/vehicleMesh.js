@@ -152,7 +152,19 @@ export function buildVehicleMesh(type, spec, paint) {
     body.orientedBox(0, belt - 0.22, -L / 2 - 0.04, W * 0.42, 0.16, 0.05, 0, black);
     body.orientedBox(0, clearance + 0.32, L / 2 + 0.05, 0.5, 0.14, 0.02, 0, tint('#f2f2ea'));
     const roofPaint = spec.police ? '#f4f4f2' : paint;
-    cabin(body, W * 0.94, belt, spec.cabin, paint, roofPaint);
+    if (spec.open) {
+      // open top: raked windshield in a chrome frame, two tan seats with headrests, a rollbar hump
+      const c = spec.cabin, zf = -c.front;
+      body.quad([-W * 0.45, belt, zf], [W * 0.45, belt, zf], [W * 0.42, belt + 0.45, zf + 0.35], [-W * 0.42, belt + 0.45, zf + 0.35], [0, 0.6, -0.8], [[0, 0], [1, 0], [1, 1], [0, 1]], tint(GLASS));
+      body.orientedBox(0, belt + 0.46, zf + 0.36, W * 0.86, 0.04, 0.04, 0, chrome);
+      body.orientedBox(0, belt - 0.1, 0.3, W * 0.86, 0.12, 1.9, 0, tint('#3a2a22'));
+      for (const s of [-1, 1]) {
+        body.orientedBox(s * 0.42, belt + 0.12, 0.55, 0.55, 0.3, 0.6, 0, tint('#d9b38c'));
+        body.orientedBox(s * 0.42, belt + 0.45, 0.85, 0.5, 0.55, 0.14, 0, tint('#d9b38c'));
+        body.orientedBox(s * 0.42, belt + 0.78, 0.86, 0.26, 0.18, 0.12, 0, tint('#d9b38c'));
+      }
+      body.orientedBox(0, belt + 0.05, 1.45, W * 0.8, 0.14, 0.7, 0, paintC);
+    } else cabin(body, W * 0.94, belt, spec.cabin, paint, roofPaint);
     // mirrors
     for (const s of [-1, 1]) body.orientedBox(s * (W / 2 + 0.11), belt + 0.12, -spec.cabin.front + 0.18, 0.2, 0.13, 0.12, 0, paintC);
     // lights: wide tail-light strip, headlight pair, amber corner markers
