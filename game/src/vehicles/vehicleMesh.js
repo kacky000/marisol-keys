@@ -21,6 +21,20 @@ tireGeo.rotateZ(Math.PI / 2);
 const rimGeo = new THREE.CylinderGeometry(0.62, 0.62, 1.04, 10);
 rimGeo.rotateZ(Math.PI / 2);
 
+// A soft elongated pool of light on the road: brightest near the car, fading out to the sides and far end.
+const beamMat = new THREE.ShaderMaterial({
+  vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: `varying vec2 vUv;
+    void main() {
+      float across = 1.0 - smoothstep(0.25, 0.5, abs(vUv.x - 0.5) / (0.55 + vUv.y * 0.45));
+      float along = smoothstep(0.0, 0.1, vUv.y) * (1.0 - smoothstep(0.5, 1.0, vUv.y));
+      gl_FragColor = vec4(vec3(1.0, 0.9, 0.7) * across * along * 0.5, 1.0);
+    }`,
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+});
+const beamGeo = new THREE.PlaneGeometry(5, 12);
+beamGeo.rotateX(-Math.PI / 2);
+
 let decalTex = null;
 function policeDecal() {
   decalTex ??= canvasTexture(256, 64, (g, w, h) => {
@@ -198,6 +212,11 @@ export function buildVehicleMesh(type, spec, paint) {
   const bodyMesh = body.toMesh(bodyMat);
   const glowMesh = glow.toMesh(glowMat, { cast: false });
   group.add(bodyMesh, glowMesh);
-  group.userData = { wheels, lightbar, body: bodyMesh };
+  // headlight pool on the road ahead, shown after dusk
+  const beam = new THREE.Mesh(beamGeo, beamMat);
+  beam.position.set(0, 0.06, -L / 2 - 6.5);
+  beam.visible = false;
+  group.add(beam);
+  group.userData = { wheels, lightbar, body: bodyMesh, beam };
   return group;
 }

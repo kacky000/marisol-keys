@@ -358,7 +358,12 @@ export class Game {
       this.shadowTimer = 20;
       const near = (o, r) => (o.pos.x - focus.x) ** 2 + (o.pos.z - focus.z) ** 2 < r * r;
       for (const ped of this.peds.peds) { const on = near(ped, 60); ped.rig.traverse((m) => { if (m.isMesh) m.castShadow = on; }); }
-      for (const car of this.vehicles.list) { const on = near(car, 90); car.mesh.traverse((m) => { if (m.isMesh) m.castShadow = on; }); }
+      for (const car of this.vehicles.list) {
+        const on = near(car, 90);
+        car.mesh.traverse((m) => { if (m.isMesh) m.castShadow = on; });
+        const beam = car.mesh.userData.beam;
+        if (beam) beam.visible = state.night > 0.35 && !car.wrecked && !car.spec.boat && near(car, 160);
+      }
     }
     const v = this.player.vehicle;
     const speedBlur = v ? Math.max(0, Math.abs(v.speed) - 24) / 40 : 0;
