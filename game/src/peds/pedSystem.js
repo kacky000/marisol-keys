@@ -1,6 +1,7 @@
 // Pedestrians: stroll sidewalk loops around blocks and the boardwalk, chat in pairs, flee from
 // gunfire and speeding cars, get knocked down, and report crimes they witness.
 
+import * as THREE from 'three';
 import { buildHuman, poseHuman, randomOutfit } from './humanModel.js';
 import { BLOCK, ROAD_HALF, blockLetter, isUrban } from '../world/cityPlan.js';
 import { groundHeight } from '../world/groundHeight.js';
@@ -13,6 +14,8 @@ import { nodes, lightFor } from '../roads/roadNetwork.js';
 
 let pedId = 1;
 export const pedClock = { time: 0 };   // game time, for reading the crossing lights
+const PHONE_GEO = new THREE.BoxGeometry(0.07, 0.14, 0.02);
+const PHONE_MAT = new THREE.MeshStandardMaterial({ color: '#111', emissive: '#4cc9f0', emissiveIntensity: 0.4 });
 
 export class Ped {
   constructor(scene, x, z, outfit, kind = 'civilian') {
@@ -127,6 +130,16 @@ export class Ped {
       else this.pos.y += (gy - this.pos.y) * Math.min(1, dt * 10);
     }
     poseHuman(this.rig, this.state === 'flee' ? 'flee' : moving ? 'walk' : 'idle', moving, dt);
+    // some people are glued to their phones: a call at the ear, or a screen held low
+    if (this.state !== 'flee' && this.id % 4 === 1) {
+      const arm = this.rig.userData.arms[1];
+      if (moving) arm.rotation.set(1.0, 0, 0.45); else arm.rotation.set(2.4, 0, 0.9);
+      if (!this.phone) {
+        this.phone = new THREE.Mesh(PHONE_GEO, PHONE_MAT);
+        this.phone.position.set(0, -0.68, -0.05);
+        arm.add(this.phone);
+      }
+    }
     this.rig.position.set(this.pos.x, this.pos.y, this.pos.z);
     this.rig.rotation.y = -this.heading;
   }
