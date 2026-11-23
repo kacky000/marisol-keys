@@ -5,6 +5,7 @@ import { PLACES } from '../world/cityPlan.js';
 import { WEAPONS } from '../combat/weaponDefs.js';
 import { wasPressed } from '../core/input.js';
 import { emit } from '../core/events.js';
+import { STORE, clothingStore } from './clothingStore.js';
 
 export const PROPERTIES = [
   { id: 'deco-loft', name: 'Pastel Mile Loft', x: 11 * 64 - 9.5, z: 7 * 64 + 30, price: 6000, income: 300 },
@@ -17,6 +18,7 @@ export const SHOPS = [
   { id: 'guns', name: 'Keys Tactical', letter: 'T', ...PLACES.gunShop },
   { id: 'paint', name: 'Pastel Paint & Body', letter: 'P', ...PLACES.paintShop },
   { id: 'garage', name: 'Sunbelt Garage', letter: 'G', ...PLACES.garage },
+  { id: 'threads', name: STORE.name, letter: 'S', x: STORE.x, z: STORE.z },
 ];
 
 export class Shops {
@@ -47,6 +49,7 @@ export class Shops {
       if (s.id === 'guns' && !p.vehicle) this.gunShop();
       if (s.id === 'paint' && p.vehicle) this.paintShop();
       if (s.id === 'garage' && p.vehicle) this.garage();
+      if (s.id === 'threads' && !p.vehicle) clothingStore(g, wasPressed);
     }
     // safehouse: save and sleep until the next morning
     const sh = PLACES.safehouse;

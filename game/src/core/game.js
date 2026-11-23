@@ -25,6 +25,7 @@ import { Pickups } from '../activities/pickups.js';
 import { StuntJumps } from '../activities/stuntJumps.js';
 import { Shops, tuningFor } from '../economy/shops.js';
 import { playerTuning } from '../vehicles/vehicle.js';
+import { outfitLook } from '../economy/clothingStore.js';
 // effects
 import { ParticleFX } from '../fx/particles.js';
 import { TracerFX } from '../fx/tracers.js';
@@ -187,6 +188,7 @@ export class Game {
     p.ammo = { fists: Infinity, ...this.state.weapons.ammo };
     p.clip = { fists: Infinity, pistol: 0, smg: 0, shotgun: 0 };
     for (const w of p.owned) p.reload(w, true);
+    p.applyOutfit(outfitLook(this.state.outfit || 'teal'));
     p.placeAt(this.state.position.x, this.state.position.z, this.state.position.heading);
     this.shops.lastDay = Math.floor((this.state.hour - 8) / 24);
     this.pages.refresh();

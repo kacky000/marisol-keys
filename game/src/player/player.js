@@ -28,14 +28,8 @@ export const TESSA_OUTFIT = { skin: '#d9a07a', shirt: '#19c3b4', pants: '#3a3f4a
 export class Player {
   constructor(scene) {
     this.team = 'player';
-    this.rig = buildHuman(TESSA_OUTFIT);
-    // ponytail
-    const tail = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.3, 0.1), new THREE.MeshStandardMaterial({ color: '#2b1b12' }));
-    tail.position.set(0, 0.85, 0.19);
-    tail.rotation.x = 0.4;
-    this.rig.userData.hips.add(tail);
-    scene.add(this.rig);
     this.scene = scene;
+    this.applyOutfit(TESSA_OUTFIT);
     this.pos = new THREE.Vector3(0, 0, 0);
     this.vy = 0;
     this.heading = 0;
@@ -58,6 +52,19 @@ export class Player {
   }
 
   get alive() { return !this.dead; }
+
+  // Rebuilds Tessa's model in a given outfit (her trademark ponytail stays).
+  applyOutfit(outfit) {
+    const old = this.rig;
+    this.rig = buildHuman(outfit);
+    const tail = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.3, 0.1), new THREE.MeshStandardMaterial({ color: '#2b1b12' }));
+    tail.position.set(0, 0.85, 0.19);
+    tail.rotation.x = 0.4;
+    this.rig.userData.hips.add(tail);
+    if (old) { this.rig.visible = old.visible; this.scene.remove(old); }
+    this.scene.add(this.rig);
+    if (this.pos) this.syncRig();
+  }
 
   placeAt(x, z, heading = 0) {
     this.pos.set(x, groundHeight(x, z), z);

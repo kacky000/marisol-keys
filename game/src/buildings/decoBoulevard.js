@@ -74,6 +74,9 @@ export function buildDecoBlock(kit, block, rng) {
     kit.glow.box(ix1 + 0.2, WALK_Y + 8.3, (iz0 + iz1) / 2, 0.12, 0.2, 12.5, tint('#ff4fa3'));
     kit.glow.box(ix1 + 0.2, WALK_Y + 4.9, (iz0 + iz1) / 2, 0.12, 0.2, 12.5, tint('#ff4fa3'));
   }
+  if (block.i === 10 && block.j === 6) {
+    kit.signs.push({ x: ix1 + 0.35, y: WALK_Y + 4.9, z: block.z0 + 34, yaw: Math.PI / 2, w: 9, h: 2.0, brand: 'SUNWAKE THREADS' });
+  }
   // courtyard pool and palms
   kit.trim.box(block.cx, WALK_Y, block.cz, 9, 0.35, 6, tint('#e8e1d4'));
   kit.glow.box(block.cx, WALK_Y + 0.36, block.cz, 8, 0.02, 5, tint('#38c8e0'));
