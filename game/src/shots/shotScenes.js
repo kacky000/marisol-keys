@@ -105,6 +105,17 @@ export const SCENES = {
       h.mesh.position.copy(h.pos);
       game.wanted.zone = { x: p.pos.x, z: p.pos.z, r: game.wanted.zoneRadius() };
       game.wanted.seen = true;
+      // a cab that lost an argument with a cruiser burns on the kerb ahead, smoke rising into the sunset
+      const wreck = car(game, 'taxi', p.pos.x - 21, 4 * B + 7.6, -Math.PI / 2 + 0.7, 0);
+      wreck.wrecked = true; wreck.health = 0;
+      wreck.mesh.userData.body.material = wreck.mesh.userData.body.material.clone();
+      wreck.mesh.userData.body.material.color.set('#3a3330');
+      wreck.syncMesh(0.016, 0, game.time);
+      for (let k = 0; k < 26; k++) {
+        const up = k * 0.55;
+        game.fx.particles.smoke.emit({ x: wreck.pos.x + up * 0.3 + (rng.next() - 0.5), y: 1.4 + up * 1.1, z: wreck.pos.z + up * 0.35, vy: 0.5, life: 3, size: 2.6 + up * 0.7, grow: 0, color: '#4a423e', alpha: 0.6 - k * 0.018 });
+      }
+      for (let k = 0; k < 14; k++) game.fx.particles.fire(wreck.pos.x, wreck.pos.y + 1, wreck.pos.z);
       // tyre smoke kicked up behind the racing cars
       for (const v of [p, ...units.slice(0, 2)]) {
         const f = v.forward(), r = v.right();
