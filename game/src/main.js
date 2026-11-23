@@ -1,12 +1,14 @@
-// Entry point: builds the island, then either runs a scripted screenshot scene (?shot=name)
-// or opens the title screen over a live flyover and starts the game loop.
+// Entry point: mounts the interface, builds the island, then either runs a scripted screenshot
+// scene (?shot=name) or opens the title screen over a live flyover and starts the game loop.
 
-import { createRenderer, createCamera } from './core/renderer.js';
 import { Game } from './core/game.js';
+import { mountScreens } from './ui/screenLayout.js';
+import { createRenderer, createCamera } from './core/renderer.js';
 import { runShot } from './shots/shotDirector.js';
 
 const params = new URLSearchParams(location.search);
 const shot = params.get('shot');
+mountScreens();
 const stage = document.getElementById('stage');
 const renderer = createRenderer(stage, { preserve: !!shot });
 const camera = createCamera();

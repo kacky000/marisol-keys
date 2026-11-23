@@ -2,36 +2,44 @@
 // respawns, pause, phone, radio, saving, and the title-screen flyover.
 
 import * as THREE from 'three';
-import { fitToWindow } from './renderer.js';
-import { initInput, endInputFrame, wasPressed, menuPressed, setInputEnabled, pointerLocked } from './input.js';
-import { on } from './events.js';
-import { rng } from './rng.js';
+// story and missions
+import { MissionRunner } from '../missions/missionRunner.js';
+import { ContactCast } from '../story/contactCharacters.js';
+// police and the wanted level
+import { WantedLevel } from '../police/wantedLevel.js';
+import { PoliceDispatch } from '../police/policeDispatch.js';
+import { startCrimeWatch } from '../police/crimeWatch.js';
+import { DispatchRadio } from '../police/dispatchRadio.js';
+// the player, vehicles, traffic and people
+import { Player } from '../player/player.js';
+import { VehicleManager } from '../vehicles/vehicleManager.js';
+import { TrafficSystem } from '../traffic/trafficSystem.js';
+import { PedSystem } from '../peds/pedSystem.js';
+import { GameCamera } from '../camera/gameCamera.js';
+// activities and the economy
+import { SideJobs } from '../activities/sideJobs.js';
+import { StreetEvents } from '../activities/streetEvents.js';
+import { TidePages } from '../activities/tidePages.js';
+import { Pickups } from '../activities/pickups.js';
+import { Shops } from '../economy/shops.js';
+// effects
+import { ParticleFX } from '../fx/particles.js';
+import { TracerFX } from '../fx/tracers.js';
+import { startDamageEffects } from '../fx/damageEffects.js';
+import { PostProcess } from '../fx/postProcess.js';
+// the island, sky and light
 import { buildWorld } from '../world/worldBuilder.js';
 import { districtAtPoint, PLACES } from '../world/cityPlan.js';
 import { createSkyDome, updateSkyDome } from '../sky/skyDome.js';
 import { createLighting, updateLighting } from '../sky/sunLight.js';
 import { skyStateAt } from '../sky/timeOfDay.js';
 import { SkyEnvironment } from '../sky/skyEnvironment.js';
-import { PostProcess } from '../fx/postProcess.js';
-import { VehicleManager } from '../vehicles/vehicleManager.js';
-import { TrafficSystem } from '../traffic/trafficSystem.js';
-import { PedSystem } from '../peds/pedSystem.js';
-import { Player } from '../player/player.js';
-import { GameCamera } from '../camera/gameCamera.js';
-import { ParticleFX } from '../fx/particles.js';
-import { TracerFX } from '../fx/tracers.js';
-import { startDamageEffects } from '../fx/damageEffects.js';
-import { WantedLevel } from '../police/wantedLevel.js';
-import { PoliceDispatch } from '../police/policeDispatch.js';
-import { startCrimeWatch } from '../police/crimeWatch.js';
-import { DispatchRadio } from '../police/dispatchRadio.js';
-import { MissionRunner } from '../missions/missionRunner.js';
-import { SideJobs } from '../activities/sideJobs.js';
-import { Shops } from '../economy/shops.js';
-import { TidePages } from '../activities/tidePages.js';
-import { ContactCast } from '../story/contactCharacters.js';
-import { Pickups } from '../activities/pickups.js';
-import { StreetEvents } from '../activities/streetEvents.js';
+// engine plumbing
+import { fitToWindow } from './renderer.js';
+import { initInput, endInputFrame, wasPressed, menuPressed, setInputEnabled, pointerLocked } from './input.js';
+import { on } from './events.js';
+import { rng } from './rng.js';
+// interface
 import { Hud } from '../ui/hud.js';
 import { DialogueBox } from '../ui/dialogueBox.js';
 import { PhoneScreen } from '../ui/phoneScreen.js';
