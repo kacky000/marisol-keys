@@ -39,7 +39,7 @@ export class Gunman extends Ped {
 
   hurt(amount, source) {
     // heavy hits shove the gunman back and stagger their aim for a moment
-    if (source && amount >= 15) {
+    if (source && Number.isFinite(source.x) && Number.isFinite(source.z) && amount >= 15) {
       const dx = this.pos.x - source.x, dz = this.pos.z - source.z, d = Math.hypot(dx, dz) || 1;
       this.pos.x += (dx / d) * 0.35; this.pos.z += (dz / d) * 0.35;
       this.cooldown = Math.max(this.cooldown, 0.6);

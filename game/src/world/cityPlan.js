@@ -55,7 +55,7 @@ export const CAUSEWAYS = [
 ];
 
 export function blockLetter(i, j) {
-  if (i < 0 || j < 0 || i >= GRID || j >= GRID) return '~';
+  if (!(i >= 0 && j >= 0 && i < GRID && j < GRID)) return '~'; // also catches NaN
   return DISTRICT_MAP[j][i];
 }
 

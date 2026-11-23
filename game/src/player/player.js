@@ -1,5 +1,6 @@
-// The protagonist, Tessa Vane: walking, sprinting, jumping, punching, shooting, and stealing
-// cars with a walk-to-door / pull-the-driver-out / slide-in animation.
+// The protagonist, Tessa Vane: walking, sprinting, jumping, crouching, punching and shooting on
+// foot; her outfit, health and arsenal. Car entry and driving are in vehicleEntry.js and
+// drivingControls.js.
 
 import * as THREE from 'three';
 import { buildHuman, poseHuman } from '../peds/humanModel.js';
@@ -10,18 +11,8 @@ import { WEAPONS, WEAPON_ORDER } from '../combat/weaponDefs.js';
 import { emit } from '../core/events.js';
 import { dampAngle } from '../core/mathUtil.js';
 import { fireWeapon } from '../combat/gunplay.js';
-
-// Nearest dry footing within a few metres of a boat (quay, pier or beach), or null.
-function landingSpot(x, z) {
-  for (const r of [3, 4.5, 6, 7.5]) {
-    for (let k = 0; k < 16; k++) {
-      const a = (k / 16) * Math.PI * 2;
-      const px = x + Math.cos(a) * r, pz = z + Math.sin(a) * r;
-      if (groundHeight(px, pz) > -0.4) return { x: px, z: pz };
-    }
-  }
-  return null;
-}
+import { tryEnterVehicle, updateEnterExit } from './vehicleEntry.js';
+import { updateDriving } from './drivingControls.js';
 
 export const TESSA_OUTFIT = { skin: '#d9a07a', shirt: '#19c3b4', pants: '#3a3f4a', hair: '#2b1b12', shorts: false, hat: null, shades: true, shoes: '#f5f5f5', build: 1.0, longSleeves: false };
 
@@ -265,119 +256,10 @@ export class Player {
     if (this.clip[this.weapon] === 0 && this.ammo[this.weapon] > 0) this.reload();
   }
 
-  tryEnterVehicle(ctx) {
-    // boats sit off the quay, so they can be boarded from a little further away
-    const v = ctx.vehicles.nearest(this.pos.x, this.pos.z, 4.5, (c) => !c.wrecked && c.driver !== 'player')
-      || ctx.vehicles.nearest(this.pos.x, this.pos.z, 9.5, (c) => c.spec.boat && !c.wrecked && c.driver !== 'player');
-    if (!v) return;
-    const right = v.right();
-    const side = ((this.pos.x - v.pos.x) * right.x + (this.pos.z - v.pos.z) * right.z) > 0 ? 1 : -1;
-    this.enter = { mode: 'in', vehicle: v, t: 0, side, start: this.pos.clone(), jacked: v.driver && v.driver !== 'player' };
-    emit('player:entering', { vehicle: v, jacked: !!this.enter.jacked });
-  }
-
-  updateEnterExit(dt, ctx) {
-    const e = this.enter;
-    const v = e.vehicle;
-    e.t += dt;
-    const door = e.target || v.doorPoint(e.side);
-    if (e.mode === 'in') {
-      if (e.t < 0.45) {
-        // walk to the door
-        const k = e.t / 0.45;
-        this.pos.x = e.start.x + (door.x - e.start.x) * k;
-        this.pos.z = e.start.z + (door.z - e.start.z) * k;
-        this.heading = dampAngle(this.heading, Math.atan2(v.pos.x - door.x, -(v.pos.z - door.z)), 14, dt);
-        poseHuman(this.rig, 'walk', 3, dt);
-      } else if (e.t < 0.95) {
-        if (e.jacked && !e.pulled) {
-          e.pulled = true;
-          emit('player:carjack', { vehicle: v, door, side: e.side });
-          v.driver = null;
-          v.input.throttle = 0; v.input.brake = 1;
-        }
-        // slide into the seat
-        const k = (e.t - 0.45) / 0.5;
-        this.pos.x = door.x + (v.pos.x - door.x) * k * 0.8;
-        this.pos.z = door.z + (v.pos.z - door.z) * k * 0.8;
-        this.heading = dampAngle(this.heading, v.heading, 10, dt);
-        poseHuman(this.rig, 'drive', 0, dt);
-        this.rig.userData.arms[e.side > 0 ? 0 : 1].rotation.x = 1.6 + Math.sin(e.t * 20) * 0.3;
-      } else {
-        this.enter = null;
-        this.vehicle = v;
-        v.driver = 'player';
-        v.input.brake = 0;
-        this.rig.visible = !!(v.spec.bike || v.spec.open || v.spec.boat); // seen riding in open vehicles
-        emit('player:entered', { vehicle: v });
-      }
-    } else {
-      const k = Math.min(1, e.t / 0.5);
-      this.pos.x = v.pos.x + (door.x - v.pos.x) * k;
-      this.pos.z = v.pos.z + (door.z - v.pos.z) * k;
-      this.pos.y = groundHeight(this.pos.x, this.pos.z);
-      poseHuman(this.rig, 'walk', 2, dt);
-      if (e.t >= 0.5) { this.enter = null; emit('player:exited', { vehicle: v }); }
-    }
-    this.syncRig(dt);
-  }
-
-  updateDriving(dt, ctx) {
-    const v = this.vehicle;
-    const locked = this.controlsLocked;
-    v.input.throttle = !locked && isDown('KeyW') ? 1 : 0;
-    v.input.brake = !locked && isDown('KeyS') ? 1 : 0;
-    v.input.steer = locked ? 0 : (isDown('KeyD') ? 1 : 0) - (isDown('KeyA') ? 1 : 0);
-    v.input.handbrake = !locked && isDown('Space');
-    if (this.autoDrive) Object.assign(v.input, this.autoDrive); // scripted scenes
-    if (!locked && wasPressed('KeyH')) emit('sound', { name: 'horn' });
-    if (!locked && v.spec.police && wasPressed('KeyG')) v.sirenOn = !v.sirenOn;
-    this.pos.set(v.pos.x, v.pos.y, v.pos.z);
-    this.heading = v.heading;
-    if (v.spec.bike) {
-      poseHuman(this.rig, 'drive', 0, dt);
-      this.rig.userData.hips.position.y = 0.85;
-      this.syncRig(dt);
-      this.rig.rotation.z = v.mesh.rotation.z;
-    } else if (v.spec.open || v.spec.boat) {
-      // seated at the wheel (driver's side, left)
-      poseHuman(this.rig, 'drive', 0, dt);
-      const r = v.right(), f = v.forward();
-      const seatSide = v.spec.boat ? 0 : -0.42, seatBack = v.spec.boat ? 1.4 : 0.55;
-      this.rig.userData.hips.position.y = v.spec.boat ? 0.9 : 0.7;
-      this.rig.position.set(v.pos.x + r.x * seatSide - f.x * seatBack, v.pos.y + (v.spec.boat ? -0.2 : -0.05), v.pos.z + r.z * seatSide - f.z * seatBack);
-      this.rig.rotation.set(0, -v.heading, 0);
-    }
-    // drive-by: aim and fire to the sides with the pistol or SMG
-    const mouse = mouseState();
-    this.aiming = !locked && mouse.right && this.weapon !== 'shotgun' && this.weapon !== 'fists';
-    if (this.aiming && mouse.left && this.cooldown <= 0) this.fire(ctx);
-    if (!locked && (wasPressed('Digit2'))) this.selectWeapon('pistol');
-    if (!locked && (wasPressed('Digit3'))) this.selectWeapon('smg');
-    let shore = null;
-    if (v.spec.boat && !locked && wasPressed('KeyF')) {
-      shore = landingSpot(v.pos.x, v.pos.z);
-      if (!shore) emit('hud:prompt', { html: 'Bring the boat alongside a quay or the beach to get out' });
-    }
-    if (!locked && wasPressed('KeyF') && Math.abs(v.speed) < 9 && (!v.spec.boat || shore)) {
-      if (shore) v.vel.set(0, 0);
-      this.vehicle = null;
-      v.driver = null;
-      v.input.throttle = 0; v.input.brake = 0.4; v.input.steer = 0; v.input.handbrake = true;
-      this.rig.visible = true;
-      this.rig.rotation.z = 0;
-      this.enter = { mode: 'out', vehicle: v, t: 0, side: -1, target: shore };
-      emit('player:exiting', { vehicle: v });
-    }
-    if (v.wrecked && v.health <= 0 && !this.dead) {
-      this.hurt(60, { explosion: true });
-      this.vehicle = null;
-      v.driver = null;
-      this.rig.visible = true;
-      const door = v.doorPoint(-1);
-      this.pos.set(door.x, groundHeight(door.x, door.z), door.z);
-    }
-  }
+  // Vehicles: entering, leaving and driving live in their own modules.
+  tryEnterVehicle(ctx) { tryEnterVehicle(this, ctx.vehicles); }
+  updateEnterExit(dt) { updateEnterExit(this, dt); }
+  updateDriving(dt, ctx) { updateDriving(this, dt, ctx); }
 
   syncRig() {
     this.rig.position.set(this.pos.x, this.pos.y, this.pos.z);
