@@ -72,7 +72,7 @@ Any static file server works too: the game is just the files under `game/`.
   cars, boats on the water, and random street events: police pursuits, street racers, muggings
   you can break up for a reward.
 - **Wanted level** — one to five stars from crimes the city sees; MKPD cruisers that route
-  through the streets and ram, officers who bail out and shoot, roadblocks from three stars, the
+  through the streets and ram, officers who bail out and shoot, roadblocks with spike strips from three stars, the
   helicopter from four; break line of sight and leave the search circle to escape. Busted and
   wasted both have consequences.
 - **Combat** — fists, pistol, SMG and shotgun with muzzle flash, tracers, sparks and blood;
