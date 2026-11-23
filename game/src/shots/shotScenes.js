@@ -132,7 +132,9 @@ export const SCENES = {
       game.fx.particles.update(0.05);
       game.hud.showDistrict({ name: 'Pastel Mile', sub: 'SUNDOWN BOULEVARD' });
       game.dispatch.show('Air One is up. Suspect westbound on Sundown Boulevard, all units converge.');
-      return { pos: new THREE.Vector3(p.pos.x + 12.5, 4.3, p.pos.z + 0.9), look: new THREE.Vector3(p.pos.x - 30, 2.6, p.pos.z + 0.2), roll: -0.045 };
+      const q = new URLSearchParams(location.search);
+      const back = Number(q.get('back') || 12.5), up = Number(q.get('up') || 4.3);
+      return { pos: new THREE.Vector3(p.pos.x + back, up, p.pos.z + 0.9), look: new THREE.Vector3(p.pos.x - 30, 2.6, p.pos.z + 0.2), roll: -0.045 };
     },
   },
 
