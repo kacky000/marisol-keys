@@ -160,9 +160,9 @@ export class Ped {
       if (gy < -0.6) { this.pos.x -= Math.sin(this.heading) * moving * dt * 2; this.pos.z += Math.cos(this.heading) * moving * dt * 2; this.heading += Math.PI * 0.7; }
       else this.pos.y += (gy - this.pos.y) * Math.min(1, dt * 10);
     }
-    poseHuman(this.rig, this.state === 'flee' ? 'flee' : moving ? 'walk' : 'idle', moving, dt);
+    poseHuman(this.rig, this.state === 'flee' ? 'flee' : moving ? (this.jogger ? 'run' : 'walk') : 'idle', moving, dt);
     // some people are glued to their phones: a call at the ear, or a screen held low
-    if (this.state !== 'flee' && this.id % 4 === 1) {
+    if (this.state !== 'flee' && this.id % 4 === 1 && !this.jogger) {
       const arm = this.rig.userData.arms[1];
       if (moving) arm.rotation.set(1.0, 0, 0.45); else arm.rotation.set(2.4, 0, 0.9);
       if (!this.phone) {
@@ -219,6 +219,11 @@ export function planStroll(x, z, rand) {
 }
 
 const BUSY = { A: 1.4, S: 1.6, D: 1.2, R: 0.8, C: 1.0, P: 0.9, H: 0.25, V: 0.3 };
+
+function joggerOutfit(rng) {
+  const o = randomOutfit(rng);
+  return { ...o, shorts: true, dress: null, bag: null, hat: rng.chance(0.4) ? 'cap' : null, shirt: rng.pick(['#ff3f8e', '#19c3b4', '#ffd23f', '#5b7cff', '#ffffff']), shoes: '#f5f5f5' };
+}
 
 export class PedSystem {
   constructor(scene, rng) {
@@ -305,7 +310,10 @@ export class PedSystem {
       this.timer = 0.2;
       const pt = this.findSpawnPoint(px, pz, 35, 140);
       if (pt) {
-        const ped = this.spawnAt(pt.x, pt.z);
+        // about one in ten is out for a run: shorts, sports top, jogging pace
+        const jogger = !pt.sunbathe && !pt.wade && this.rng.next() < 0.1;
+        const ped = this.spawnAt(pt.x, pt.z, jogger ? joggerOutfit(this.rng) : null);
+        if (jogger) { ped.jogger = true; ped.speed = 3.1 + this.rng.next() * 0.6; }
         if (pt.sunbathe) { ped.state = 'sunbathe'; ped.outfit.shorts = true; }
         if (pt.wade) { ped.state = 'wade'; ped.heading = Math.PI / 2 + (this.rng.next() - 0.5); }
       }
