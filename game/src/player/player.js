@@ -197,7 +197,17 @@ export class Player {
     const cam = ctx.camera;
     const origin = new THREE.Vector3(this.pos.x + Math.cos(this.heading) * 0.3 + Math.sin(this.heading) * 0.5, this.pos.y + 1.45, this.pos.z + Math.sin(this.heading) * 0.3 - Math.cos(this.heading) * 0.5);
     const target = cam.aimPoint(90);
-    const dir = target.sub(origin).normalize();
+    let dir = target.sub(origin).normalize();
+    // aim assist: snap to the chest of a hostile within a few degrees of the crosshair
+    let best = 0.07;
+    for (const q of ctx.targets.people) {
+      if (q === this || !q.alive || q.kind === 'civilian') continue;
+      const to = new THREE.Vector3(q.pos.x - origin.x, q.pos.y + 1.3 - origin.y, q.pos.z - origin.z);
+      const d = to.length();
+      if (d > 70) continue;
+      const ang = Math.acos(Math.min(1, to.dot(dir) / d));
+      if (ang < best) { best = ang; dir = to.divideScalar(d); }
+    }
     return { origin, dir };
   }
 
