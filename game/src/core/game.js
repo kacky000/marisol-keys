@@ -376,9 +376,19 @@ export class Game {
 
   loop() {
     let last = performance.now();
+    // adaptive resolution: if frames run long, render fewer pixels; recover when there is headroom
+    let avg = 16, scale = 1, settle = 0;
+    const base = this.renderer.getPixelRatio();
     const frame = (now) => {
-      const dt = Math.min(0.05, (now - last) / 1000);
+      const raw = now - last;
+      const dt = Math.min(0.05, raw / 1000);
       last = now;
+      avg += (raw - avg) * 0.05;
+      settle -= raw;
+      if (settle <= 0 && this.running) {
+        const next = avg > 30 ? Math.max(0.6, scale - 0.1) : avg < 18 ? Math.min(1, scale + 0.05) : scale;
+        if (next !== scale) { scale = next; this.renderer.setPixelRatio(base * scale); settle = 1500; }
+      }
       if (this.running) {
         this.update(dt);
         this.render();

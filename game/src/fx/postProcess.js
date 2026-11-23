@@ -107,9 +107,9 @@ export class PostProcess {
   }
 
   setSize(w, h) {
-    if (this.w === w && this.h === h) return;
-    this.w = w; this.h = h;
     const pr = this.renderer.getPixelRatio();
+    if (this.w === w && this.h === h && this.pr === pr) return;
+    this.w = w; this.h = h; this.pr = pr;
     this.sceneRT.setSize(w * pr, h * pr);
     const bw = Math.max(1, Math.floor(w / 4)), bh = Math.max(1, Math.floor(h / 4));
     this.brightRT.setSize(bw, bh);
