@@ -37,19 +37,41 @@ export function buildVillaBlock(kit, block, rng) {
   for (let k = 0; k < 4; k++) kit.shrubs.push({ x: rng.range(ix0 + 3, ix1 - 3), z: iz1 - rng.range(3, 5), y: y0, size: rng.range(0.8, 1.2), flowering: rng.chance(0.5) });
 }
 
-// The green hills rising north of the villas, a backdrop for the skyline.
+// The Mirador ridge north of the island: a displaced heightfield of rolling hills, green in the
+// folds and sun-dried on the crests, speckled with dark scrub.
+const PEAKS = [[200, -110, 130, 60], [320, -170, 170, 95], [450, -130, 150, 72], [110, -80, 100, 38], [580, -200, 210, 118], [740, -170, 170, 80], [880, -150, 140, 50], [20, -120, 120, 45]];
+
+function ridgeHeight(x, z) {
+  let h = 0;
+  for (const [px, pz, r, ph] of PEAKS) {
+    const d = Math.hypot(x - px, z - pz) / r;
+    if (d < 1.6) h = Math.max(h, ph * Math.exp(-d * d * 1.6));
+  }
+  // gullies and knobs
+  h += Math.sin(x * 0.045) * Math.cos(z * 0.06) * 4 + Math.sin(x * 0.13 + z * 0.09) * 1.5;
+  return h - 3;
+}
+
 export function buildHills(batch) {
-  const green = tint('#6d9a4f'), dry = tint('#a89a62');
-  const peaks = [[200, -90, 120, 60], [300, -140, 160, 90], [420, -110, 140, 70], [120, -60, 90, 40], [540, -170, 200, 110], [700, -150, 160, 75]];
-  for (const [x, z, r, h] of peaks) {
-    const seg = 10;
-    for (let k = 0; k < seg; k++) {
-      const a0 = (k / seg) * Math.PI * 2, a1 = ((k + 1) / seg) * Math.PI * 2;
-      const p0 = [x + Math.cos(a0) * r, -2, z + Math.sin(a0) * r];
-      const p1 = [x + Math.cos(a1) * r, -2, z + Math.sin(a1) * r];
-      const apex = [x, h, z];
-      const nx = Math.cos((a0 + a1) / 2), nz = Math.sin((a0 + a1) / 2);
-      batch.quad(p1, p0, apex, apex, [nx * 0.6, 0.8, nz * 0.6], [[0, 0], [1, 0], [0.5, 1], [0.5, 1]], k % 3 === 0 ? dry : green);
+  const green = tint('#5f9446'), dry = tint('#b8a564'), scrub = tint('#3c6b34'), rock = tint('#a08f78');
+  const x0 = -260, x1 = 1120, z0 = -420, z1 = -20, step = 14;
+  const nx = Math.round((x1 - x0) / step), nz = Math.round((z1 - z0) / step);
+  const H = (i, j) => ridgeHeight(x0 + i * step, z0 + j * step);
+  for (let j = 0; j < nz; j++) {
+    for (let i = 0; i < nx; i++) {
+      const xa = x0 + i * step, xb = xa + step, za = z0 + j * step, zb = za + step;
+      const h00 = H(i, j), h10 = H(i + 1, j), h01 = H(i, j + 1), h11 = H(i + 1, j + 1);
+      if (Math.max(h00, h10, h01, h11) < -2) continue;
+      const avg = (h00 + h10 + h01 + h11) / 4;
+      const slope = Math.max(Math.abs(h00 - h11), Math.abs(h10 - h01)) / step;
+      const n = ((i * 73856093) ^ (j * 19349663)) >>> 0;
+      // dry grass climbs the crests, scrub dots the lower slopes, rock shows on the steep bits
+      const c = avg > 48 + (n % 9) ? dry : slope > 1.1 ? rock : n % 11 === 0 ? scrub : green;
+      // normal from the cell's two diagonals
+      const ux = step, uy = h10 - h00, vz = step, vy = h01 - h00;
+      const len = Math.hypot(uy * vz, ux * vz, ux * vy) || 1;
+      const nrm = [-uy * vz / len, ux * vz / len, -ux * vy / len];
+      batch.quad([xa, h01, zb], [xb, h11, zb], [xb, h10, za], [xa, h00, za], nrm, [[0, 0], [1, 0], [1, 1], [0, 1]], c);
     }
   }
 }
