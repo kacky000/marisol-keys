@@ -235,7 +235,7 @@ export class Player {
         if (!p.alive || p === this) continue;
         const dx = p.pos.x - this.pos.x, dz = p.pos.z - this.pos.z;
         if (dx * dx + dz * dz < w.range * w.range && dx * f.x + dz * f.z > 0) {
-          p.hurt(w.damage, { x: this.pos.x, z: this.pos.z, byPlayer: true, shooter: this });
+          p.hurt(w.damage, { x: this.pos.x, z: this.pos.z, byPlayer: true, shooter: this, melee: true });
           emit('player:melee', { target: p });
           break;
         }

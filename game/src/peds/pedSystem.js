@@ -46,8 +46,38 @@ export class Ped {
       emit('ped:killed', { ped: this, source });
       return true;
     }
+    // about a third of the people Tessa punches put their fists up and swing back
+    if (source?.melee && this.kind === 'civilian' && this.id % 3 === 0 && source.shooter) {
+      this.state = 'brawl';
+      this.brawl = { foe: source.shooter, t: 9, swing: 0.6 };
+      return false;
+    }
     this.flee(source?.x ?? this.pos.x, source?.z ?? this.pos.z, 10);
     return false;
+  }
+
+  // Close in and trade punches until the time runs out or the foe goes down.
+  updateBrawl(dt) {
+    const b = this.brawl, foe = b.foe;
+    b.t -= dt;
+    b.swing -= dt;
+    const dx = foe.pos.x - this.pos.x, dz = foe.pos.z - this.pos.z, d = Math.hypot(dx, dz);
+    this.heading = Math.atan2(dx, -dz);
+    let moving = 0;
+    if (d > 1.2) { moving = 3.4; this.pos.x += (dx / d) * moving * dt; this.pos.z += (dz / d) * moving * dt; resolveCircle(this.pos, 0.35, this.pos.y); }
+    poseHuman(this.rig, moving ? 'run' : 'idle', moving, dt);
+    // guard up, and a jab when in reach
+    const u = this.rig.userData;
+    u.arms[0].rotation.set(1.3, 0, 0.4);
+    u.arms[1].rotation.set(b.swing < 0.15 ? 1.7 : 1.1, 0, -0.3);
+    if (d < 1.5 && b.swing <= 0 && foe.alive && !foe.vehicle) {
+      b.swing = 0.9;
+      foe.hurt(7, { x: this.pos.x, z: this.pos.z, melee: true });
+      emit('sound', { name: 'punch' });
+    }
+    if (b.t <= 0 || !foe.alive || foe.vehicle) { this.state = 'walk'; this.brawl = null; this.route.length = 0; }
+    this.rig.position.set(this.pos.x, this.pos.y, this.pos.z);
+    this.rig.rotation.y = -this.heading;
   }
 
   flee(fromX, fromZ, time = 8) {
@@ -79,6 +109,7 @@ export class Ped {
       this.rig.rotation.y = -this.heading;
       return;
     }
+    if (this.state === 'brawl') { this.updateBrawl(dt); return; }
     if (this.state === 'wade') {
       // standing in the surf, bobbing with the swell, arms out for balance
       this.phase = (this.phase || 0) + dt;
