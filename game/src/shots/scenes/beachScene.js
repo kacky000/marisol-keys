@@ -14,7 +14,7 @@ export const boardwalk = {
     const p = game.player;
     p.placeAt(12 * B + 12.5, 9 * B + 4, 2.6);
     p.weapon = 'fists';
-    crowd(game, [[12 * B + 13.5, 9 * B + 14, 0.2, 'walk'], [12 * B + 15.5, 9 * B + 9, Math.PI, 'walk'], [12 * B + 26, 9 * B + 18, 1.2, 'idle'], [12 * B + 27, 9 * B + 19, -1.8, 'idle'], [12 * B + 11.5, 9 * B + 26, 0, 'walk'], [12 * B + 33, 9 * B + 12, 2.2, 'idle'], [12 * B + 20, 9 * B + 32, -0.4, 'walk'], [12 * B + 16, 8 * B + 56, 2.9, 'walk'],
+    crowd(game, [[12 * B + 13.5, 9 * B + 14, 0.2, 'walk'], [12 * B + 15.5, 9 * B + 9, Math.PI, 'walk', 'dog'], [12 * B + 26, 9 * B + 18, 1.2, 'idle'], [12 * B + 27, 9 * B + 19, -1.8, 'idle'], [12 * B + 11.5, 9 * B + 26, 0, 'walk'], [12 * B + 33, 9 * B + 12, 2.2, 'idle'], [12 * B + 20, 9 * B + 32, -0.4, 'walk'], [12 * B + 16, 8 * B + 56, 2.9, 'walk'],
       [12 * B + 24, 9 * B + 23, 1.57, 'sunbathe'], [12 * B + 30, 9 * B + 26, 1.4, 'sunbathe'], [12 * B + 22, 9 * B + 38, 1.7, 'sunbathe'], [12 * B + 29, 9 * B + 41, 1.5, 'idle'], [12 * B + 13, 9 * B + 36, 3.0, 'walk'], [12 * B + 42, 9 * B + 20, 0.6, 'idle'], [12 * B + 47, 9 * B + 30, -1.4, 'walk'],
       [13 * B + 5, 9 * B + 12, -1.6, 'wade'], [13 * B + 8, 9 * B + 16, 1.4, 'wade'], [13 * B + 4, 9 * B + 30, -1.2, 'wade'], [13 * B + 10, 9 * B + 26, 1.7, 'wade']]);
     game.boardMarker = new Marker(game.scene, 12 * B + 36, 9 * B + 30, { color: '#ffd23f', radius: 2.2, height: 9 });

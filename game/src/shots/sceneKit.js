@@ -51,12 +51,13 @@ export function cops(game, list) {
   }
 }
 
-// Pedestrians: [x, z, heading, 'walk' | 'idle' | 'flee' | 'sunbathe' | 'wade'] each.
+// Pedestrians: [x, z, heading, 'walk' | 'idle' | 'flee' | 'sunbathe' | 'wade', 'dog'?] each.
 export function crowd(game, points) {
-  for (const [x, z, h, state] of points) {
+  for (const [x, z, h, state, extra] of points) {
     const ped = game.peds.spawnAt(x, z, randomOutfit(rng));
     ped.heading = h;
     ped.persistent = true;
+    if (extra === 'dog') { game.peds.addDog(ped); ped.dog.x = x + Math.sin(h) * 1.2; ped.dog.z = z - Math.cos(h) * 1.2; }
     if (state === 'idle') { ped.state = 'idle'; ped.idleTimer = 99; }
     if (state === 'flee') ped.flee(x - Math.sin(h) * 5, z + Math.cos(h) * 5, 99);
     if (state === 'sunbathe') ped.state = 'sunbathe';
