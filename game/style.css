@@ -105,6 +105,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #0b2233; fon
 #phone-side .row .what { flex: 1; }
 #phone-side .row .what b { display: block; font-size: 14px; }
 #phone-side .row .pay { color: var(--cash); font-weight: 800; }
+#phone-side .row .replay { pointer-events: auto; cursor: pointer; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.08); color: #fff; border-radius: 6px; padding: 0 7px; font-size: 13px; line-height: 20px; }
+#phone-side .row .replay:hover { background: var(--coral); }
 #phone-side .goals { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 10px; font-size: 12px; }
 #phone-side .goal { color: #d9e6ee; }
 #phone-side .goal i { color: var(--amber); font-style: normal; font-weight: 700; }

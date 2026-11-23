@@ -69,6 +69,7 @@ export class MissionRunner {
           if (g.player.vehicle) { g.player.vehicle.driver = null; g.player.vehicle = null; g.player.rig.visible = true; }
           g.wanted.clear();
           g.police.clearAll(g.player);
+          if (this.replaying) { this.replay(this.activeIndex); return; }
           g.player.placeAt(c.x - 1.5, c.z + 1.5, 0);
           this.start(g.state.story);
           return;
@@ -87,9 +88,24 @@ export class MissionRunner {
     this.updateStep(dt);
   }
 
-  start(index) {
+  // Play a finished mission again from the phone: same steps, a quarter of the reward, and the
+  // story doesn't move on.
+  replay(index) {
+    const g = this.game, p = g.player;
+    if (this.active || index >= g.state.story) return;
+    const c = CONTACTS[STORY[index].at];
+    if (p.vehicle) { p.vehicle.driver = null; p.vehicle = null; p.rig.visible = true; }
+    g.wanted.clear();
+    g.police.clearAll(p);
+    p.placeAt(c.x - 1.5, c.z + 1.5, 0);
+    this.start(index, true);
+  }
+
+  start(index, replaying = false) {
     const g = this.game;
     this.clearContact();
+    this.replaying = replaying;
+    this.activeIndex = index;
     this.active = STORY[index];
     this.stepIndex = -1;
     g.hud.bigMessage(this.active.title.toUpperCase(), `MISSION ${index + 1} · ${CAST[this.active.giver].name.toUpperCase()}`, 3);
@@ -275,6 +291,16 @@ export class MissionRunner {
   pass() {
     const g = this.game, m = this.active;
     this.cleanupMission();
+    if (this.replaying) {
+      const pay = Math.round(m.reward / 4);
+      g.state.money += pay;
+      this.active = null;
+      this.replaying = false;
+      this.cooldown = 4;
+      g.hud.bigMessage('REPLAY PASSED', `+$${pay.toLocaleString('en-US')} · ${m.title}`, 4);
+      emit('sound', { name: 'passed' });
+      return;
+    }
     g.state.money += m.reward;
     g.state.story++;
     g.state.stats.missions++;
