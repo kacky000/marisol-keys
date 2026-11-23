@@ -32,17 +32,15 @@ import { ParticleFX } from '../fx/particles.js';
 import { TracerFX } from '../fx/tracers.js';
 import { startDamageEffects } from '../fx/damageEffects.js';
 import { PostProcess } from '../fx/postProcess.js';
+import { renderFrame } from '../fx/frameRenderer.js';
 // the island, sky and light
 import { buildWorld } from '../world/worldBuilder.js';
 import { districtAtPoint, PLACES } from '../world/cityPlan.js';
-import { createSkyDome, updateSkyDome } from '../sky/skyDome.js';
-import { createLighting, updateLighting } from '../sky/sunLight.js';
-import { skyStateAt } from '../sky/timeOfDay.js';
+import { createSkyDome } from '../sky/skyDome.js';
+import { createLighting } from '../sky/sunLight.js';
 import { SkyEnvironment } from '../sky/skyEnvironment.js';
 import { WeatherSystem } from '../weather/weatherSystem.js';
-import { roadMaterials } from '../roads/roadMesh.js';
 // engine plumbing
-import { fitToWindow } from './renderer.js';
 import { initInput, endInputFrame, wasPressed, menuPressed, setInputEnabled, pointerLocked } from './input.js';
 import { on } from './events.js';
 import { rng } from './rng.js';
@@ -58,7 +56,6 @@ import { playSound } from '../audio/soundEffects.js';
 import { VehicleAudio } from '../audio/vehicleAudio.js';
 import { Radio } from '../audio/radioStations.js';
 import { Ambience } from '../audio/ambience.js';
-import { lampHeads } from '../props/streetFurniture.js';
 
 export class Game {
   constructor(renderer, camera, { shotMode = false } = {}) {
@@ -346,41 +343,7 @@ export class Game {
 
   updateHud(dt) { this.hud.update(dt, this.hudSnapshot()); }
 
-  render() {
-    fitToWindow(this.renderer, this.threeCamera);
-    const state = this.weather.apply(skyStateAt(this.state.hour));
-    const focus = this.player.pos;
-    const wet = this.weather.rainAmount || 0;
-    for (const m of roadMaterials) m.roughness = 0.92 - wet * 0.6;
-    updateLighting(this.lights, this.scene, state, focus, this.drawDistance || 900);
-    updateSkyDome(this.sky, state, this.threeCamera, this.time);
-    this.skyEnv.update(state);
-    const exposure = 1.0 + state.night * 0.35;
-    this.world.signMaterial.emissiveIntensity = 0.25 + state.night * 1.4;
-    if (this.world.shopMaterial) this.world.shopMaterial.emissiveIntensity = 0.3 + state.night * 1.6;
-    for (const m of this.world.nightMaterials) m.emissiveIntensity = state.night * 0.95;
-    if (this.police.heli) this.police.heli.night = state.night > 0.3;
-    // street lamps near the player light up at night
-    const lamps = state.night > 0.3 ? lampHeads.map((l) => [l, l.distanceToSquared(focus)]).sort((a, b) => a[1] - b[1]).slice(0, this.nightLights.length) : [];
-    // (toggling visibility only at dusk and dawn keeps daytime shaders free of these lights)
-    this.nightLights.forEach((l, k) => { l.visible = !!lamps[k]; if (lamps[k]) { l.position.copy(lamps[k][0]); l.intensity = 30 * state.night; } });
-    // only nearby people and cars cast shadows (the shadow map covers ~110 m around the player anyway)
-    this.shadowTimer = (this.shadowTimer || 0) - 1;
-    if (this.shadowTimer <= 0) {
-      this.shadowTimer = 20;
-      const near = (o, r) => (o.pos.x - focus.x) ** 2 + (o.pos.z - focus.z) ** 2 < r * r;
-      for (const ped of this.peds.peds) { const on = near(ped, 60); ped.rig.traverse((m) => { if (m.isMesh) m.castShadow = on; }); }
-      for (const car of this.vehicles.list) {
-        const on = near(car, 90);
-        car.mesh.traverse((m) => { if (m.isMesh) m.castShadow = on; });
-        const beam = car.mesh.userData.beam;
-        if (beam) beam.visible = state.night > 0.35 && !car.wrecked && !car.spec.boat && near(car, 160);
-      }
-    }
-    const v = this.player.vehicle;
-    const speedBlur = v ? Math.max(0, Math.abs(v.speed) - 24) / 40 : 0;
-    this.post.render(this.scene, this.threeCamera, { exposure, bloom: 0.45 + state.night * 0.5, speedBlur: Math.min(0.6, speedBlur) });
-  }
+  render() { renderFrame(this); }
 
   // Advances the simulation without drawing (used by automated play tests).
   debugStep(frames = 30, dt = 1 / 30) {
