@@ -68,6 +68,12 @@ export function buildDecoBlock(kit, block, rng) {
   }
   const midD = iz1 - iz0 - depth * 2;
   for (const x of [ix0 + depth / 2, ix1 - depth / 2]) decoBuilding(kit, block, x, (iz0 + iz1) / 2, depth - 0.6, midD - 0.6, rng);
+  // Lulu's nightclub gets its name in lights over Coral Parade
+  if (block.i === 10 && block.j === 4) {
+    kit.signs.push({ x: ix1 + 0.35, y: WALK_Y + 5.2, z: (iz0 + iz1) / 2, yaw: Math.PI / 2, w: 12, h: 2.8, brand: 'THE CORAL ROOM' });
+    kit.glow.box(ix1 + 0.2, WALK_Y + 8.3, (iz0 + iz1) / 2, 0.12, 0.2, 12.5, tint('#ff4fa3'));
+    kit.glow.box(ix1 + 0.2, WALK_Y + 4.9, (iz0 + iz1) / 2, 0.12, 0.2, 12.5, tint('#ff4fa3'));
+  }
   // courtyard pool and palms
   kit.trim.box(block.cx, WALK_Y, block.cz, 9, 0.35, 6, tint('#e8e1d4'));
   kit.glow.box(block.cx, WALK_Y + 0.36, block.cz, 8, 0.02, 5, tint('#38c8e0'));

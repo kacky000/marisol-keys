@@ -22,11 +22,14 @@ export function buildHarborBlock(kit, block, rng) {
     addSign(kit, cx, cz, ix1 - ix0 - 6, iz1 - iz0 - 10, WALK_Y + 7, 'n', rng.pick(['SALTGATE FREIGHT', 'BRAVO LOGISTICS', 'KESTREL MOTORS']), 12, 2);
     return;
   }
+  const baitShop = block.i === 2 && block.j === 13;
+  if (baitShop) buildBaitShop(kit, ix1 - 6, iz1 - 9);
   // container stacks lying east-west in rows, with forklift aisles between rows and gaps for cover
   for (let row = 0; row < 5; row++) {
     const z = iz0 + 3 + row * 8;
     for (let x = ix0 + 7; x < ix1 - 5; x += 13.6) {
       if (rng.chance(0.22)) continue;
+      if (baitShop && x > ix1 - 22 && z > iz1 - 18) continue;
       const stack = rng.int(1, 3);
       for (let s = 0; s < stack; s++) containers.push({ x, y: WALK_Y + s * 2.6, z, yaw: Math.PI / 2, color: rng.pick(CONTAINER_COLORS) });
       addCollider(x - 6.1, z - 1.25, x + 6.1, z + 1.25, WALK_Y + stack * 2.6, -5, 'container');
@@ -38,6 +41,17 @@ export function buildHarborBlock(kit, block, rng) {
   } else if (waterWest) {
     cranes.push({ x: block.x0 - 2, z: cz, yaw: Math.PI / 2 });
   }
+}
+
+// Ozzie's Bait & Tackle: a weathered clapboard shack with a striped awning, barrels and nets.
+function buildBaitShop(kit, x, z) {
+  addBlockBuilding(kit, 'warehouse', x, z, 9, 7, 4.2, '#9fd3c7', { roof: false });
+  kit.roof.pyramid(x, WALK_Y + 4.2, z, 10.4, 8.4, 1.8, tint('#c8553d'));
+  for (let k = 0; k < 6; k++) kit.trim.box(x + 4.6 + 0.9, WALK_Y + 2.6, z - 2.5 + k, 1.8, 0.12, 1.0, tint(k % 2 ? '#ffffff' : '#ff6b5a'));
+  kit.signs.push({ x: x + 4.56, y: WALK_Y + 3.0, z, yaw: Math.PI / 2, w: 6.4, h: 1.2, brand: "OZZIE'S BAIT & TACKLE" });
+  for (let k = 0; k < 3; k++) kit.trim.cylinder(x + 5.5, WALK_Y, z + 4 + k * 0.9, 0.38, 0.9, tint(k === 1 ? '#3b6e4f' : '#8b5a2b'), { segments: 8 });
+  kit.trim.box(x - 4.6, WALK_Y + 1.6, z, 0.08, 2.2, 5, tint('#6b5a46'));
+  addCollider(x - 4.5, z - 3.5, x + 4.5, z + 3.5, WALK_Y + 4.2);
 }
 
 function containerTexture() {

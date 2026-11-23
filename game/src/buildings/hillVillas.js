@@ -8,11 +8,12 @@ import { addCollider } from '../world/collisionWorld.js';
 
 export function buildVillaBlock(kit, block, rng) {
   const { ix0, iz0, ix1, iz1, cx, cz } = block;
-  const terrace = Math.max(0, (5 - block.j)) * 1.2;
-  // terrace plinth with a retaining wall
+  const terrace = Math.max(0, (5 - block.j)) * 0.6;
+  // a low stone retaining wall and lawn terrace, stepping up toward the hills
   if (terrace > 0) {
-    kit.stucco.box(cx, WALK_Y, cz, ix1 - ix0, terrace, iz1 - iz0, tint('#e9dcc3'), { top: false });
-    kit.trim.box(cx, WALK_Y + terrace - 0.01, cz, ix1 - ix0, 0.02, iz1 - iz0, tint('#6fae55'));
+    kit.trim.box(cx, WALK_Y, cz, ix1 - ix0, terrace, iz1 - iz0, tint('#cdb48c'), { top: false });
+    kit.trim.box(cx, WALK_Y + terrace, cz, ix1 - ix0 + 0.3, 0.18, iz1 - iz0 + 0.3, tint('#efe4cf'), { top: false });
+    kit.trim.box(cx, WALK_Y + terrace - 0.01, cz, ix1 - ix0, 0.02, iz1 - iz0, tint('#7dbb5c'));
     addCollider(ix0, iz0, ix1, iz1, WALK_Y + terrace);
   }
   const y0 = WALK_Y + terrace;

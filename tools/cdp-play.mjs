@@ -51,6 +51,18 @@ async function main() {
       await sleep(st.ms || 1000);
       for (const k of st.keys) await send('Runtime.evaluate', { expression: `dispatchEvent(new KeyboardEvent('keyup', { code: '${k}' }))` });
     }
+    if (st.pause) {
+      // break into a stuck page and print where it is spinning
+      ws.addEventListener('message', (ev) => {
+        const msg = JSON.parse(ev.data);
+        if (msg.method === 'Debugger.paused') {
+          for (const f of msg.params.callFrames.slice(0, 8)) console.log('FRAME', f.functionName, f.url.split('/').slice(-2).join('/'), f.location.lineNumber + 1);
+        }
+      });
+      await send('Debugger.enable');
+      send('Debugger.pause');
+      await sleep(3000);
+    }
     if (st.shot) {
       const r = await send('Page.captureScreenshot', { format: 'png' });
       writeFileSync(join(outDir, `${st.shot}.png`), Buffer.from(r.data, 'base64'));

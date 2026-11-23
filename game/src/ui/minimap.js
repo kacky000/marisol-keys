@@ -70,7 +70,11 @@ export class Minimap {
       const dx = (b.x - view.x) * z, dz = (b.z - view.z) * z;
       let sx = cx + dx * cosH - dz * sinH, sy = cy + dx * sinH + dz * cosH;
       const ox = sx - W / 2, oy = sy - H / 2, r = Math.hypot(ox, oy), lim = W / 2 - 12;
-      if (r > lim) { sx = W / 2 + (ox / r) * lim; sy = H / 2 + (oy / r) * lim; }
+      if (r > lim) {
+        // only the things you are heading for stick to the rim; the rest drop off the radar
+        if (!['objective', 'contact', 'vehicle', 'enemy'].includes(b.kind)) continue;
+        sx = W / 2 + (ox / r) * lim; sy = H / 2 + (oy / r) * lim;
+      }
       drawBlip(g, b, sx, sy, b.kind === 'enemy' || b.kind === 'police' ? 7 : 10, view.time);
     }
     // player arrow
