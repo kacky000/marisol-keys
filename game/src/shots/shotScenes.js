@@ -105,6 +105,17 @@ export const SCENES = {
       h.mesh.position.copy(h.pos);
       game.wanted.zone = { x: p.pos.x, z: p.pos.z, r: game.wanted.zoneRadius() };
       game.wanted.seen = true;
+      // tyre smoke kicked up behind the racing cars
+      for (const v of [p, ...units.slice(0, 2)]) {
+        const f = v.forward(), r = v.right();
+        for (let k = 0; k < 7; k++) {
+          for (const s of [-1, 1]) {
+            game.fx.particles.smoke.emit({ x: v.pos.x - f.x * (v.spec.len * 0.5 + k * 0.9) + r.x * s * 0.8, y: 0.35 + k * 0.05, z: v.pos.z - f.z * (v.spec.len * 0.5 + k * 0.9) + r.z * s * 0.8,
+              vy: 0.4, life: 1.4, size: 0.7 + k * 0.25, grow: 0, color: '#e8dccb', alpha: 0.26 - k * 0.03 });
+          }
+        }
+      }
+      game.fx.particles.update(0.05);
       game.hud.showDistrict({ name: 'Pastel Mile', sub: 'SUNDOWN BOULEVARD' });
       game.dispatch.show('Air One is up. Suspect westbound on Sundown Boulevard, all units converge.');
       return { pos: new THREE.Vector3(p.pos.x + 12.5, 4.3, p.pos.z + 0.9), look: new THREE.Vector3(p.pos.x - 30, 2.6, p.pos.z + 0.2) };
