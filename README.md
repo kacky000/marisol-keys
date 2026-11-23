@@ -59,6 +59,7 @@ Any static file server works too: the game is just the files under `game/`.
 art-deco strip, Sunwake Beach with its boardwalk, lifeguard towers and pier, Lantern Canals with
 footbridges and skiffs, Saltgate Harbor's gantry cranes and container stacks, the villas of
 Mirador Hills, Palmetto Flats, Old Keys and Seagrape Park — and two causeways to the mainland.
+A stone seawall with promenade railings, quay bollards and riprap rings the island.
 Landmarks: the 206 m Lumen Tower, rounded deco corner towers in neon, Ozzie's Bait & Tackle,
 The Coral Room, the pier café, and a skyline of invented brands (Mango Bay Cola, Palmetto Bank,
 Vela Cinema, Hotel Esmeralda...).
@@ -71,7 +72,8 @@ street racers, muggings you can break up).
 **Driving.** Ten invented vehicles — Solara Vela sedan, Kestrel Strata GT, Marisol Spyder
 convertible, Mako Tradesman pickup, Keys Cab, Coastline Transit bus, MKPD Interceptor, Sunrise
 Courier van, Zephyr 400 motorbike, Riptide 22 speedboat — with arcade physics, handbrake drifts,
-stunt-jump ramps, crashes, smoke, fire and explosions, and a speed-sensitive chase camera.
+stunt-jump ramps, crashes, smoke, fire and explosions, skid marks, and a speed-sensitive chase
+camera. Near misses at speed and long clean drifts pay street-style cash.
 
 **Wanted level.** One to five stars from crimes the city sees. MKPD cruisers route through the
 streets and ram, officers try to arrest you at low levels and shoot at high ones, roadblocks with
@@ -95,7 +97,8 @@ Night Sprint time trial, Vigilante runs in a stolen cruiser, stunt jumps. Spend 
 (guns, ammo, armour), Pastel Paint & Body (resprays), Sunbelt Garage (repairs and three tiers of
 engine, tyre and armour tuning), Sunwake Threads (five outfits), Kestrel Motors (cars delivered to
 your garage) and on four properties that pay out every day. Twenty hidden Tide Book pages, pickups,
-and a safehouse that saves, sleeps to morning and keeps your car.
+and a safehouse that saves, sleeps to morning and keeps your car. The phone tracks an island
+completion percentage with a checklist; each quarter is announced and 100% pays a $100,000 bonus.
 
 **Interface.** A rotating minimap drawn from the city plan with building footprints, GPS route,
 search circle and blips; health, armour, money, stars, weapon and ammo, objective and timer,
@@ -115,7 +118,7 @@ own music.
 `game/src/` is split by job: `world/` (city plan, terrain, collision), `roads/`, `buildings/`,
 `vegetation/`, `props/`, `water/`, `sky/`, `weather/`, `vehicles/`, `traffic/`, `peds/`,
 `player/`, `camera/`, `combat/`, `fx/`, `police/`, `missions/`, `story/`, `activities/`,
-`economy/`, `ui/`, `audio/`, `save/`, `core/` and `shots/`. three.js is the only library
+`economy/`, `progress/`, `ui/`, `audio/`, `save/`, `core/` and `shots/`. three.js is the only library
 (`game/vendor/three.module.min.js`).
 
 ## Screenshots
