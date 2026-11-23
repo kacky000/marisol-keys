@@ -26,10 +26,15 @@ export function paintTitleOverlay(canvas) {
   g.globalCompositeOperation = 'destination-out';
   for (let k = 0; k < 7; k++) { const y = cy + r * 0.1 + k * r * 0.14; g.fillRect(cx - r, y, r * 2, 3 + k * 1.6); }
   g.restore();
-  g.globalAlpha = 0.35;
-  g.fillStyle = '#ff4f6d';
-  g.beginPath(); g.arc(cx, cy, r * 1.6, 0, Math.PI * 2); g.fill();
-  g.globalAlpha = 1;
+  // soft glow fading out from the disc instead of a hard-edged halo
+  const glow = g.createRadialGradient(cx, cy, r * 0.9, cx, cy, r * 2.4);
+  glow.addColorStop(0, 'rgba(255,110,110,0.38)');
+  glow.addColorStop(0.45, 'rgba(255,90,120,0.14)');
+  glow.addColorStop(1, 'rgba(255,80,120,0)');
+  g.globalCompositeOperation = 'destination-over';
+  g.fillStyle = glow;
+  g.fillRect(cx - r * 2.4, cy - r * 2.4, r * 4.8, r * 4.8);
+  g.globalCompositeOperation = 'source-over';
   const bottom = g.createLinearGradient(0, h * 0.7, 0, h);
   bottom.addColorStop(0, 'rgba(0,0,0,0)');
   bottom.addColorStop(1, 'rgba(10,5,25,0.7)');
