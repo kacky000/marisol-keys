@@ -66,10 +66,18 @@ export function createSurf(x, z0, z1) {
   grad.addColorStop(1, 'rgba(255,255,255,0)');
   g.fillStyle = grad;
   g.fillRect(0, 0, 64, 256);
+  // break the line into ragged foam: punch holes and wobble the edge along its length
+  g.globalCompositeOperation = 'destination-out';
+  for (let y = 0; y < 256; y += 4) {
+    const gap = (Math.sin(y * 0.11) + Math.sin(y * 0.037 + 1.3)) * 0.5;
+    if (gap > 0.35) g.fillRect(0, y, 64, 4);
+    else g.fillRect(0, y, 18 + Math.sin(y * 0.2) * 10, 4);
+  }
+  g.globalCompositeOperation = 'source-over';
   const tex = new THREE.CanvasTexture(c);
   tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(1, (z1 - z0) / 30);
-  const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, opacity: 0.75 });
+  const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, opacity: 0.55 });
   const group = new THREE.Group();
   for (let k = 0; k < 2; k++) {
     const geo = new THREE.PlaneGeometry(6, z1 - z0);
