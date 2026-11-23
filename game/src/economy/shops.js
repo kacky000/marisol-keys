@@ -6,6 +6,7 @@ import { WEAPONS } from '../combat/weaponDefs.js';
 import { wasPressed } from '../core/input.js';
 import { emit } from '../core/events.js';
 import { STORE, clothingStore } from './clothingStore.js';
+import { PropertySigns } from './propertySigns.js';
 
 export const PROPERTIES = [
   { id: 'deco-loft', name: 'Pastel Mile Loft', x: 11 * 64 - 9.5, z: 7 * 64 + 30, price: 6000, income: 300 },
@@ -25,6 +26,7 @@ export class Shops {
   constructor(game) {
     this.game = game;
     this.lastDay = Math.floor(game.state.hour / 24);
+    this.signs = new PropertySigns(game.scene, PROPERTIES);
   }
 
   blips() {
@@ -36,6 +38,7 @@ export class Shops {
 
   update() {
     const g = this.game, p = g.player;
+    this.signs.update(g.state.properties, g.time);
     // daily property income at 08:00
     const day = Math.floor((g.state.hour - 8) / 24);
     if (day > this.lastDay) {
