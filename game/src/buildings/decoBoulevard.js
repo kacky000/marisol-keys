@@ -4,6 +4,7 @@
 import { addBlockBuilding, addSign, addRooftopClutter, streetSide, addShopfront } from './buildingKit.js';
 import { tint } from '../core/meshBatch.js';
 import { WALK_Y } from '../world/terrain.js';
+import { addCollider } from '../world/collisionWorld.js';
 
 const PASTELS = ['#ffc2cf', '#b9f0dc', '#fff0a8', '#c7d6ff', '#ffd2a8', '#e5c9ff', '#a8e6f0', '#ffe0ec'];
 const ACCENTS = ['#ff6f91', '#19b39b', '#f0a020', '#5b7cff', '#ff8a3d', '#9a5cff', '#1c9fc0'];
@@ -36,6 +37,19 @@ function decoBuilding(kit, block, cx, cz, w, d, rng) {
   // neon outline along the roof edge
   kit.glow.box(cx, top + 0.72, cz, w + 0.1, 0.14, d + 0.1, tint(neon));
   addSign(kit, cx, cz, w, d, WALK_Y + 4.6, side, rng.pick(BRANDS), Math.min(10, (along ? w : d) * 0.75), 1.8);
+  // street-corner buildings get a rounded deco corner tower with a stepped crown and neon ring
+  const sx = Math.sign(cx - block.cx), sz = Math.sign(cz - block.cz);
+  if (Math.abs(cx - block.cx) > 9 && Math.abs(cz - block.cz) > 9 && w > 8 && d > 8) {
+    const tx = cx + sx * (w / 2 - 2.2), tz = cz + sz * (d / 2 - 2.2);
+    const th = top - WALK_Y + 3.5;
+    kit.deco.cylinder(tx, WALK_Y, tz, 3.2, th, tint(pastel), { capColor: tint(pastel) });
+    kit.trim.cylinder(tx, WALK_Y + th, tz, 2.3, 1.4, tint(accent));
+    kit.trim.cylinder(tx, WALK_Y + th + 1.4, tz, 1.3, 1.4, tint(pastel));
+    kit.trim.box(tx, WALK_Y + th + 2.8, tz, 0.25, 3.2, 0.25, tint('#f0f0f0'));
+    kit.glow.cylinder(tx, top - 0.9, tz, 3.26, 0.22, tint(neon), { cap: false });
+    kit.glow.cylinder(tx, WALK_Y + th - 0.4, tz, 3.26, 0.22, tint(neon), { cap: false });
+    addCollider(tx - 3.2, tz - 3.2, tx + 3.2, tz + 3.2, WALK_Y + th);
+  }
   addRooftopClutter(kit, cx, cz, w, d, top, rng);
   kit.rooftops.push({ x: cx, y: top, z: cz, w, d });
 }

@@ -36,6 +36,7 @@ export const BRAND_STYLES = {
   'PASTEL PAINT & BODY': ['#ff99c8', '#ffffff', 'round'],
   'KEYS CAB CO.': ['#ffd60a', '#000000', 'block'],
   'SUNRISE COURIERS': ['#ff6b35', '#ffffff', 'round'],
+  'LUMEN TOWER': ['#0b1f33', '#9fe8ff', 'serif'],
   'DRINK MANGO BAY': ['#ff8a00', '#fff8e1', 'billboard'],
   'SUNWAKE · ROOMS FROM $89': ['#00a6a6', '#ffffff', 'billboard'],
 };

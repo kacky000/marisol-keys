@@ -3,6 +3,7 @@
 import { addBlockBuilding, addSign, streetSide, addShopfront } from './buildingKit.js';
 import { tint } from '../core/meshBatch.js';
 import { WALK_Y } from '../world/terrain.js';
+import { addCollider } from '../world/collisionWorld.js';
 
 const GLASS_TINTS = ['#c6e2ff', '#dff3ff', '#ffe6c8', '#cdeee6', '#e4dcff', '#bfd8f0', '#f4f0ff'];
 const PODIUM_TINTS = ['#efe6da', '#e4ddd2', '#f3ece4', '#dfe3e6'];
@@ -44,7 +45,28 @@ function tower(kit, block, cx, cz, w, d, h, rng) {
   if (h > 70 && rng.chance(0.7)) addSign(kit, cx, cz, w, d, WALK_Y + h - 6, side, rng.pick(TOWER_BRANDS), Math.min(16, w * 0.9), 3);
 }
 
+// Lumen Tower: the island's tallest building, a glass cylinder with a stepped crown of light rings.
+function lumenTower(kit, block) {
+  const { cx, cz } = block;
+  addBlockBuilding(kit, 'stucco', cx, cz, 40, 40, 8, '#f3ece4');
+  addShopfront(kit, cx, cz, 40, 40);
+  const glass = tint('#cfe6ff');
+  kit.glass.cylinder(cx, WALK_Y + 8, cz, 14, 132, glass, { segments: 28 });
+  kit.glass.cylinder(cx, WALK_Y + 140, cz, 10.5, 22, glass, { segments: 24 });
+  kit.trim.cylinder(cx, WALK_Y + 162, cz, 7, 6, tint('#eef2f6'), { segments: 20 });
+  for (let y = 60; y < 140; y += 14) kit.trim.cylinder(cx, WALK_Y + y, cz, 14.15, 0.6, tint('#f4f6f8'), { segments: 28, cap: false });
+  for (let y = 142; y < 162; y += 5) kit.glow.cylinder(cx, WALK_Y + y, cz, 10.6, 0.35, tint('#9fe8ff'), { segments: 24, cap: false });
+  kit.trim.box(cx, WALK_Y + 168, cz, 0.9, 38, 0.9, tint('#f0f0f0'));
+  kit.glow.box(cx, WALK_Y + 205.5, cz, 1.3, 1.3, 1.3, tint('#ff3030'));
+  addCollider(cx - 13, cz - 13, cx + 13, cz + 13, WALK_Y + 168);
+  for (const [sx, sz, yaw] of [[0, 14.3, 0], [14.3, 0, Math.PI / 2], [0, -14.3, Math.PI], [-14.3, 0, -Math.PI / 2]]) {
+    kit.signs.push({ x: cx + sx, y: WALK_Y + 150, z: cz + sz, yaw, w: 12, h: 3, brand: 'LUMEN TOWER' });
+  }
+  kit.tallest.push({ x: cx, z: cz, h: WALK_Y + 206 });
+}
+
 export function buildDowntownBlock(kit, block, rng) {
+  if (block.i === 7 && block.j === 3) { lumenTower(kit, block); return; }
   const coreDist = Math.hypot(block.i - 7, block.j - 4);
   const base = 150 - coreDist * 26;
   const w = block.ix1 - block.ix0, d = block.iz1 - block.iz0;

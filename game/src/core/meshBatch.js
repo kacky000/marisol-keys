@@ -11,15 +11,17 @@ export class MeshBatch {
 
   get vertexCount() { return this.pos.length / 3; }
 
-  // Four corners (counter-clockwise seen from the normal side), with their uvs.
+  // Four corners (counter-clockwise seen from the normal side), with their uvs. `color` is one
+  // colour or an array of four (per corner), e.g. darker at the foot of a wall.
   quad(p0, p1, p2, p3, n, uvs, color) {
     const base = this.vertexCount;
-    for (const [p, t] of [[p0, uvs[0]], [p1, uvs[1]], [p2, uvs[2]], [p3, uvs[3]]]) {
+    const cols = Array.isArray(color) ? color : [color, color, color, color];
+    [[p0, uvs[0]], [p1, uvs[1]], [p2, uvs[2]], [p3, uvs[3]]].forEach(([p, t], k) => {
       this.pos.push(p[0], p[1], p[2]);
       this.nrm.push(n[0], n[1], n[2]);
       this.uv.push(t[0], t[1]);
-      this.col.push(color.r, color.g, color.b);
-    }
+      this.col.push(cols[k].r, cols[k].g, cols[k].b);
+    });
     this.idx.push(base, base + 1, base + 2, base, base + 2, base + 3);
   }
 
@@ -46,14 +48,37 @@ export class MeshBatch {
     const v0 = y0 / tv, v1 = y1 / tv;
     if (sides) {
       const uw = w / tu, ud = d / tu, o = uOffset;
-      this.quad([x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1], [0, 0, 1], [[o, v0], [o + uw, v0], [o + uw, v1], [o, v1]], color);
-      this.quad([x1, y0, z0], [x0, y0, z0], [x0, y1, z0], [x1, y1, z0], [0, 0, -1], [[o, v0], [o + uw, v0], [o + uw, v1], [o, v1]], color);
-      this.quad([x1, y0, z1], [x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [1, 0, 0], [[o, v0], [o + ud, v0], [o + ud, v1], [o, v1]], color);
-      this.quad([x0, y0, z0], [x0, y0, z1], [x0, y1, z1], [x0, y1, z0], [-1, 0, 0], [[o, v0], [o + ud, v0], [o + ud, v1], [o, v1]], color);
+      // fake ambient occlusion: walls darken toward the ground, strongest at street level
+      const ao = y0 < 1 ? Math.max(0.55, 1 - 6 / (h + 8)) : 0.92;
+      const foot = color.clone().multiplyScalar(ao);
+      const c4 = [foot, foot, color, color];
+      this.quad([x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1], [0, 0, 1], [[o, v0], [o + uw, v0], [o + uw, v1], [o, v1]], c4);
+      this.quad([x1, y0, z0], [x0, y0, z0], [x0, y1, z0], [x1, y1, z0], [0, 0, -1], [[o, v0], [o + uw, v0], [o + uw, v1], [o, v1]], c4);
+      this.quad([x1, y0, z1], [x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [1, 0, 0], [[o, v0], [o + ud, v0], [o + ud, v1], [o, v1]], c4);
+      this.quad([x0, y0, z0], [x0, y0, z1], [x0, y1, z1], [x0, y1, z0], [-1, 0, 0], [[o, v0], [o + ud, v0], [o + ud, v1], [o, v1]], c4);
     }
     if (top) {
       this.quad([x0, y1, z1], [x1, y1, z1], [x1, y1, z0], [x0, y1, z0], [0, 1, 0],
         [[x0 / tu, z1 / tu], [x1 / tu, z1 / tu], [x1 / tu, z0 / tu], [x0 / tu, z0 / tu]], topColor || color);
+    }
+  }
+
+  // Vertical cylinder (open bottom) with facade uvs wrapped around it, optional flat cap.
+  cylinder(cx, y0, cz, r, h, color, { segments = 16, cap = true, capColor = null } = {}) {
+    const tu = this.tileU, tv = this.tileV;
+    const v0 = y0 / tv, v1 = (y0 + h) / tv;
+    const ao = y0 < 1 ? Math.max(0.55, 1 - 6 / (h + 8)) : 0.92;
+    const foot = color.clone().multiplyScalar(ao);
+    for (let k = 0; k < segments; k++) {
+      const a0 = (k / segments) * Math.PI * 2, a1 = ((k + 1) / segments) * Math.PI * 2;
+      const p = (a, y) => [cx + Math.sin(a) * r, y, cz + Math.cos(a) * r];
+      const am = (a0 + a1) / 2;
+      const u0 = (a0 * r) / tu, u1 = (a1 * r) / tu;
+      this.quad(p(a0, y0), p(a1, y0), p(a1, y0 + h), p(a0, y0 + h), [Math.sin(am), 0, Math.cos(am)], [[u0, v0], [u1, v0], [u1, v1], [u0, v1]], [foot, foot, color, color]);
+      if (cap) {
+        const c = capColor || color;
+        this.quad(p(a1, y0 + h), [cx, y0 + h, cz], [cx, y0 + h, cz], p(a0, y0 + h), [0, 1, 0], [[0, 0], [0.5, 0.5], [0.5, 0.5], [1, 0]], c);
+      }
     }
   }
 
