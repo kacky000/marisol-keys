@@ -22,6 +22,23 @@ function car(game, type, x, z, heading, speed = 0, paint) {
   return v;
 }
 
+// Two tyre streaks running back from a car's rear wheels, bending sideways by `bend` metres.
+function skidTrail(game, v, bend, length = 16) {
+  const f = v.forward(), r = v.right();
+  const track = v.spec.width * 0.4, back = v.spec.len * 0.34;
+  for (const side of [-1, 1]) {
+    let prev = null;
+    for (let s = 0; s <= length; s += 1) {
+      const sway = bend * (s / length) ** 2;
+      const x = v.pos.x - f.x * (back + s) + r.x * (side * track + sway);
+      const z = v.pos.z - f.z * (back + s) + r.z * (side * track + sway);
+      const pt = { x, y: 0.035, z, rx: r.x, rz: r.z };
+      if (prev) game.fx.skids.quad(prev, pt);
+      prev = pt;
+    }
+  }
+}
+
 function seatPlayer(game, v) {
   const p = game.player;
   p.vehicle = v;
@@ -129,6 +146,8 @@ export const SCENES = {
           }
         }
       }
+      // rubber from the swerves that got everyone here, curving back toward the camera
+      [[p, 0.9], [units[0], -1.4], [units[1], 1.2]].forEach(([v, bend]) => { if (v) skidTrail(game, v, bend); });
       game.fx.particles.update(0.05);
       game.hud.showDistrict({ name: 'Pastel Mile', sub: 'SUNDOWN BOULEVARD' });
       game.dispatch.show('Air One is up. Suspect westbound on Sundown Boulevard, all units converge.');
