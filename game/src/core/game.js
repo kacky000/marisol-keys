@@ -105,6 +105,13 @@ export class Game {
     if (!this.shotMode) {
       initInput(this.renderer.domElement);
       this.menus = new Menus(this);
+      // browsers only allow sound after a gesture: the first click on the title starts the music
+      addEventListener('pointerdown', () => {
+        if (this.running || this.titleMusic) return;
+        startAudio(this.settings);
+        this.radio.tune(0);
+        this.titleMusic = true;
+      }, { once: true });
     }
     this.applySettings();
   }
@@ -333,9 +340,10 @@ export class Game {
     return { x: this.player.pos.x, z: this.player.pos.z, time: this.time };
   }
 
-  // Title screen: a slow helicopter flyover of the island.
+  // Title screen: a slow helicopter flyover of the island, with Tidal 101.3 once audio is allowed.
   renderTitle(dt) {
     this.time += dt;
+    if (this.titleMusic) this.radio.update(true);
     const t = this.time * 0.04;
     const cam = this.threeCamera;
     cam.position.set(560 + Math.cos(t) * 380, 95 + Math.sin(t * 0.7) * 20, 470 + Math.sin(t) * 380);
