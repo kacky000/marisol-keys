@@ -89,14 +89,25 @@ export class MissionRunner {
     const g = this.game;
     if (s.text) g.hud.setObjective(this.active.title, s.text);
     switch (s.type) {
-      case 'talk':
+      case 'talk': {
         g.player.controlsLocked = true;
+        // face-to-face scenes with the contact get a two-shot cutscene camera
+        const contact = g.contacts.current;
+        const faceToFace = contact && s.lines.some(([who]) => who === contact.who) && Math.hypot(g.player.pos.x - contact.x, g.player.pos.z - contact.z) < 8;
+        if (faceToFace) {
+          g.contacts.talking = true;
+          if (!g.player.vehicle) g.player.heading = Math.atan2(contact.x - g.player.pos.x, -(contact.z - g.player.pos.z));
+          g.camera.fixed = g.contacts.twoShot();
+        }
         g.dialogue.play(s.lines, () => {
           g.player.controlsLocked = false;
+          g.contacts.talking = false;
+          if (faceToFace) { g.camera.fixed = null; g.camera.yaw = g.player.heading; }
           if (s.give) { g.player.giveWeapon(s.give.weapon, s.give.ammo); g.hud.toast(`Picked up the <b>${s.give.weapon.toUpperCase()}</b>`); }
           this.advance();
         });
         break;
+      }
       case 'enterVehicle': {
         const v = s.vehicle;
         this.vehicle = g.vehicles.spawn(v.type, v.x, v.z, v.heading, { paint: v.paint });
@@ -239,6 +250,8 @@ export class MissionRunner {
     this.suppressShotCrime = false;
     g.wanted.minimumStars = 0;
     g.player.controlsLocked = false;
+    g.camera.fixed = null;
+    g.contacts.talking = false;
     g.dialogue.close();
     g.hud.setObjective(null);
   }

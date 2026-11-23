@@ -29,6 +29,7 @@ import { MissionRunner } from '../missions/missionRunner.js';
 import { SideJobs } from '../activities/sideJobs.js';
 import { Shops } from '../economy/shops.js';
 import { TidePages } from '../activities/tidePages.js';
+import { ContactCast } from '../story/contactCharacters.js';
 import { Hud } from '../ui/hud.js';
 import { DialogueBox } from '../ui/dialogueBox.js';
 import { PhoneScreen } from '../ui/phoneScreen.js';
@@ -79,6 +80,7 @@ export class Game {
     this.activities = new SideJobs(this);
     this.shops = new Shops(this);
     this.pages = new TidePages(this);
+    this.contacts = new ContactCast(this);
     this.phone = new PhoneScreen(this);
     this.damageFx = startDamageEffects(this);
     this.radio = new Radio();
@@ -227,6 +229,7 @@ export class Game {
       this.shops.update(dt);
       this.pages.update(dt, this.time);
     }
+    this.contacts.update(dt);
     this.dialogue.update(dt);
     this.damageFx(dt);
     this.fx.particles.update(dt);

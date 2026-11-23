@@ -10,11 +10,17 @@ const SHIRTS = ['#ff6b5a', '#19c3b4', '#ffd23f', '#ffffff', '#ff8fb1', '#5b7cff'
 const PANTS = ['#2f3e46', '#d9c9a3', '#3d5a80', '#f1f1f1', '#6d597a', '#264653', '#c9ada7'];
 const HAIR = ['#1d1a17', '#4a2c1a', '#a06a3b', '#e8cf8f', '#7a7a7a', '#2b1b12'];
 
+const DRESSES = ['#ff6b5a', '#ffd23f', '#19c3b4', '#ff8fb1', '#ffffff', '#7a5cff', '#f4a259'];
+
 export function randomOutfit(rng) {
+  const feminine = rng.chance(0.5);
   return {
     skin: rng.pick(SKIN), shirt: rng.pick(SHIRTS), pants: rng.pick(PANTS), hair: rng.pick(HAIR),
     shorts: rng.chance(0.55), hat: rng.chance(0.25) ? rng.pick(['cap', 'sunhat']) : null,
-    shades: rng.chance(0.35), shoes: rng.pick(['#222', '#f5f5f5', '#8b5a2b']), build: rng.range(0.92, 1.1),
+    shades: rng.chance(0.35), shoes: rng.pick(['#222', '#f5f5f5', '#8b5a2b']), build: feminine ? rng.range(0.88, 0.98) : rng.range(0.96, 1.1),
+    hairStyle: feminine ? rng.pick(['long', 'long', 'bun', 'bob']) : rng.pick(['short', 'short', 'bald', 'curly']),
+    dress: feminine && rng.chance(0.45) ? rng.pick(DRESSES) : null,
+    bag: rng.chance(0.2) ? rng.pick(['#8b5a2b', '#ff6b5a', '#2b2d42']) : null,
   };
 }
 
@@ -37,8 +43,20 @@ export function buildHuman(o) {
   body.orientedBox(0, 0.02, 0, 0.42, 0.12, 0.24, 0, tint(o.pants));       // belt line
   body.orientedBox(0, 0.72, 0, 0.12, 0.1, 0.12, 0, tint(o.skin));         // neck
   body.orientedBox(0, 0.9, 0, 0.26, 0.28, 0.27, 0, tint(o.skin));         // head
-  body.orientedBox(0, 1.05, 0.02, 0.28, 0.08, 0.29, 0, tint(o.hair));     // hair top
-  body.orientedBox(0, 0.95, 0.12, 0.28, 0.2, 0.06, 0, tint(o.hair));      // hair back
+  const hs = o.hairStyle || 'short';
+  if (hs !== 'bald') {
+    body.orientedBox(0, 1.05, 0.02, 0.28, hs === 'curly' ? 0.14 : 0.08, 0.29, 0, tint(o.hair));   // hair top
+    body.orientedBox(0, 0.95, 0.12, 0.28, 0.2, 0.06, 0, tint(o.hair));    // hair back
+  }
+  if (hs === 'long') { body.orientedBox(0, 0.72, 0.13, 0.3, 0.42, 0.07, 0, tint(o.hair)); body.orientedBox(0, 0.86, 0, 0.31, 0.22, 0.24, 0, tint(o.hair)); }
+  if (hs === 'bob') body.orientedBox(0, 0.88, 0.02, 0.32, 0.22, 0.3, 0, tint(o.hair));
+  if (hs === 'bun') body.orientedBox(0, 1.1, 0.12, 0.13, 0.13, 0.13, 0, tint(o.hair));
+  if (o.headphones) { body.orientedBox(0, 1.1, 0, 0.32, 0.05, 0.08, 0, tint('#ff3f8e')); for (const s of [-1, 1]) body.orientedBox(s * 0.15, 0.93, 0, 0.06, 0.14, 0.12, 0, tint('#ff3f8e')); }
+  if (o.beard) body.orientedBox(0, 0.8, -0.1, 0.26, 0.12, 0.09, 0, tint(o.beard));
+  if (o.mustache) body.orientedBox(0, 0.85, -0.14, 0.14, 0.03, 0.02, 0, tint(o.mustache));
+  if (o.dress) body.orientedBox(0, -0.1, 0, 0.5, 0.48, 0.32, 0, tint(o.dress));   // skirt over the hips
+  if (o.bag) { body.orientedBox(0.27, 0.05, 0, 0.08, 0.3, 0.26, 0, tint(o.bag)); body.orientedBox(0.1, 0.45, 0, 0.36, 0.04, 0.27, 0.6, tint(o.bag)); }
+  if (o.hat === 'bucket') { body.orientedBox(0, 1.08, 0, 0.42, 0.03, 0.42, 0, tint('#5b7c5a')); body.orientedBox(0, 1.14, 0, 0.3, 0.12, 0.3, 0, tint('#5b7c5a')); }
   if (o.shades) body.orientedBox(0, 0.93, -0.14, 0.27, 0.06, 0.03, 0, tint('#111'));
   if (o.hat === 'cap') { body.orientedBox(0, 1.1, 0, 0.3, 0.08, 0.3, 0, tint(o.hatColor || o.shirt)); body.orientedBox(0, 1.08, -0.2, 0.26, 0.03, 0.16, 0, tint(o.hatColor || o.shirt)); }
   if (o.hat === 'sunhat') { body.orientedBox(0, 1.08, 0, 0.56, 0.03, 0.56, 0, tint('#e9d8a6')); body.orientedBox(0, 1.13, 0, 0.3, 0.1, 0.3, 0, tint('#e9d8a6')); }
@@ -57,11 +75,11 @@ export function buildHuman(o) {
     hips.add(pivot);
     return pivot;
   });
-  const legTop = o.shorts ? 0.45 : 0.92;
+  const legTop = o.dress ? 0.3 : o.shorts ? 0.45 : 0.92;
   const legs = [-1, 1].map((s) => {
     const pivot = new THREE.Group();
     pivot.position.set(s * 0.12, 0, 0);
-    pivot.add(limb(null, 0.17, 0.92, 0.18, [[0, legTop, o.pants], [legTop, 0.92, o.skin], [0.92, 1, o.shoes]]));
+    pivot.add(limb(null, 0.17, 0.92, 0.18, [[0, legTop, o.dress || o.pants], [legTop, 0.92, o.skin], [0.92, 1, o.shoes]]));
     hips.add(pivot);
     return pivot;
   });

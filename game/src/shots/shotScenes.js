@@ -159,7 +159,7 @@ export const SCENES = {
 
   // 2. On foot on the Sunwake boardwalk with Ozzie on the phone and the tower marker.
   boardwalk: {
-    hour: 17.4,
+    hour: 16.1,
     setup(game) {
       game.peds.target = 0;
       game.traffic.target = 0;
@@ -178,15 +178,18 @@ export const SCENES = {
       game.dialogue.showStatic('ozzie', 'Marco stashed a cooler under Lifeguard Tower 3. Coral stripes, can\'t miss it. Beach patrol loves a cooler — be quick.');
       game.missions.active = STORY[1];
       game.missions.marker = game.boardMarker;
+      p.placeAt(12 * B + 12.4, 9 * B - 0.4, Math.PI - 0.5);
+      game.contacts.place('ozzie', 12 * B + 12.6, 9 * B + 2.6, -0.35);
+      game.contacts.talking = true;
     },
     steps: 20,
     finalize(game) {
       const p = game.player;
-      p.heading = 2.45;
+      p.heading = Math.PI - 0.55;
       p.syncRig();
       game.boardMarker.update(1.2);
       game.hud.showDistrict({ name: 'Sunwake Beach', sub: 'BOARDWALK & SURF' });
-      return { pos: new THREE.Vector3(p.pos.x - 6.5, p.pos.y + 3.6, p.pos.z - 8.5), look: new THREE.Vector3(p.pos.x + 12, p.pos.y + 0.6, p.pos.z + 12) };
+      return { pos: new THREE.Vector3(12 * B + 5.2, p.pos.y + 2.2, 9 * B - 1.5), look: new THREE.Vector3(12 * B + 22, p.pos.y + 0.9, 9 * B + 7) };
     },
   },
 
