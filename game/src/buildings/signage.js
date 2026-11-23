@@ -38,6 +38,7 @@ export const BRAND_STYLES = {
   'SUNRISE COURIERS': ['#ff6b35', '#ffffff', 'round'],
   'LUMEN TOWER': ['#0b1f33', '#9fe8ff', 'serif'],
   "OZZIE'S BAIT & TACKLE": ['#1d4e5f', '#ffd36e', 'round'],
+  'TOWER 3': ['#ffffff', '#ff6b5a', 'block'],
   'DRINK MANGO BAY': ['#ff8a00', '#fff8e1', 'billboard'],
   'SUNWAKE · ROOMS FROM $89': ['#00a6a6', '#ffffff', 'billboard'],
 };

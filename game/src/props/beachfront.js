@@ -38,7 +38,9 @@ export function buildBeachfront(kit) {
     kit.trim.box(bw.x1 - 0.1, bw.y + 1.0, b.cz, 0.14, 0.12, BLOCK, tint('#f6efe2'));
     // lifeguard tower
     const tx = b.x0 + 40, tz = b.z0 + 30;
-    lifeguardTower(kit, tx, tz, TOWER_COLORS[towerIndex++ % TOWER_COLORS.length]);
+    // Tower 3 (the story's cooler drop) wears Sunwake's coral stripes
+    lifeguardTower(kit, tx, tz, b.j === 9 ? TOWER_COLORS[0] : TOWER_COLORS[1 + (towerIndex++ % (TOWER_COLORS.length - 1))]);
+    if (b.j === 9) kit.signs.push({ x: tx - 1.42, y: 3.0, z: tz, yaw: -Math.PI / 2, w: 2.0, h: 0.7, brand: 'TOWER 3' });
     kit.signs.push({ x: tx + 1.42, y: 3.0, z: tz, yaw: Math.PI / 2, w: 2.0, h: 0.7, brand: 'PELICAN SURF CO' });
     // umbrellas and towels
     for (let k = 0; k < 7; k++) {
