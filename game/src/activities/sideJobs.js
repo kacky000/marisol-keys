@@ -10,7 +10,7 @@ import { rng } from '../core/rng.js';
 import { edges, nodes, lanePoint } from '../roads/roadNetwork.js';
 import { LaneDriver } from '../traffic/laneDriver.js';
 import { streetNameAt } from '../police/dispatchRadio.js';
-import { startParamedic, updateParamedic, dropPatient } from './paramedicJob.js';
+import { startParamedic, updateParamedic, dropPatient, HOSPITAL_BAY } from './paramedicJob.js';
 
 const SPRINT = [[10 * BLOCK, 11 * BLOCK], [10 * BLOCK, 9 * BLOCK], [8 * BLOCK + 32, 8 * BLOCK], [7 * BLOCK, 7 * BLOCK], [5 * BLOCK, 6 * BLOCK + 20], [6 * BLOCK, 10 * BLOCK], [8 * BLOCK, 12 * BLOCK], [10 * BLOCK, 12 * BLOCK + 32]];
 const FARE_NAMES = ['a tourist in a sun hat', 'a nervous accountant', 'two surfers', 'a wedding planner', 'a chef late for service', 'a lost cruise passenger'];
@@ -35,6 +35,7 @@ export class SideJobs {
     this.startMarkers = [
       { kind: 'courier', ...PLACES.courier, letter: 'C' },
       { kind: 'sprint', ...PLACES.raceStart, letter: 'R' },
+      { kind: 'paramedic', ...HOSPITAL_BAY, letter: 'A' }, // blip only: duty starts from inside the ambulance
     ];
   }
 
