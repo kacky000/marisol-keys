@@ -24,6 +24,7 @@ import { StreetEvents } from '../activities/streetEvents.js';
 import { TidePages } from '../activities/tidePages.js';
 import { Pickups } from '../activities/pickups.js';
 import { StuntJumps } from '../activities/stuntJumps.js';
+import { GangTurf } from '../combat/gangTurf.js';
 import { Shops, tuningFor } from '../economy/shops.js';
 import { playerTuning } from '../vehicles/vehicle.js';
 import { outfitLook } from '../economy/clothingStore.js';
@@ -104,6 +105,8 @@ export class Game {
     this.pickups = new Pickups(this);
     this.events = new StreetEvents(this);
     this.stunts = new StuntJumps(this);
+    this.gangs = new GangTurf(this);
+    on('gunfire', ({ x, z, team }) => { if (team === 'player') this.gangs.alertNear(x, z); });
     this.intro = new IntroCinematic(this);
     this.phone = new PhoneScreen(this);
     this.damageFx = startDamageEffects(this);
@@ -146,7 +149,7 @@ export class Game {
 
   get targets() {
     return {
-      people: [...this.peds.peds, ...this.police.officers, ...this.missions.enemies, ...(this.events ? this.events.people : []), this.player],
+      people: [...this.peds.peds, ...this.police.officers, ...this.missions.enemies, ...(this.events ? this.events.people : []), ...(this.gangs ? this.gangs.people : []), this.player],
       vehicles: this.vehicles.list,
     };
   }
@@ -306,6 +309,7 @@ export class Game {
       this.pickups.update(dt, this.time);
       this.events.update(dt);
       this.stunts.update(dt);
+      this.gangs.update(dt);
     }
     this.contacts.update(dt);
     this.dialogue.update(dt);
@@ -353,7 +357,7 @@ export class Game {
   hudSnapshot() {
     const p = this.player;
     const v = p.vehicle;
-    const blips = [...this.missions.blips(), ...this.activities.blips(), ...this.shops.blips(), ...this.pickups.blips(), ...this.events.blips(), ...this.stunts.blips()];
+    const blips = [...this.missions.blips(), ...this.activities.blips(), ...this.shops.blips(), ...this.pickups.blips(), ...this.events.blips(), ...this.stunts.blips(), ...this.gangs.blips()];
     if (this.waypoint) {
       if (Math.hypot(p.pos.x - this.waypoint.x, p.pos.z - this.waypoint.z) < 15) { this.waypoint = null; this.hud.toast('Waypoint reached'); }
       else blips.push({ ...this.waypoint, kind: 'waypoint' });

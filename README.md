@@ -65,7 +65,7 @@ Vela Cinema, Hotel Esmeralda...).
 
 **A living city.** Lane-following traffic that obeys working traffic lights; pedestrians who walk
 the sidewalks, cross at the zebras on their light, sunbathe, wade in the surf, flee from gunfire
-and get thrown by speeding cars; boats on the water; random street events (police pursuits,
+and get thrown by speeding cars; boats on the water; random street events (police pursuits, Gull's crew loitering at harbor hangouts,
 street racers, muggings you can break up).
 
 **Driving.** Ten invented vehicles — Solara Vela sedan, Kestrel Strata GT, Marisol Spyder
