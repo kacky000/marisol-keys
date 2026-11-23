@@ -92,6 +92,7 @@ export class Vehicle {
     this.pos.x += this.vel.x * dt;
     this.pos.z += this.vel.y * dt;
     this.drifting = inp.handbrake && Math.abs(vF) > 8 || Math.abs(vR) > 4;
+    this.skidding = this.drifting || (this.driver === 'player' && inp.brake > 0 && vF > 14);
 
     if (s.boat) {
       // boats bounce off the shore, ride the swell and pitch up with speed

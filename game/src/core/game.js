@@ -33,6 +33,7 @@ import { outfitLook } from '../economy/clothingStore.js';
 import { ParticleFX } from '../fx/particles.js';
 import { TracerFX } from '../fx/tracers.js';
 import { startDamageEffects } from '../fx/damageEffects.js';
+import { SkidMarks } from '../fx/skidMarks.js';
 import { PostProcess } from '../fx/postProcess.js';
 import { renderFrame } from '../fx/frameRenderer.js';
 // the island, sky and light
@@ -93,7 +94,7 @@ export class Game {
     LaneDriver.crossers = this.peds.peds;
     this.player = new Player(s);
     this.camera = new GameCamera(this.threeCamera);
-    this.fx = { particles: new ParticleFX(s), tracers: new TracerFX(s) };
+    this.fx = { particles: new ParticleFX(s), tracers: new TracerFX(s), skids: new SkidMarks(s) };
     this.wanted = new WantedLevel();
     this.police = new PoliceDispatch(s, this.vehicles, this.wanted);
     this.hud = new Hud();
@@ -241,6 +242,7 @@ export class Game {
     p.controlsLocked = false;
     this.downTimer = 0;
     this.camera.fixed = null;
+    this.fx.skids.clear();
     this.dialogue.close();
     document.body.classList.remove('busted', 'wasted');
   }

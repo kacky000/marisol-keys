@@ -1,5 +1,5 @@
 // Vehicle damage feedback: engine smoke when hurt, flames when critical, explosions that hurt
-// everything nearby, crash sparks, and tyre dust while drifting.
+// everything nearby, crash sparks, and tyre dust and skid marks while sliding.
 
 import { on, emit } from '../core/events.js';
 
@@ -32,6 +32,7 @@ export function startDamageEffects(game) {
   });
   let timer = 0;
   return (dt) => {
+    for (const v of game.vehicles.list) game.fx.skids.track(v);
     timer -= dt;
     if (timer > 0) return;
     timer = 0.06;
