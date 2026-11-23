@@ -25,6 +25,7 @@ import { TidePages } from '../activities/tidePages.js';
 import { Pickups } from '../activities/pickups.js';
 import { StuntJumps } from '../activities/stuntJumps.js';
 import { CompletionWatch } from '../progress/completion.js';
+import { DrivingBonuses } from '../activities/drivingBonuses.js';
 import { GangTurf } from '../combat/gangTurf.js';
 import { Shops, tuningFor } from '../economy/shops.js';
 import { playerTuning } from '../vehicles/vehicle.js';
@@ -108,6 +109,7 @@ export class Game {
     this.events = new StreetEvents(this);
     this.stunts = new StuntJumps(this);
     this.completion = new CompletionWatch(this);
+    this.bonuses = new DrivingBonuses(this);
     this.gangs = new GangTurf(this);
     on('gunfire', ({ x, z, team }) => { if (team === 'player') this.gangs.alertNear(x, z); });
     this.intro = new IntroCinematic(this);
@@ -315,6 +317,7 @@ export class Game {
       this.stunts.update(dt);
       this.gangs.update(dt);
       this.completion.update(dt);
+      this.bonuses.update(dt);
     }
     this.contacts.update(dt);
     this.dialogue.update(dt);
