@@ -105,7 +105,7 @@ Any static file server works too: the game is just the files under `game/`.
 ## Screenshots
 
 `index.html?shot=<cover|boardwalk|harbor|map>&seed=1` builds a scripted scene with the real game
-code and renders one stable frame. `tools/capture-shots.sh` takes all of them with headless Chrome
+code and renders one stable frame. `tools/capture-shots.sh` takes all of them with headless Chrome over the DevTools protocol
 (with `node serve.ts --port 8137` running).
 
 ## Hand-in

@@ -8,7 +8,7 @@ mkdir -p screenshots
 rm -f screenshots/*.jpg screenshots/*.png
 node -e "for (const s of JSON.parse(require('fs').readFileSync('shots.json','utf8'))) console.log(s.name + ' ' + s.query)" | tr -d '\r' |
 while read -r name query; do
-  bash tools/shoot.sh "$query" "$tmp/${name%.*}.png" 20000 > /dev/null
+  node tools/cdp-shot.mjs "$query" "$tmp/${name%.*}.png"
   python tools/to_jpeg.py "$tmp/${name%.*}.png" "screenshots/$name"
 done
 rm -rf "$tmp"
