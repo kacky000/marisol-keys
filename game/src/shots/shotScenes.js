@@ -88,7 +88,7 @@ export const SCENES = {
       game.wanted.setStars(4);
       game.wanted.minimumStars = 4;
       game.police.heli = new Helicopter(game.scene, 10 * B, 4 * B - 20);
-      game.state.story = 8;
+      game.state.story = 9; // the final mission, Causeway Run
       game.state.money = 48250;
       game.hud.setObjective('CAUSEWAY RUN', 'Cross <b>Pelican Causeway</b> to the mainland');
     },
