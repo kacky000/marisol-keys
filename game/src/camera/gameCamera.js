@@ -38,6 +38,7 @@ export class GameCamera {
     if (this.fixed) {
       this.cam.position.copy(this.fixed.pos);
       this.cam.lookAt(this.fixed.look);
+      if (this.fixed.roll) this.cam.rotateZ(this.fixed.roll); // a dutch tilt for action scenes
       return;
     }
     if (m.dx || m.dy) this.lastMouse = time;
