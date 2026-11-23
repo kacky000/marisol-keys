@@ -111,7 +111,7 @@ export class Game {
   // A pool of warm point lights that follow the nearest street lamps after dusk.
   makeNightLights() {
     const pool = [];
-    for (let k = 0; k < 6; k++) {
+    for (let k = 0; k < 4; k++) {
       const l = new THREE.PointLight('#ffcf8a', 0, 26, 1.6);
       this.scene.add(l);
       pool.push(l);
@@ -310,6 +310,7 @@ export class Game {
     const exposure = 1.0 + state.night * 0.35;
     this.world.signMaterial.emissiveIntensity = 0.25 + state.night * 1.4;
     if (this.world.shopMaterial) this.world.shopMaterial.emissiveIntensity = 0.3 + state.night * 1.6;
+    for (const m of this.world.nightMaterials) m.emissiveIntensity = state.night * 0.95;
     if (this.police.heli) this.police.heli.night = state.night > 0.3;
     // street lamps near the player light up at night
     const lamps = state.night > 0.3 ? lampHeads.map((l) => [l, l.distanceToSquared(focus)]).sort((a, b) => a[1] - b[1]).slice(0, this.nightLights.length) : [];

@@ -1,6 +1,7 @@
 // Facade paintings for each architectural style. Walls are painted near-white so per-building
 // vertex tints give every block its own pastel; glass is painted with a sky reflection.
 
+import * as THREE from 'three';
 import { canvasTexture, grain } from '../core/canvasTexture.js';
 
 // Glass curtain wall: one tile = 12 m wide x 12 m tall (4 panes x 3 floors).
@@ -186,6 +187,38 @@ export function shopfrontFacade() {
     g.fillRect(0, 0, 8, h); g.fillRect(100, fascia, 8, h); g.fillRect(148, fascia, 8, h); g.fillRect(w - 8, 0, 8, h);
     grain(g, w, h, rng, 6);
   }, { seed: 37 });
+}
+
+// Night windows: an emissive map derived from a facade texture. The tile is split into the
+// style's window grid and roughly 40% of the panes glow a warm interior light.
+export function litWindowsFrom(tex, cols, rows, seed = 5) {
+  const src = tex.image;
+  const w = src.width, h = src.height;
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const g = c.getContext('2d');
+  const sd = src.getContext('2d').getImageData(0, 0, w, h).data;
+  const out = g.createImageData(w, h);
+  let s = seed;
+  const rand = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
+  const lit = [];
+  const tints = [[255, 196, 120], [255, 226, 170], [190, 220, 255], [255, 170, 120]];
+  for (let k = 0; k < cols * rows; k++) lit.push(rand() < 0.42 ? tints[Math.floor(rand() * tints.length)] : null);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      const r = sd[i], gg = sd[i + 1], b = sd[i + 2];
+      const lum = (r * 0.3 + gg * 0.59 + b * 0.11) / 255;
+      const cell = lit[Math.floor(x / (w / cols)) + Math.floor(y / (h / rows)) * cols];
+      if (cell && lum < 0.62 && b >= r - 10) { out.data[i] = cell[0]; out.data[i + 1] = cell[1]; out.data[i + 2] = cell[2]; }
+      out.data[i + 3] = 255;
+    }
+  }
+  g.putImageData(out, 0, 0);
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
 }
 
 // Flat roofs: gravel with HVAC grime.

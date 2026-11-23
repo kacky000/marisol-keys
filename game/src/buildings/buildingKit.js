@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { MeshBatch, tint } from '../core/meshBatch.js';
 import { addCollider } from '../world/collisionWorld.js';
-import { glassFacade, decoFacade, stuccoFacade, warehouseFacade, villaFacade, roofTexture, shopfrontFacade } from './facadeTextures.js';
+import { glassFacade, decoFacade, stuccoFacade, warehouseFacade, villaFacade, roofTexture, shopfrontFacade, litWindowsFrom } from './facadeTextures.js';
 import { WALK_Y } from '../world/terrain.js';
 import { boardwalkTexture } from '../world/groundTextures.js';
 
@@ -79,10 +79,20 @@ export function streetSide(block, cx, cz) {
 
 export function buildKitMeshes(kit, group) {
   const facadeMat = (map, rough = 0.85, metal = 0) => new THREE.MeshStandardMaterial({ map, roughness: rough, metalness: metal, vertexColors: true });
+  // facades whose windows light up after dusk (emissive intensity is driven by the clock)
+  const nightMat = (map, cols, rows, rough, metal = 0) => {
+    const m = facadeMat(map, rough, metal);
+    m.emissiveMap = litWindowsFrom(map, cols, rows, cols * 31 + rows);
+    m.emissive = new THREE.Color('#ffffff');
+    m.emissiveIntensity = 0;
+    kit.nightMaterials.push(m);
+    return m;
+  };
+  kit.nightMaterials = [];
   const layers = [
-    [kit.glass, facadeMat(glassFacade(), 0.28, 0.35)],
-    [kit.deco, facadeMat(decoFacade(), 0.8)],
-    [kit.stucco, facadeMat(stuccoFacade(), 0.9)],
+    [kit.glass, nightMat(glassFacade(), 4, 3, 0.28, 0.35)],
+    [kit.deco, nightMat(decoFacade(), 2, 2, 0.8)],
+    [kit.stucco, nightMat(stuccoFacade(), 2, 2, 0.9)],
     [kit.warehouse, facadeMat(warehouseFacade(), 0.7, 0.2)],
     [kit.villa, facadeMat(villaFacade(), 0.6)],
     [kit.roof, facadeMat(roofTexture(), 1)],

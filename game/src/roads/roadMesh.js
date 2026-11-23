@@ -4,10 +4,12 @@
 import * as THREE from 'three';
 import { MeshBatch, tint } from '../core/meshBatch.js';
 import { nodes, edges } from './roadNetwork.js';
-import { ROAD_HALF } from '../world/cityPlan.js';
+import { ROAD_HALF, CAUSEWAYS } from '../world/cityPlan.js';
+import { addCollider } from '../world/collisionWorld.js';
 import { laneTexture, crosswalkTexture, junctionTexture, causewayDeckTexture } from './roadTextures.js';
 
 const ROAD_Y = 0.03;
+export const RAMP = 40;   // size of the ferry-ramp plaza at each causeway's mainland end
 const CAP = 6;
 
 export function buildRoadMeshes(group) {
@@ -72,6 +74,21 @@ function buildCausewayStructure(group) {
       rail.box(x0 + len / 2, 0, cz + side * (ROAD_HALF + 0.35), len, 0.9, 0.5, r);
       rail.box(x0 + len / 2, 0.9, cz + side * (ROAD_HALF + 0.35), len, 0.12, 0.62, stripe);
     }
+  }
+  // the mainland ferry ramp at the far end of each causeway: a plaza, bollards and a gantry sign
+  for (const cw of CAUSEWAYS) {
+    const x = cw.x0 - RAMP / 2;
+    concrete.box(x, -3, cw.z, RAMP, 3.02, RAMP, tint('#cfc8ba'));
+    for (let k = -RAMP / 2 + 2; k <= RAMP / 2 - 2; k += 4) {
+      concrete.box(cw.x0 - RAMP + 0.6, 0, cw.z + k, 0.8, 1.0, 0.8, stripe);
+      if (Math.abs(k) > ROAD_HALF + 2) concrete.box(cw.x0 - 0.6, 0, cw.z + k, 0.8, 1.0, 0.8, stripe);
+    }
+    for (const s of [-1, 1]) concrete.box(x + s * 0, 0, cw.z + s * (RAMP / 2 - 0.5), RAMP, 1.0, 0.6, r);
+    concrete.box(x + 6, 0, cw.z - ROAD_HALF - 1, 0.5, 7, 0.5, tint('#5d6066'));
+    concrete.box(x + 6, 0, cw.z + ROAD_HALF + 1, 0.5, 7, 0.5, tint('#5d6066'));
+    concrete.box(x + 6, 6, cw.z, 0.6, 1.6, ROAD_HALF * 2 + 2.5, tint('#1d6b8a'));
+    addCollider(cw.x0 - RAMP - 1, cw.z - RAMP / 2, cw.x0 - RAMP + 1, cw.z + RAMP / 2, 2);
+    for (const s of [-1, 1]) addCollider(cw.x0 - RAMP, cw.z + s * (RAMP / 2 - 0.5) - 0.4, cw.x0, cw.z + s * (RAMP / 2 - 0.5) + 0.4, 2);
   }
   group.add(concrete.toMesh(new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.9, vertexColors: true })));
   group.add(rail.toMesh(new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.6, vertexColors: true })));

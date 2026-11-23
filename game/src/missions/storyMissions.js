@@ -154,7 +154,7 @@ export const STORY = [
         ['tessa', 'Catch me first, Captain.'],
       ] },
       { type: 'enterVehicle', vehicle: { type: 'sports', x: 7 * B + 32, z: 8 * B + 3.5, heading: -Math.PI / 2, paint: '#19c3b4' }, text: 'Get in the <b>getaway car</b>', onEnterStars: 4, holdStars: 4 },
-      { type: 'goto', x: -640, z: 5 * B, radius: 16, inVehicle: true, text: 'Cross <b>Pelican Causeway</b> to the mainland' },
+      { type: 'goto', x: -776, z: 5 * B, radius: 16, inVehicle: true, text: 'Cross <b>Pelican Causeway</b> to the mainland ferry ramp' },
       { type: 'clearWanted' },
       { type: 'talk', lines: [
         ['priya', 'The press has it. Hale\'s been suspended — they\'re reading the Tide Book on every station.'],

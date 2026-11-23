@@ -72,6 +72,7 @@ export function buildWorld(scene) {
     tallest: kit.tallest,
     signMaterial,
     shopMaterial: kit.shopMaterial,
+    nightMaterials: kit.nightMaterials,
     signals,
     update(time, dt = 0.016) {
       signals.update(dt, time);

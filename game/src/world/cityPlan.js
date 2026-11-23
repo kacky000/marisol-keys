@@ -94,7 +94,10 @@ export function hasHorizontalRoad(i, j) {
 
 // Ground type at a world point: 'road', 'walk', 'lot', 'sand', 'water'.
 export function groundAt(x, z) {
-  for (const c of CAUSEWAYS) if (x >= c.x0 && x <= c.x1 && Math.abs(z - c.z) <= ROAD_HALF) return 'road';
+  for (const c of CAUSEWAYS) {
+    if (x >= c.x0 && x <= c.x1 && Math.abs(z - c.z) <= ROAD_HALF) return 'road';
+    if (x >= c.x0 - 40 && x < c.x0 && Math.abs(z - c.z) <= 20) return 'road'; // mainland ferry ramp
+  }
   const { i, j } = blockAtPoint(x, z);
   const l = blockLetter(i, j);
   const lx = x - i * BLOCK, lz = z - j * BLOCK;
