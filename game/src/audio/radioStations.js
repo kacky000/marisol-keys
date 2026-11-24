@@ -1,19 +1,24 @@
 // In-car radio: three invented stations playing generated music on a step sequencer, each with
-// its own scale, tempo and sound, plus a station ident jingle when you tune in.
+// its own scale, tempo and sound, a station ident jingle when you tune in, and DJs who cut in
+// between tracks.
 
 import { audioContext, bus, envGain, noiseBuffer } from './audioEngine.js';
 
 export const STATIONS = [
   { name: 'TIDAL 101.3 — Sunset Synthwave', bpm: 96, root: 45, scale: [0, 3, 5, 7, 10], lead: 'sawtooth', bass: 'square', drums: 'four',
-    songs: ['Neon Pelicans — "Coral Static"', 'Glasswater Drive — "Last Ferry Out"', 'The Undertow — "Pastel Heat"', 'Miss Mirador — "Halcyon Nights"'] },
+    songs: ['Neon Pelicans — "Coral Static"', 'Glasswater Drive — "Last Ferry Out"', 'The Undertow — "Pastel Heat"', 'Miss Mirador — "Halcyon Nights"'],
+    djs: ['Rosa Vale here, the sun\'s melting into Glasswater —', 'Tidal 101.3, windows down on Sundown Boulevard —', 'If you\'re stuck on the causeway, this one\'s for you —'] },
   { name: 'STATIC 88 FM — Pirate Reggaeton', bpm: 92, root: 50, scale: [0, 2, 3, 7, 8], lead: 'square', bass: 'sine', drums: 'dembow',
-    songs: ['DJ Sardina — "Canal Bounce"', 'Lantern Kids — "No Signal"', 'Priya L. live mix — "Tide Book Dub"', 'Rayo Sound — "Quay Road"'] },
+    songs: ['DJ Sardina — "Canal Bounce"', 'Lantern Kids — "No Signal"', 'Priya L. live mix — "Tide Book Dub"', 'Rayo Sound — "Quay Road"'],
+    djs: ['Still on air, MKPD still can\'t find the antenna —', 'Static 88, broadcasting from a boat you\'ll never see —', 'Shout out to the Lantern Canals, keep it loud —'] },
   { name: 'REEF ROOM RADIO — Steel Pan Lounge', bpm: 104, root: 55, scale: [0, 2, 4, 7, 9], lead: 'triangle', bass: 'triangle', drums: 'shaker',
-    songs: ['The Lifeguards — "Tower Three"', 'Seagrape Trio — "Low Tide Waltz"', 'Captain Calypso — "Marlin Diner"', 'Sunwake Steel — "Boardwalk 6am"'] },
+    songs: ['The Lifeguards — "Tower Three"', 'Seagrape Trio — "Low Tide Waltz"', 'Captain Calypso — "Marlin Diner"', 'Sunwake Steel — "Boardwalk 6am"'],
+    djs: ['Reef Room Radio, cool as the pier at six —', 'Gelato weather on the boardwalk, folks —', 'Slow it down, Marisol Keys —'] },
   { name: 'RADIO OFF', off: true },
 ];
 
 const midi = (n) => 440 * Math.pow(2, (n - 69) / 12);
+const SONG_STEPS = 384; // sixteenth notes per song, a minute or so
 
 export class Radio {
   constructor() {
@@ -99,6 +104,18 @@ export class Radio {
       }
       this.nextStep += stepDur;
       this.step++;
+      if (this.step % SONG_STEPS === 0) this.nextSong();
     }
+  }
+
+  // About once a minute the DJ cuts in and the station moves on to its next track.
+  nextSong() {
+    const st = STATIONS[this.index];
+    if (st.off) return;
+    this.track = ((this.track || 0) + 1) % st.songs.length;
+    this.seed = 7 + this.index * 131 + this.track * 977;
+    this.jingle();
+    const dj = st.djs[(this.track + this.index) % st.djs.length];
+    this.onTrack?.(`${dj} ${st.songs[this.track]}`);
   }
 }

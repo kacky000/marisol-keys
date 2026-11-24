@@ -128,6 +128,7 @@ export class Game {
     this.phone = new PhoneScreen(this);
     this.damageFx = startDamageEffects(this);
     this.radio = new Radio();
+    this.radio.onTrack = (line) => { if (this.player.vehicle) this.hud.setRadio(line); };
     this.dispatch = new DispatchRadio(this);
     startCrimeWatch(this);
     startTutorialTips(this);
