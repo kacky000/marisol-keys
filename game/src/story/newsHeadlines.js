@@ -24,6 +24,8 @@ export function headlines(state) {
   if (state.properties?.length) out.push('Mystery buyer snaps up waterfront property');
   if (state.stats?.patients > 0) out.push(`Sunwake Medical thanks volunteer driver: ${state.stats.patients} patients rushed in`);
   if (state.stats?.vigilante > 0) out.push(`"Vigilante in a stolen cruiser" — MKPD neither confirms nor denies`);
+  if (state.stats?.boatBest) out.push(`Riptide Run record falls: ${state.stats.boatBest.toFixed(1)} s round the buoys`);
+  if (state.stats?.topSpeed > 45) out.push(`Speed camera on Coral Parade clocks something at ${Math.round(state.stats.topSpeed * 3.6)} km/h`);
   if (state.stats?.jumps > 0) out.push(`Daredevil clears ${state.stats.jumps} park ramps; council promises fences`);
   if (state.stats?.kills > 10) out.push('Las Linternas and Gull\'s crew blame each other for a violent week');
   out.push('Calloway Belle ferry runs to timetable, mostly', 'Weather: hot, sunny, chance of afternoon storms', 'Mango Bay Cola — taste the sunset');
