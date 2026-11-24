@@ -22,6 +22,10 @@ export function headlines(state) {
   if (state.stats?.fares > 0) out.push(`Keys Cab ratings soar: ${state.stats.fares} fares this week`);
   if ((state.pages || []).length) out.push(`Loose ledger pages found around the island: ${(state.pages || []).length} so far`);
   if (state.properties?.length) out.push('Mystery buyer snaps up waterfront property');
-  out.push('Weather: hot, sunny, chance of afternoon storms', 'Mango Bay Cola — taste the sunset');
+  if (state.stats?.patients > 0) out.push(`Sunwake Medical thanks volunteer driver: ${state.stats.patients} patients rushed in`);
+  if (state.stats?.vigilante > 0) out.push(`"Vigilante in a stolen cruiser" — MKPD neither confirms nor denies`);
+  if (state.stats?.jumps > 0) out.push(`Daredevil clears ${state.stats.jumps} park ramps; council promises fences`);
+  if (state.stats?.kills > 10) out.push('Las Linternas and Gull\'s crew blame each other for a violent week');
+  out.push('Calloway Belle ferry runs to timetable, mostly', 'Weather: hot, sunny, chance of afternoon storms', 'Mango Bay Cola — taste the sunset');
   return out;
 }
