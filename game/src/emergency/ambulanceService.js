@@ -7,6 +7,7 @@ import { on } from '../core/events.js';
 import { HOSPITAL_BAY } from '../activities/paramedicJob.js';
 import { ResponseCall } from './responseCall.js';
 import { MEDIC_OUTFIT } from './crewMember.js';
+import { streetNameAt } from '../police/dispatchRadio.js';
 
 const RESPONSE_DELAY = 6;     // seconds after the incident before the call goes out
 const CALL_RANGE = 160;       // only incidents this close to the player get a response
@@ -62,6 +63,7 @@ export class AmbulanceService {
     });
     if (!call) return;
     patient.persistent = true; // the body waits for the crew
+    g.dispatch.show(`Sunwake Medical, unit rolling to a casualty on ${streetNameAt(patient.pos.x, patient.pos.z)}.`, 4);
     this.incidents = this.incidents.filter((i) => i.ped !== patient);
     this.call = call;
   }

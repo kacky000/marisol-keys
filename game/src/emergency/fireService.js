@@ -5,6 +5,7 @@
 import { on } from '../core/events.js';
 import { ResponseCall } from './responseCall.js';
 import { FIREFIGHTER_OUTFIT } from './crewMember.js';
+import { streetNameAt } from '../police/dispatchRadio.js';
 
 const RESPONSE_DELAY = 3;
 const CALL_RANGE = 170;
@@ -51,6 +52,7 @@ export class FireService {
     });
     if (!call) return;
     wreck.burning = 999; // keeps burning until the crew puts it out
+    g.dispatch.show(`KFD Engine 7 responding: vehicle fire on ${streetNameAt(wreck.pos.x, wreck.pos.z)}.`, 4);
     wreck.persistent = true;
     this.fires = this.fires.filter((f) => f.wreck !== wreck);
     this.call = call;
