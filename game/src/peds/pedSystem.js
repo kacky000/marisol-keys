@@ -84,6 +84,14 @@ export class Ped {
     this.rig.rotation.y = -this.heading;
   }
 
+  // Stand and film the commotion at (x, z) with a phone held up.
+  film(x, z, time) {
+    if (this.state === 'flee') return;
+    this.state = 'film';
+    this.filmTimer = time;
+    this.heading = Math.atan2(x - this.pos.x, -(z - this.pos.z));
+  }
+
   flee(fromX, fromZ, time = 8) {
     if (!this.alive || this.state === 'wade') return; // swimmers duck under the waves instead
     this.state = 'flee';
@@ -114,6 +122,18 @@ export class Ped {
       return;
     }
     if (this.state === 'brawl') { this.updateBrawl(dt); return; }
+    if (this.state === 'film') {
+      this.filmTimer -= dt;
+      if (this.filmTimer <= 0) { this.state = 'walk'; this.route.length = 0; }
+      poseHuman(this.rig, 'idle', 0, dt);
+      const arm = this.rig.userData.arms[1];
+      arm.rotation.set(1.8, 0, 0.3); // phone held out at eye level
+      if (!this.phone) { this.phone = new THREE.Mesh(PHONE_GEO, PHONE_MAT); this.phone.position.set(0, -0.68, -0.05); arm.add(this.phone); }
+      this.phone.visible = true;
+      this.rig.position.set(this.pos.x, this.pos.y, this.pos.z);
+      this.rig.rotation.y = -this.heading;
+      return;
+    }
     if (this.state === 'wade') {
       // standing in the surf, bobbing with the swell, arms out for balance
       this.phase = (this.phase || 0) + dt;
@@ -174,7 +194,8 @@ export class Ped {
         this.phone.position.set(0, -0.68, -0.05);
         arm.add(this.phone);
       }
-    }
+      this.phone.visible = true;
+    } else if (this.phone) this.phone.visible = false; // put away after filming, or while running
     this.rig.position.set(this.pos.x, this.pos.y, this.pos.z);
     this.rig.rotation.y = -this.heading;
   }
@@ -241,7 +262,14 @@ export class PedSystem {
   }
 
   panic(x, z, r) {
-    for (const p of this.peds) if (p.alive && p.kind === 'civilian' && (p.pos.x - x) ** 2 + (p.pos.z - z) ** 2 < r * r) p.flee(x, z, 9);
+    for (const p of this.peds) {
+      if (!p.alive || p.kind !== 'civilian') continue;
+      const d2 = (p.pos.x - x) ** 2 + (p.pos.z - z) ** 2;
+      if (d2 > r * r) continue;
+      // a few onlookers at a safe distance stop and film it on their phones instead of running
+      if (p.id % 5 === 2 && d2 > 18 * 18 && p.state !== 'wade' && p.state !== 'sunbathe') p.film(x, z, 7);
+      else p.flee(x, z, 9);
+    }
   }
 
   spawnAt(x, z, outfit = null) {
