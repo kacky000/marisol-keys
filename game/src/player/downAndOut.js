@@ -11,6 +11,8 @@ export function playerDown(game, cause) {
   game.hud.bigMessage(busted ? 'BUSTED' : 'WASTED', busted ? 'Captain Hale sends his regards' : 'Sunwake Medical patched you up', DOWN_SECONDS);
   game.downTimer = DOWN_SECONDS;
   game.downBusted = busted;
+  game.player.controlsLocked = true; // cuffed (or down): no driving off or shooting while it plays out
+  if (game.player.vehicle) { const v = game.player.vehicle; v.input.throttle = 0; v.input.brake = 1; }
   document.body.classList.add(busted ? 'busted' : 'wasted');
 }
 
@@ -25,6 +27,7 @@ export function respawn(game) {
   if (p.vehicle) { p.vehicle.driver = null; p.vehicle = null; }
   p.enter = null;
   p.rig.visible = true;
+  p.controlsLocked = false;
   p.placeAt(spot.x, spot.z, 0);
   game.wanted.clear();
   game.police.clearAll(p);

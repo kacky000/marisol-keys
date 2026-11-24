@@ -33,6 +33,12 @@ export class Shops {
   }
 
   // The stored car waits at the safehouse kerb when the game starts.
+  // The last session's garage car leaves with it (a new game or another save may have none).
+  clearGarageCar() {
+    if (this.garageCar && !this.garageCar.removed && this.garageCar !== this.game.player.vehicle) this.game.vehicles.remove(this.garageCar);
+    this.garageCar = null;
+  }
+
   spawnGarageCar() {
     const g = this.game, c = g.state.garageCar;
     if (!c || (this.garageCar && !this.garageCar.removed)) return;

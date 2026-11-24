@@ -47,6 +47,13 @@ export class IntroCinematic {
     g.hud.toast('Tip: press <b>M</b> for the map, <b>F</b> to take a car');
   }
 
+  // Silently drop an unfinished intro (quitting to the title mid-glide, then loading a save).
+  cancel() {
+    if (this.t < 0) return;
+    this.t = -1;
+    this.el.classList.add('hidden');
+  }
+
   update(dt) {
     if (this.t < 0) return;
     this.t += dt;

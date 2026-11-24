@@ -199,6 +199,7 @@ export class Game {
     p.ammo = { fists: Infinity, ...this.state.weapons.ammo };
     p.clip = { fists: Infinity, pistol: 0, smg: 0, shotgun: 0 };
     for (const w of p.owned) p.reload(w, true);
+    if (!p.owned.has(p.weapon)) p.weapon = p.owned.has('pistol') ? 'pistol' : 'fists'; // last session's gun may not be owned here
     p.applyOutfit(outfitLook(this.state.outfit || 'teal'));
     p.placeAt(this.state.position.x, this.state.position.z, this.state.position.heading);
     this.shops.lastDay = Math.floor((this.state.hour - 8) / 24);
@@ -238,6 +239,8 @@ export class Game {
     this.ambulance.clear();
     this.cab.cancel();
     this.fire.clear();
+    this.intro.cancel();
+    this.shops.clearGarageCar();
     this.dialogue.close();
     document.body.classList.remove('busted', 'wasted');
   }
@@ -329,7 +332,7 @@ export class Game {
   handleGlobalKeys() {
     if (!this.running) return;
     if (menuPressed('Escape') || menuPressed('KeyP')) {
-      if (this.phone.open) this.phone.toggle(false);
+      if (this.phone.open) { this.phone.toggle(false); setInputEnabled(true); }
       else if (this.paused) { this.menus.show(null); this.setPaused(false); }
       else this.setPaused(true);
     }

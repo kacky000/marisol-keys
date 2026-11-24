@@ -66,6 +66,7 @@ export class MissionRunner {
         g.hud.prompt('<kbd>E</kbd> Retry the mission');
         if (wasPressed('KeyE') && !g.player.dead && !g.downTimer) {
           this.retryTimer = 0;
+          g.player.enter = null; // drop any half-finished climb in or out of a car
           if (g.player.vehicle) { g.player.vehicle.driver = null; g.player.vehicle = null; g.player.rig.visible = true; }
           g.wanted.clear();
           g.police.clearAll(g.player);
@@ -76,7 +77,7 @@ export class MissionRunner {
         }
       }
       const d = Math.hypot(g.player.pos.x - c.x, g.player.pos.z - c.z);
-      if (d < 2.2 && !g.player.vehicle && g.wanted.stars === 0 && this.cooldown <= 0 && !g.activities.active) this.start(g.state.story);
+      if (d < 2.2 && !g.player.vehicle && g.wanted.stars === 0 && this.cooldown <= 0 && !g.activities.active && !g.cab?.ride) this.start(g.state.story);
       return;
     }
     if (this.marker) this.marker.update(g.time);
@@ -96,6 +97,7 @@ export class MissionRunner {
     // same rule as a story start: no replays with the police on your tail
     if (g.wanted.stars > 0) { g.hud.toast('Lose the <b>MKPD</b> before replaying a mission'); return; }
     const c = CONTACTS[STORY[index].at];
+    p.enter = null;
     if (p.vehicle) { p.vehicle.driver = null; p.vehicle = null; p.rig.visible = true; }
     p.placeAt(c.x - 1.5, c.z + 1.5, 0);
     this.start(index, true);

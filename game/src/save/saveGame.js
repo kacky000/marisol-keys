@@ -1,6 +1,15 @@
 // Progress kept in localStorage: money, story chapter, weapons, properties, stats and settings.
 
+import { isWater } from '../world/groundHeight.js';
+import { nearestRoad } from '../roads/roadNetwork.js';
+
 const KEY = 'marisol-keys-save-v1';
+
+// The nearest street to a point out on the water (roads are always dry land or causeway).
+function landingNear(x, z) {
+  const r = nearestRoad(x, z);
+  return r ? { x: r.x, z: r.z } : { x: 3 * 64 - 8.6, z: 13 * 64 + 24 };
+}
 const SETTINGS_KEY = 'marisol-keys-settings-v1';
 
 export function newGameState() {
@@ -23,8 +32,13 @@ export function newGameState() {
 }
 
 export function saveGame(state, player) {
-  state.weapons = { owned: [...player.owned], ammo: { ...player.ammo } };
-  state.position = { x: player.pos.x, z: player.pos.z, heading: player.heading };
+  // rounds still in the magazine count too: Continue reloads each gun from this total
+  const ammo = {};
+  for (const [w, n] of Object.entries(player.ammo)) if (Number.isFinite(n)) ammo[w] = n + (Number.isFinite(player.clip?.[w]) ? player.clip[w] : 0);
+  state.weapons = { owned: [...player.owned], ammo };
+  // saved at sea (the end of Low Water, or the pause menu in a boat): wake up on the nearest quay
+  const spot = isWater(player.pos.x, player.pos.z) ? landingNear(player.pos.x, player.pos.z) : player.pos;
+  state.position = { x: spot.x, z: spot.z, heading: player.heading };
   state.savedAt = new Date().toISOString();
   try { localStorage.setItem(KEY, JSON.stringify(state)); return true; } catch { return false; }
 }

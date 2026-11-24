@@ -135,7 +135,8 @@ export class PoliceDispatch {
       return raycastStatic(x, y, z, dx / d, dy / d, dz / d, d) >= d - 1;
     };
     if (this.heli && look(this.heli.pos.x, this.heli.pos.y - 2, this.heli.pos.z, 140)) return true;
-    for (const u of this.units) if (!u.vehicle.wrecked && look(u.vehicle.pos.x, 1.6, u.vehicle.pos.z, 75)) return true;
+    // only crewed cruisers watch: not one the officers have left, nor one Tessa has stolen
+    for (const u of this.units) if (!u.vehicle.wrecked && u.vehicle.driver === u.driver && look(u.vehicle.pos.x, 1.6, u.vehicle.pos.z, 75)) return true;
     for (const o of this.officers) if (o.alive && look(o.pos.x, 1.6, o.pos.z, 55)) return true;
     return false;
   }
@@ -207,6 +208,7 @@ export class PoliceDispatch {
     const far = (p, r) => (p.x - player.pos.x) ** 2 + (p.z - player.pos.z) ** 2 > r * r;
     this.units = this.units.filter((u) => {
       if (u.vehicle.removed) return false;
+      if (u.vehicle === player.vehicle) { u.vehicle.sirenOn = false; u.vehicle.persistent = false; return false; } // stolen: it's Tessa's car now
       if (far(u.vehicle.pos, stars ? 320 : 160) && u.vehicle !== player.vehicle) { this.vehicles.remove(u.vehicle); return false; }
       return true;
     });
@@ -216,11 +218,18 @@ export class PoliceDispatch {
       return true;
     });
     for (const b of this.roadblocks) b.timer -= 0.016;
+    // an expired roadblock pulls its strip at once, kills its lights, and its cruisers are
+    // cleared away as soon as they're out of sight (kept on the list until then)
     this.roadblocks = this.roadblocks.filter((b) => {
       if (b.timer > 0 && stars > 0) return true;
-      for (const c of b.cars) if (c !== player.vehicle && far(c.pos, 60)) this.vehicles.remove(c);
-      if (b.strip) this.scene.remove(b.strip.mesh);
-      return false;
+      if (b.strip) { this.scene.remove(b.strip.mesh); b.strip = null; }
+      b.cars = b.cars.filter((c) => {
+        if (c === player.vehicle || c.removed) return false;
+        if (far(c.pos, 60)) { this.vehicles.remove(c); return false; }
+        c.sirenOn = false;
+        return true;
+      });
+      return b.cars.length > 0;
     });
   }
 
