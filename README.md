@@ -114,7 +114,8 @@ pause, settings and controls; save and continue.
 **Look and sound.** A golden-hour sky with clouds, sky-lit reflections, soft shadows, bloom and a
 warm colour grade, an animated sea with sun glints and surf, a day/night cycle with lit windows,
 glowing signs, street lamps and headlights, siren light spilling over the street, tropical
-storms with rain, wet streets and lightning. WebAudio engines, tyre squeal, sirens, gunshots, surf,
+storms with rain, wet streets and lightning, and a rainbow as they clear; stars and a moon at
+night. WebAudio engines, tyre squeal, sirens, gunshots, surf,
 gulls, rain and three radio stations (Tidal 101.3, Static 88 FM, Reef Room Radio) composing their
 own music.
 
