@@ -47,7 +47,7 @@ export class FireService {
       },
       done: () => hosed > HOSE_SECONDS,
       finish: () => { wreck.burning = 0; wreck.persistent = false; },
-      abandon: () => { wreck.persistent = false; },
+      abandon: () => { wreck.persistent = false; wreck.burning = Math.min(wreck.burning, 10); }, // burns itself out
     });
     if (!call) return;
     wreck.burning = 999; // keeps burning until the crew puts it out

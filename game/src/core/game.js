@@ -55,6 +55,9 @@ import { WeatherSystem } from '../weather/weatherSystem.js';
 import { initInput, endInputFrame, wasPressed, menuPressed, setInputEnabled, pointerLocked } from './input.js';
 import { on } from './events.js';
 import { wireGameEvents } from './eventWiring.js';
+import { runFrameLoop } from './frameLoop.js';
+import { updateSoundscape } from '../audio/soundscape.js';
+import { buildHudSnapshot } from '../ui/hudSnapshot.js';
 import { rng } from './rng.js';
 // interface
 import { Hud } from '../ui/hud.js';
@@ -309,19 +312,7 @@ export class Game {
     if (p.sinceHurt > 6 && p.health < 50 && !p.dead) p.health = Math.min(50, p.health + 3 * dt);
     this.camera.update(dt, p, this.time);
     this.weather.update(dt, this.time, this.threeCamera);
-    // radio and engine audio
-    if (this.vehicleAudio) {
-      let near = Infinity, count = 0, kind = 'police';
-      for (const v of this.vehicles.list) {
-        if (!v.sirenOn) continue;
-        count++;
-        const d = Math.hypot(v.pos.x - p.pos.x, v.pos.z - p.pos.z);
-        if (d < near) { near = d; kind = v.spec.ambulance ? 'ambulance' : v.spec.firetruck ? 'fire' : 'police'; }
-      }
-      this.vehicleAudio.update(p, near, count, kind);
-      this.radio.update(!!p.vehicle && !this.dialogue.open);
-      this.ambience.update(dt, p, this.time, this.weather.rainAmount || 0);
-    }
+    updateSoundscape(this, dt);
     this.districtTimer = (this.districtTimer || 0) - dt;
     if (this.districtTimer <= 0 && this.running) {
       this.districtTimer = 0.5;
@@ -345,26 +336,7 @@ export class Game {
     this.prevLocked = pointerLocked();
   }
 
-  hudSnapshot() {
-    const p = this.player;
-    const v = p.vehicle;
-    const blips = [...this.missions.blips(), ...this.activities.blips(), ...this.shops.blips(), ...this.pickups.blips(), ...this.events.blips(), ...this.stunts.blips(), ...this.gangs.blips()];
-    if (this.waypoint) {
-      if (Math.hypot(p.pos.x - this.waypoint.x, p.pos.z - this.waypoint.z) < 15) { this.waypoint = null; this.hud.toast('Waypoint reached'); }
-      else blips.push({ ...this.waypoint, kind: 'waypoint' });
-    }
-    for (const u of this.police.units) if (!u.vehicle.wrecked && !u.vehicle.removed) blips.push({ x: u.vehicle.pos.x, z: u.vehicle.pos.z, kind: 'police' });
-    for (const o of this.police.officers) if (o.alive) blips.push({ x: o.pos.x, z: o.pos.z, kind: 'police' });
-    if (this.police.heli) blips.push({ x: this.police.heli.pos.x, z: this.police.heli.pos.z, kind: 'heli' });
-    const heading = v ? v.heading : this.camera.yaw;
-    return {
-      money: this.state.money, snapMoney: this.shotMode, weatherIcon: this.weather.icon, hour: this.state.hour, stars: this.wanted.stars, starsFlash: this.wanted.flash,
-      health: p.health, armor: p.armor, weapon: p.weapon, clip: p.clip[p.weapon], ammo: p.ammo[p.weapon],
-      vehicle: v, aiming: p.aiming && !v,
-      map: { x: p.pos.x, z: p.pos.z, heading, arrowRel: (v ? 0 : p.heading - heading), speed: v ? Math.abs(v.speed) : 0, blips, time: this.time,
-        zone: this.wanted.stars > 0 ? { ...this.wanted.zone, seen: this.wanted.seen } : null },
-    };
-  }
+  hudSnapshot() { return buildHudSnapshot(this); }
 
   updateHud(dt) { this.hud.update(dt, this.hudSnapshot()); }
 
@@ -389,28 +361,5 @@ export class Game {
     this.render();
   }
 
-  loop() {
-    let last = performance.now();
-    // adaptive resolution: if frames run long, render fewer pixels; recover when there is headroom
-    let avg = 16, scale = 1, settle = 0;
-    const base = this.renderer.getPixelRatio();
-    const frame = (now) => {
-      const raw = now - last;
-      const dt = Math.min(0.05, raw / 1000);
-      last = now;
-      avg += (raw - avg) * 0.05;
-      settle -= raw;
-      if (settle <= 0 && this.running) {
-        const next = avg > 30 ? Math.max(0.6, scale - 0.1) : avg < 18 ? Math.min(1, scale + 0.05) : scale;
-        if (next !== scale) { scale = next; this.renderer.setPixelRatio(base * scale); settle = 1500; }
-      }
-      if (this.running) {
-        this.update(dt);
-        this.render();
-      } else this.renderTitle(dt);
-      endInputFrame();
-      requestAnimationFrame(frame);
-    };
-    requestAnimationFrame(frame);
-  }
+  loop() { runFrameLoop(this); }
 }

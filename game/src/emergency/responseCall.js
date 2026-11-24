@@ -4,7 +4,7 @@
 // means (kneeling over a patient, hosing down a fire) through the hooks it passes in.
 // Steal or wreck the unit mid-call and the call is over.
 
-import { edges, nodes, lanePoint } from '../roads/roadNetwork.js';
+import { edges, nodes, lanePoint, nearestRoad } from '../roads/roadNetwork.js';
 import { PursuitDriver } from '../police/pursuitDriver.js';
 import { CrewMember } from './crewMember.js';
 import { rng } from '../core/rng.js';
@@ -48,8 +48,12 @@ export class ResponseCall {
     if (playerDist > 240 || this.t > 120) { this.end(true); return true; }
     if (this.stage === 'respond') {
       this.driver.update(dt, this.target);
-      const near = Math.hypot(v.pos.x - this.scene.x, v.pos.z - this.scene.z) < 20;
-      if (near && Math.abs(v.speed) < 1.5) this.arrive();
+      const dist = Math.hypot(v.pos.x - this.scene.x, v.pos.z - this.scene.z);
+      if (dist < 20 && Math.abs(v.speed) < 1.5) { this.arrive(); return false; }
+      // a long unit can wedge itself at a tight junction: after ten seconds without getting any
+      // closer, put it back on a lane a short drive from the scene, out of the player's way
+      if (dist < (this.best ?? Infinity) - 2) { this.best = dist; this.stall = 0; } else this.stall = (this.stall || 0) + dt;
+      if (this.stall > 10) this.relocate();
       return false;
     }
     if (this.stage === 'leave') {
@@ -74,6 +78,26 @@ export class ResponseCall {
       if (this.crew.every((m) => m.walkTo(back.x, back.z, dt, 1.2))) this.depart();
     }
     return false;
+  }
+
+  // Back on the scene's own street, ~35 m short of it and facing it, from whichever end is
+  // further from the player (so the jump happens out of sight).
+  relocate() {
+    const v = this.v, p = this.game.player.pos;
+    this.stall = 0;
+    this.best = Infinity;
+    const road = nearestRoad(this.scene.x, this.scene.z);
+    if (!road) return;
+    const e = road.edge, a = nodes.get(e.a), b = nodes.get(e.b);
+    const along = road.t * e.len;
+    const fromA = lanePoint(a, b, 1, Math.max(2, along - 35));
+    const fromB = lanePoint(b, a, 1, Math.max(2, e.len - along - 35));
+    const dA = Math.hypot(fromA.x - p.x, fromA.z - p.z), dB = Math.hypot(fromB.x - p.x, fromB.z - p.z);
+    const at = dA > dB ? fromA : fromB;
+    v.pos.x = at.x; v.pos.z = at.z; v.heading = at.heading;
+    v.vel.set(0, 0);
+    this.driver.route = [];
+    this.driver.replan = 0;
   }
 
   arrive() {
