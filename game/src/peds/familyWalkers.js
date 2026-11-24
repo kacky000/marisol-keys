@@ -1,5 +1,6 @@
 // Families out for a walk: a child at a parent's side, holding their hand, taking quicker steps
 // to keep up; the child runs along when the parent flees and stays close if they stop.
+// Children are never targets; if the parent goes down, the child runs off out of the scene.
 
 import { buildHuman, poseHuman, randomOutfit } from './humanModel.js';
 import { groundHeight } from '../world/groundHeight.js';
@@ -23,6 +24,16 @@ export function removeChild(scene, ped) {
 
 export function updateChild(ped, dt) {
   const c = ped.child;
+  if (!ped.alive) {
+    // the child runs off up the street and out of the scene
+    c.gone = (c.gone || 0) + dt;
+    c.x += Math.sin(c.heading) * 4 * dt; c.z += -Math.cos(c.heading) * 4 * dt;
+    poseHuman(c.rig, 'run', 4 / CHILD_SCALE, dt);
+    c.rig.position.set(c.x, groundHeight(c.x, c.z), c.z);
+    c.rig.rotation.y = -c.heading;
+    if (c.gone > 4) { c.rig.parent?.remove(c.rig); ped.child = null; }
+    return;
+  }
   // on the parent's left, a little behind
   const fx = Math.sin(ped.heading), fz = -Math.cos(ped.heading);
   const tx = ped.pos.x - fx * 0.2 + fz * 0.75, tz = ped.pos.z - fz * 0.2 - fx * 0.75;
