@@ -1,11 +1,10 @@
 // Walkable surface height at any point: roads, kerbs, sand, the raised boardwalk and the pier.
 
-import { groundAt, BLOCK, blockLetter } from './cityPlan.js';
+import { groundAt, BLOCK, blockLetter, MAINLAND_SHORE } from './cityPlan.js';
 import { WALK_Y } from './terrain.js';
 import { BOARDWALK, PIER } from '../props/beachfront.js';
 import { rampHeight } from '../activities/stuntJumps.js';
-import { MAINLAND_SHORE } from './mainland.js';
-import { FERRY_HULL } from '../water/carFerry.js';
+import { FERRY_HULL } from './movingHulls.js';
 
 // Stunt ramps rise above whatever surface they sit on.
 export function groundHeight(x, z) {

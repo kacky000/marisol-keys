@@ -49,6 +49,7 @@ export const AVENUES = { 2: 'Bayfront Way', 5: 'Mirador Ave', 7: 'Halcyon Ave', 
 export const STREETS = { 1: 'Vista Rd', 3: 'Lumen St', 4: 'Sundown Boulevard', 5: 'Pelican Causeway', 7: 'Seagrape St', 9: 'Flamingo Way', 10: 'Tarpon Causeway', 12: 'Ferry St', 14: 'Quay Road' };
 
 // Causeways: long bridges to the mainland across Marisol Bay (west).
+export const MAINLAND_SHORE = -840; // x of the mainland's waterline, across the channel from the causeway ramps
 export const CAUSEWAYS = [
   { name: 'Pelican Causeway', z: 5 * BLOCK, x0: -760, x1: 2 * BLOCK },
   { name: 'Tarpon Causeway', z: 10 * BLOCK, x0: -760, x1: 2 * BLOCK },

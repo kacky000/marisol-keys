@@ -3,11 +3,9 @@
 // scenery seen from the island and the causeways; the ferry ramps are as far as the roads go.
 
 import { MeshBatch, tint } from '../core/meshBatch.js';
-import { CAUSEWAYS } from './cityPlan.js';
+import { CAUSEWAYS, MAINLAND_SHORE } from './cityPlan.js';
 import { addBillboard } from '../buildings/signage.js';
 import { hash2 } from '../core/rng.js';
-
-export const MAINLAND_SHORE = -840;   // x of the mainland waterline
 const WEST = -2300, NORTH = -700, SOUTH = 1700;
 
 function hillHeight(x, z) {

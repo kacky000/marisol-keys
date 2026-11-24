@@ -6,7 +6,7 @@ import { edges } from '../roads/roadNetwork.js';
 import { PIER } from '../props/beachfront.js';
 import { CANAL_HALF } from '../world/terrain.js';
 import { eachCollider } from '../world/collisionWorld.js';
-import { MAINLAND_SHORE } from '../world/mainland.js';
+import { MAINLAND_SHORE } from '../world/cityPlan.js';
 
 export const MAP_BOUNDS = { x0: -1000, z0: -260, x1: 1140, z1: 1300 };
 const PPM = 1; // pixels per metre in the cached map

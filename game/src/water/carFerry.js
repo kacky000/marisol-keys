@@ -4,15 +4,14 @@
 
 import * as THREE from 'three';
 import { MeshBatch, tint } from '../core/meshBatch.js';
-import { MAINLAND_SHORE } from '../world/mainland.js';
+import { MAINLAND_SHORE } from '../world/cityPlan.js';
+import { FERRY_HULL } from '../world/movingHulls.js';
 
 const ROUTE_Z = 905;
 const ISLAND_END = 70, MAINLAND_END = MAINLAND_SHORE + 60;
 const CROSSING = 150, DWELL = 40;      // seconds
 const LEN = 38, WIDTH = 13;
-
-// Where the hull is right now, for boats to bump into (it runs east-west, so its length is on x).
-export const FERRY_HULL = { x: ISLAND_END, z: ROUTE_Z, halfLen: LEN / 2 + 1, halfWidth: WIDTH / 2 + 1 };
+Object.assign(FERRY_HULL, { x: ISLAND_END, z: ROUTE_Z, halfLen: LEN / 2 + 1, halfWidth: WIDTH / 2 + 1 });
 
 function buildFerry() {
   const b = new MeshBatch();
