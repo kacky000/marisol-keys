@@ -44,6 +44,13 @@ export class VehicleAudio {
     this.siren.start(); lfo.start();
   }
 
+  // Fades the engine, tyres and sirens out (pause menu, phone, title screen).
+  hush() {
+    if (!this.ok) return;
+    const t = audioContext().currentTime;
+    for (const g of [this.engGain, this.squeal, this.sirenGain]) g.gain.setTargetAtTime(0, t, 0.05);
+  }
+
   update(player, nearestSirenDist, sirenCount, sirenKind = 'police') {
     if (!this.ok) return;
     const ctx = audioContext();

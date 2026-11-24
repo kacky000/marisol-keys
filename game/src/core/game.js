@@ -266,6 +266,11 @@ export class Game {
     this.running = false;
     this.paused = false;
     setInputEnabled(true);
+    this.vehicleAudio?.hush();
+    // nothing from the game may linger over the title: dialogue, the intro bars, the credits
+    this.dialogue.close();
+    this.intro.cancel();
+    document.getElementById('credits')?.remove();
     this.hud.show(false);
     this.menus.openTitle();
   }
@@ -277,7 +282,7 @@ export class Game {
   update(dt) {
     this.time += dt;
     if (!this.shotMode) this.handleGlobalKeys();
-    if (this.paused || (this.phone.open && !this.shotMode)) return;
+    if (this.paused || (this.phone.open && !this.shotMode)) { this.vehicleAudio?.hush(); return; }
     if (this.running) this.state.hour += dt / 120; // a full day every 48 minutes
     const p = this.player;
     Object.assign(playerTuning, tuningFor(this.state.upgrades));

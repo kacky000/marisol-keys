@@ -13,7 +13,8 @@ export function runFrameLoop(game) {
     // (the first frame's timestamp can be a hair earlier than performance.now(): never step back)
     const dt = Math.max(0, Math.min(0.05, raw / 1000));
     last = now;
-    avg += (raw - avg) * 0.05;
+    // a long gap (the tab was hidden) is not a slow frame: don't let it crush the resolution
+    avg += (Math.min(raw, 100) - avg) * 0.05;
     settle -= raw;
     if (settle <= 0 && game.running) {
       const next = avg > 30 ? Math.max(0.6, scale - 0.1) : avg < 18 ? Math.min(1, scale + 0.05) : scale;

@@ -29,7 +29,14 @@ export function initInput(canvas) {
   });
   addEventListener('contextmenu', (e) => e.preventDefault());
   // if the page may not capture the mouse (embedded frames, some kiosks), plain moves steer the camera
-  document.addEventListener('pointerlockerror', () => { lockRefused = true; });
+  // A single refusal is usually Chrome's cool-down right after Esc released the lock: ask again on a
+  // later click. Only three refusals in a row mean the page really may not capture the mouse.
+  let refusals = 0;
+  document.addEventListener('pointerlockerror', () => {
+    refusals++;
+    if (refusals >= 3) lockRefused = true;
+  });
+  document.addEventListener('pointerlockchange', () => { if (document.pointerLockElement === canvas) refusals = 0; });
   addEventListener('mousemove', (e) => {
     if (!locked && !lockRefused) return;
     mouse.dx += e.movementX;

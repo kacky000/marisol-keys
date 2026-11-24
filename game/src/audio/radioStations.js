@@ -85,6 +85,9 @@ export class Radio {
     if (!this.on) { this.nextStep = ctx.currentTime + 0.1; return; }
     const st = STATIONS[this.index];
     const stepDur = 60 / st.bpm / 4;
+    // after a pause, the phone or a hidden tab, pick the beat up again instead of firing every
+    // missed note at once
+    if (this.nextStep < ctx.currentTime) this.nextStep = ctx.currentTime + 0.1;
     while (this.nextStep < ctx.currentTime + 0.15) {
       const t = this.nextStep, s = this.step % 32;
       const bar = Math.floor(this.step / 16) % 4;
