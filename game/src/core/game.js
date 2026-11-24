@@ -100,6 +100,10 @@ export class Game {
     for (const [x, z, h, paint] of [[852, 486.5, Math.PI / 2, '#ffffff'], [876, 486.5, Math.PI / 2, '#e63946'], [300, 925, 0, '#1d3557'], [96, 600, Math.PI, '#ffffff']]) {
       this.vehicles.spawn('boat', x, z, h, { paint }).persistent = true;
     }
+    // Sandpiper buggies parked on Sunwake Beach, free to borrow
+    for (const [x, z, h, paint] of [[806, 8 * 64 + 22, 0.4, '#ffd23f'], [810, 10 * 64 + 46, -0.3, '#19c3b4']]) {
+      this.vehicles.spawn('buggy', x, z, h, { paint }).persistent = true;
+    }
     this.traffic = new TrafficSystem(this.vehicles, rng);
     this.peds = new PedSystem(s, rng);
     LaneDriver.crossers = this.peds.peds;

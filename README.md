@@ -76,8 +76,8 @@ street racers, muggings you can break up). When someone goes down near you, a Su
 ambulance runs lights and siren to the scene and two paramedics kneel over the patient and carry
 them off; a burning wreck brings KFD Engine 7, whose crew hoses it down before rolling home.
 
-**Driving.** Twelve invented vehicles — Solara Vela sedan, Kestrel Strata GT, Marisol Spyder
-convertible, Mako Tradesman pickup, Keys Cab, Coastline Transit bus, MKPD Interceptor, Sunrise
+**Driving.** Thirteen invented vehicles — Solara Vela sedan, Kestrel Strata GT, Marisol Spyder
+convertible, Sandpiper beach buggy (parked on the sand), Mako Tradesman pickup, Keys Cab, Coastline Transit bus, MKPD Interceptor, Sunrise
 Courier van, Sunwake Medical Rescue ambulance, KFD Engine 7 fire truck, Zephyr 400 motorbike,
 Riptide 22 speedboat — with arcade physics, handbrake drifts,
 stunt-jump ramps, crashes, smoke, fire and explosions, skid marks, and a speed-sensitive chase

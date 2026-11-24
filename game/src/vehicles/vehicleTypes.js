@@ -22,6 +22,12 @@ export const VEHICLE_TYPES = {
     cabin: { front: 0.25, back: -0.9, top: 1.25, slopeF: 0.5, slopeB: 0.2 }, open: true,
     paints: ['#ff8fb1', '#8fd3c8', '#fff1a8', '#ffffff', '#ff5a36', '#7a5cff'],
   },
+  buggy: {
+    name: 'Sandpiper Beach Buggy', len: 3.5, width: 1.85, height: 1.1, wheelbase: 2.3, wheelR: 0.42,
+    maxSpeed: 40, accel: 17, brake: 26, grip: 7.8, steer: 0.68, health: 700, mass: 0.75,
+    cabin: { front: 0.4, back: -0.7, top: 1.1, slopeF: 0.4, slopeB: 0.1 }, open: true, buggy: true,
+    paints: ['#ffd23f', '#19c3b4', '#ff5a36', '#7bd389'],
+  },
   taxi: {
     name: 'Keys Cab', len: 4.7, width: 1.9, height: 1.5, wheelbase: 2.75, wheelR: 0.36,
     maxSpeed: 42, accel: 12, brake: 25, grip: 7.2, steer: 0.6, health: 950, mass: 1.0,
