@@ -7,6 +7,7 @@ import { PursuitDriver } from '../police/pursuitDriver.js';
 import { Gunman, GANG_OUTFITS } from '../combat/gunman.js';
 import { on } from '../core/events.js';
 import { rng } from '../core/rng.js';
+import { groundAt } from '../world/cityPlan.js';
 
 export class StreetEvents {
   constructor(game) {
@@ -64,6 +65,7 @@ export class StreetEvents {
       // a mugging on the sidewalk of a nearby block
       const p = this.game.player.pos;
       const x = Math.round((p.x + (rng.next() - 0.5) * 120) / 64) * 64 + 9.5, z = Math.round((p.z + (rng.next() - 0.5) * 120) / 64) * 64 + 30;
+      if (groundAt(x, z) !== 'walk') return; // only on a real sidewalk (not in the sea or a canal)
       const victim = this.game.peds.spawnAt(x, z);
       victim.state = 'idle'; victim.idleTimer = 999; victim.persistent = true;
       const mugger = new Gunman(this.game.scene, x + 1.2, z + 0.6, GANG_OUTFITS[2], 'gang', 'pistol');
@@ -75,8 +77,22 @@ export class StreetEvents {
   stop() {
     const a = this.active, g = this.game;
     if (!a) return;
-    const drop = (v) => { if (v && v !== g.player.vehicle) { v.persistent = false; } };
-    if (a.kind === 'pursuit') { drop(a.runner); drop(a.cop); if (a.cop.driver === a.chase) a.cop.sirenOn = false; }
+    // back to ordinary traffic: no longer kept alive, and drivers calm down to a normal pace
+    const drop = (v) => {
+      if (!v || v === g.player.vehicle) return;
+      v.persistent = false;
+      const d = g.traffic.drivers.get(v);
+      if (d) { d.panic = 0; d.cruise = 11; }
+    };
+    if (a.kind === 'pursuit') {
+      drop(a.runner); drop(a.cop);
+      // the cruiser pulls over and waits (its chase driver is only steered while the event runs)
+      if (a.cop.driver === a.chase) {
+        a.cop.sirenOn = false;
+        a.cop.driver = null;
+        Object.assign(a.cop.input, { throttle: 0, brake: 0, steer: 0, handbrake: true });
+      }
+    }
     if (a.kind === 'racers') a.cars.forEach(drop);
     if (a.kind === 'mugging') { a.mugger.dispose(); a.victim.persistent = false; a.victim.state = 'walk'; }
     this.active = null;
@@ -103,7 +119,8 @@ export class StreetEvents {
     const a = this.active;
     a.t -= dt;
     if (a.kind === 'pursuit') {
-      if (a.cop.driver === a.chase && !a.runner.removed) a.chase.update(dt, { pos: a.runner.pos, vehicle: a.runner }, null);
+      // once the getaway car is wrecked the cruiser pulls up beside it instead of ramming it
+      if (a.cop.driver === a.chase && !a.runner.removed) a.chase.update(dt, { pos: a.runner.pos, vehicle: a.runner.wrecked ? null : a.runner }, null);
       if (a.runner.wrecked && !a.paid && g.player.vehicle) {
         a.paid = true;
         g.state.money += 500;

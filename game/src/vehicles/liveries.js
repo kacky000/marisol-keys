@@ -5,12 +5,18 @@
 import * as THREE from 'three';
 import { tint } from '../core/meshBatch.js';
 import { canvasTexture } from '../core/canvasTexture.js';
+import { markShared } from '../core/disposeTree.js';
 
 const redLight = new THREE.MeshBasicMaterial({ color: new THREE.Color(7, 0.35, 0.3) });
 const blueLight = new THREE.MeshBasicMaterial({ color: new THREE.Color(0.3, 0.9, 8) });
 const whiteLight = new THREE.MeshBasicMaterial({ color: new THREE.Color(6, 6, 5.5) });
+markShared(redLight, blueLight, whiteLight);
 
-let decalTex = null;
+let decalTex = null, decalMat = null;
+function policeDecalMaterial() {
+  decalMat ??= markShared(new THREE.MeshBasicMaterial({ map: markShared(policeDecal()) }));
+  return decalMat;
+}
 function policeDecal() {
   decalTex ??= canvasTexture(256, 64, (g, w, h) => {
     g.fillStyle = '#132a4a'; g.fillRect(0, 0, w, h);
@@ -50,7 +56,7 @@ export function applyLivery(type, spec, c) {
     for (const s of [-1, 1]) body.orientedBox(s * (W / 2 + 0.006), c.clearance + c.sideH * 0.45, 0.05, 0.01, c.sideH * 0.8, L * 0.46, 0, tint('#132a4a'));
     body.orientedBox(0, c.clearance + 0.35, -L / 2 - 0.2, W * 0.7, 0.4, 0.1, 0, c.black); // push bar
     lightBar(c, spec.cabin.top + 0.1, roofMid(spec.cabin), 1.5, 0.66, redLight, blueLight);
-    const decal = new THREE.MeshBasicMaterial({ map: policeDecal() });
+    const decal = policeDecalMaterial();
     for (const s of [-1, 1]) {
       const plane = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 0.48), decal);
       plane.position.set(s * (W / 2 + 0.02), c.clearance + c.sideH * 0.5, 0.05);

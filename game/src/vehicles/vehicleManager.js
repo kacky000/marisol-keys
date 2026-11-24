@@ -2,6 +2,7 @@
 
 import { Vehicle } from './vehicle.js';
 import { emit } from '../core/events.js';
+import { disposeTree } from '../core/disposeTree.js';
 
 export class VehicleManager {
   constructor(scene) {
@@ -19,7 +20,9 @@ export class VehicleManager {
   remove(v) {
     const i = this.list.indexOf(v);
     if (i >= 0) this.list.splice(i, 1);
+    if (v.removed) return;
     this.scene.remove(v.mesh);
+    disposeTree(v.mesh); // each car owns its body geometry; free it (shared parts are skipped)
     v.removed = true;
   }
 

@@ -94,11 +94,14 @@ export class Gunman extends Ped {
       }
     }
     if (move) {
+      const px = this.pos.x, pz = this.pos.z;
       this.pos.x += Math.sin(moveDir) * move * dt;
       this.pos.z += -Math.cos(moveDir) * move * dt;
       resolveCircle(this.pos, 0.38, this.pos.y);
       const gy = groundHeight(this.pos.x, this.pos.z);
-      if (gy > -0.6) this.pos.y += (gy - this.pos.y) * Math.min(1, dt * 10);
+      // they stop at the water's edge (a suspect in a boat is shot at from the quay, not chased)
+      if (gy <= -0.6) { this.pos.x = px; this.pos.z = pz; }
+      else this.pos.y += (gy - this.pos.y) * Math.min(1, dt * 10);
     }
     poseHuman(this.rig, state === 'run' ? 'run' : state === 'aim' ? 'aim' : 'idle', move, dt);
     this.rig.position.set(this.pos.x, this.pos.y, this.pos.z);

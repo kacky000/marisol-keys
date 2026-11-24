@@ -12,12 +12,14 @@ import { BOARDWALK } from '../props/beachfront.js';
 import { on, emit } from '../core/events.js';
 import { wrapAngle } from '../core/mathUtil.js';
 import { rng as sharedRng } from '../core/rng.js';
+import { markShared, disposeTree } from '../core/disposeTree.js';
 import { nodes, lightFor } from '../roads/roadNetwork.js';
 
 let pedId = 1;
 export const pedClock = { time: 0 };   // game time, for reading the crossing lights
 const PHONE_GEO = new THREE.BoxGeometry(0.07, 0.14, 0.02);
 const PHONE_MAT = new THREE.MeshStandardMaterial({ color: '#111', emissive: '#4cc9f0', emissiveIntensity: 0.4 });
+markShared(PHONE_GEO, PHONE_MAT);
 
 export class Ped {
   constructor(scene, x, z, outfit, kind = 'civilian') {
@@ -177,7 +179,7 @@ export class Ped {
     this.rig.rotation.y = -this.heading;
   }
 
-  dispose() { this.scene.remove(this.rig); }
+  dispose() { this.scene.remove(this.rig); disposeTree(this.rig); }
 }
 
 // A route around the sidewalk ring of the block the ped stands in (or along the boardwalk).
@@ -287,7 +289,8 @@ export class PedSystem {
     return null;
   }
 
-  update(dt, player, vehicles) {
+  // others: gang members, officers and muggers, who live outside this system but can be hit too
+  update(dt, player, vehicles, others = []) {
     const px = player.pos.x, pz = player.pos.z;
     for (const p of [...this.peds]) {
       p.update(dt);
@@ -296,27 +299,41 @@ export class PedSystem {
       const d2 = (p.pos.x - px) ** 2 + (p.pos.z - pz) ** 2;
       if (!p.persistent && (d2 > 190 * 190 || (!p.alive && p.deadTimer > 40))) this.remove(p);
     }
-    // run-overs and dodging speeding cars
+    this.runOvers(vehicles, player, others);
+    this.spawnPassersBy(dt, px, pz);
+  }
+
+  // Cars hitting people (and people jumping clear of the player's speeding car).
+  runOvers(vehicles, player, others) {
+    const people = others.length ? [...this.peds, ...others] : this.peds;
     for (const v of vehicles.list) {
       const sp = Math.abs(v.speed);
-      if (sp < 3) continue;
+      if (sp < 3 || v.spec.boat) continue;
       const f = v.forward();
-      for (const p of this.peds) {
+      for (const p of people) {
         if (!p.alive) continue;
+        if (Math.abs(p.pos.y - v.pos.y) > 1.6) continue; // a car flying off a ramp passes overhead
         const dx = p.pos.x - v.pos.x, dz = p.pos.z - v.pos.z;
         const along = dx * f.x + dz * f.z, side = Math.abs(dx * -f.z + dz * f.x);
         if (Math.abs(along) < v.spec.len / 2 + 0.3 && side < v.spec.width / 2 + 0.3) {
+          // one impact per car: a slow car catching up with someone it just threw doesn't count again
+          if (p.lastHitBy === v && pedClock.time - p.lastHitAt < 1.2) continue;
+          p.lastHitBy = v; p.lastHitAt = pedClock.time;
           p.pos.x += f.x * 1.5; p.pos.z += f.z * 1.5;
           p.heading = Math.atan2(f.x, -f.z);
-          // thrown ahead of the bumper, faster cars throw further and higher
-          if (sp > 7) p.fling = { vx: v.vel.x * 0.7, vz: v.vel.y * 0.7, vy: 2 + sp * 0.18, t: 0 };
+          // thrown ahead of the bumper, faster cars throw further and higher (gunmen just go down)
+          if (sp > 7 && p.kind !== 'gang' && p.kind !== 'cop') p.fling = { vx: v.vel.x * 0.7, vz: v.vel.y * 0.7, vy: 2 + sp * 0.18, t: 0 };
           p.hurt(sp * 9, { x: v.pos.x, z: v.pos.z, vehicle: v, byPlayer: v === player.vehicle });
           emit('ped:runover', { ped: p, vehicle: v });
-        } else if (along > 0 && along < 14 && side < 3 && p.state !== 'flee' && v === player.vehicle && sp > 8) {
+        } else if (along > 0 && along < 14 && side < 3 && p.state !== 'flee' && v === player.vehicle && sp > 8 && p.kind === 'civilian') {
           p.flee(v.pos.x, v.pos.z, 3);
         }
       }
     }
+  }
+
+  // Keeps the streets populated around the player: joggers, dog walkers, families, sunbathers.
+  spawnPassersBy(dt, px, pz) {
     this.timer -= dt;
     if (this.timer <= 0 && this.peds.filter((p) => p.kind === 'civilian').length < this.target) {
       this.timer = 0.2;

@@ -7,6 +7,7 @@ import { VEHICLE_TYPES } from '../vehicles/vehicleTypes.js';
 import { groundHeight } from '../world/groundHeight.js';
 import { emit } from '../core/events.js';
 import { wasPressed } from '../core/input.js';
+import { disposeTree } from '../core/disposeTree.js';
 
 // The salesman's spot on the park's west sidewalk; the turntable stands on the lawn beside it.
 export const DEALER = { x: 7 * 64 + 9.5, z: 7 * 64 + 20, name: 'Kestrel Motors', tx: 7 * 64 + 17.5, tz: 7 * 64 + 20 };
@@ -56,7 +57,7 @@ export class CarDealer {
   }
 
   showCar() {
-    if (this.display) this.turntable.remove(this.display);
+    if (this.display) { this.turntable.remove(this.display); disposeTree(this.display); }
     const s = STOCK[this.index];
     this.display = buildVehicleMesh(s.type, VEHICLE_TYPES[s.type], s.paint);
     this.display.position.y = 0.25;

@@ -3,10 +3,11 @@
 
 import * as THREE from 'three';
 import { MeshBatch, tint } from '../core/meshBatch.js';
+import { markShared } from '../core/disposeTree.js';
 
-const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85 });
+const mat = markShared(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85 }));
 const COATS = [['#c8a165', '#f1e3c8'], ['#3a2a20', '#7a5a40'], ['#f2efe8', '#d8cfc0'], ['#8a5a32', '#e8c89a'], ['#222222', '#c8a165']];
-const LEAD = new THREE.LineBasicMaterial({ color: '#c0392b' });
+const LEAD = markShared(new THREE.LineBasicMaterial({ color: '#c0392b' }));
 
 function part(build) {
   const b = new MeshBatch();

@@ -4,6 +4,7 @@
 import { buildDog, poseDog, buildLead, setLead } from './dogModel.js';
 import { groundHeight } from '../world/groundHeight.js';
 import { wrapAngle } from '../core/mathUtil.js';
+import { disposeTree } from '../core/disposeTree.js';
 
 export function addDog(scene, ped, rng) {
   ped.dog = { rig: buildDog(rng), lead: buildLead(), x: ped.pos.x + 1, z: ped.pos.z + 1, heading: ped.heading };
@@ -13,6 +14,8 @@ export function addDog(scene, ped, rng) {
 export function removeDog(scene, ped) {
   if (!ped.dog) return;
   scene.remove(ped.dog.rig, ped.dog.lead);
+  disposeTree(ped.dog.rig);
+  disposeTree(ped.dog.lead);
   ped.dog = null;
 }
 

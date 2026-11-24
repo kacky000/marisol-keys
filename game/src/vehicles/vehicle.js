@@ -105,6 +105,7 @@ export class Vehicle {
       }
       this.pos.y = -0.62 + Math.sin(time * 1.6 + this.id) * 0.07;
       if (this.health <= 0 && !this.wrecked) this.explode();
+      if (this.wrecked) this.burning = Math.max(0, this.burning - dt); // a burning hull goes out too
       this.syncMesh(dt, vF, time);
       this.mesh.rotation.x = Math.min(0.12, Math.abs(vF) * 0.004) + Math.sin(time * 1.3 + this.id) * 0.02;
       return;

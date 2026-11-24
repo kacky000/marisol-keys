@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { MeshBatch, tint } from '../core/meshBatch.js';
 import { applyLivery } from './liveries.js';
+import { markShared } from '../core/disposeTree.js';
 import { speedboatBatch } from '../water/boats.js';
 import { buildHuman, poseHuman } from '../peds/humanModel.js';
 
@@ -32,6 +33,8 @@ const beamMat = new THREE.ShaderMaterial({
 });
 const beamGeo = new THREE.PlaneGeometry(5, 12);
 beamGeo.rotateX(-Math.PI / 2);
+// shared by every vehicle: never freed when one car is recycled
+markShared(bodyMat, glowMat, tireMat, rimMat, tireGeo, rimGeo, beamMat, beamGeo);
 
 // Cabin prism with slanted windshield and rear glass, chrome window line and B-pillars.
 function cabin(batch, W, beltY, c, paint, roofPaint = paint) {
@@ -193,6 +196,21 @@ export function buildVehicleMesh(type, spec, paint) {
     poseHuman(npc, 'drive', 0, 0);
     npc.userData.hips.position.y = 0.7;
     npc.position.set(-0.42, -0.05, 0.55);
+    group.add(npc);
+    group.userData.npc = npc;
+  }
+  if (spec.bike) {
+    // a rider astride the seat, leaning to the bars (hidden when Tessa rides it, as above)
+    const npc = buildHuman({ skin: '#b97a55', shirt: '#2b2d42', pants: '#1d1d24', hair: '#111', hairStyle: 'short', hat: 'cap', hatColor: paint, shades: true, shoes: '#222', build: 0.95 });
+    poseHuman(npc, 'drive', 0, 0);
+    const u = npc.userData;
+    u.hips.position.y = 0.72;
+    u.hips.rotation.x = -0.25; // leaning forward
+    u.legs[0].rotation.set(0.7, 0, 0.25);
+    u.legs[1].rotation.set(0.7, 0, -0.25);
+    u.arms[0].rotation.set(1.25, 0, 0.12);
+    u.arms[1].rotation.set(1.25, 0, -0.12);
+    npc.position.set(0, 0.24, 0.3);
     group.add(npc);
     group.userData.npc = npc;
   }

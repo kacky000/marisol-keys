@@ -288,7 +288,7 @@ export class Game {
     this.traffic.update(dt, this.time, p);
     this.vehicles.update(dt, this.time);
     pedClock.time = this.time;
-    this.peds.update(dt, p, this.vehicles);
+    this.peds.update(dt, p, this.vehicles, [...this.police.officers, ...this.missions.enemies, ...this.events.people, ...this.gangs.people]);
     const seen = this.wanted.stars > 0 && this.police.canAnyoneSee(p);
     this.wanted.update(dt, p, seen);
     this.police.update(dt, this.time, p, this.targets, this.fx);

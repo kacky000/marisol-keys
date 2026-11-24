@@ -4,6 +4,7 @@
 import { buildHuman, poseHuman } from '../peds/humanModel.js';
 import { groundHeight } from '../world/groundHeight.js';
 import { resolveCircle } from '../world/collisionWorld.js';
+import { disposeTree } from '../core/disposeTree.js';
 
 const BASE = { skin: '#c98d66', hair: '#2b1b12', shorts: false, shades: false, shoes: '#222', build: 1, hairStyle: 'short', dress: null, bag: null };
 export const MEDIC_OUTFIT = { ...BASE, shirt: '#f4f4f2', pants: '#1f3b5c', hat: 'cap' };
@@ -54,5 +55,5 @@ export class CrewMember {
     return { x: this.pos.x + fx * 0.8, y: this.pos.y + 1.3, z: this.pos.z + fz * 0.8 };
   }
 
-  dispose() { this.scene.remove(this.rig); }
+  dispose() { this.scene.remove(this.rig); disposeTree(this.rig); }
 }

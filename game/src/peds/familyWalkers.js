@@ -5,6 +5,7 @@
 import { buildHuman, poseHuman, randomOutfit } from './humanModel.js';
 import { groundHeight } from '../world/groundHeight.js';
 import { wrapAngle } from '../core/mathUtil.js';
+import { disposeTree } from '../core/disposeTree.js';
 
 const CHILD_SCALE = 0.6;
 
@@ -19,6 +20,7 @@ export function addChild(scene, ped, rng) {
 export function removeChild(scene, ped) {
   if (!ped.child) return;
   scene.remove(ped.child.rig);
+  disposeTree(ped.child.rig);
   ped.child = null;
 }
 
@@ -31,7 +33,7 @@ export function updateChild(ped, dt) {
     poseHuman(c.rig, 'run', 4 / CHILD_SCALE, dt);
     c.rig.position.set(c.x, groundHeight(c.x, c.z), c.z);
     c.rig.rotation.y = -c.heading;
-    if (c.gone > 4) { c.rig.parent?.remove(c.rig); ped.child = null; }
+    if (c.gone > 4) { c.rig.parent?.remove(c.rig); disposeTree(c.rig); ped.child = null; }
     return;
   }
   // on the parent's left, a little behind

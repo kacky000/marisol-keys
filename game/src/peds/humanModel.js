@@ -3,8 +3,9 @@
 
 import * as THREE from 'three';
 import { MeshBatch, tint } from '../core/meshBatch.js';
+import { markShared } from '../core/disposeTree.js';
 
-const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.75 });
+const mat = markShared(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.75 }));
 const SKIN = ['#f1c7a5', '#d9a07a', '#b97a55', '#8d5a3b', '#5e3a26', '#f6d9c0'];
 const SHIRTS = ['#ff6b5a', '#19c3b4', '#ffd23f', '#ffffff', '#ff8fb1', '#5b7cff', '#7bd389', '#f4a259', '#2b2d42', '#e9e4da'];
 const PANTS = ['#2f3e46', '#d9c9a3', '#3d5a80', '#f1f1f1', '#6d597a', '#264653', '#c9ada7'];
