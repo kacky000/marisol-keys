@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { buildHuman, poseHuman, randomOutfit } from './humanModel.js';
 import { addDog, removeDog, updateDog } from './dogWalkers.js';
+import { addChild, removeChild, updateChild } from './familyWalkers.js';
 import { BLOCK, ROAD_HALF, blockLetter, isUrban } from '../world/cityPlan.js';
 import { groundHeight } from '../world/groundHeight.js';
 import { resolveCircle } from '../world/collisionWorld.js';
@@ -252,8 +253,12 @@ export class PedSystem {
   // Give a ped a dog on a lead (dogWalkers.js).
   addDog(p) { addDog(this.scene, p, this.rng); }
 
+  // Give a ped a child walking at their side (familyWalkers.js).
+  addChild(p) { addChild(this.scene, p, this.rng); }
+
   remove(p) {
     removeDog(this.scene, p);
+    removeChild(this.scene, p);
     p.dispose();
     const i = this.peds.indexOf(p);
     if (i >= 0) this.peds.splice(i, 1);
@@ -287,6 +292,7 @@ export class PedSystem {
     for (const p of [...this.peds]) {
       p.update(dt);
       if (p.dog) updateDog(p, dt);
+      if (p.child) updateChild(p, dt);
       const d2 = (p.pos.x - px) ** 2 + (p.pos.z - pz) ** 2;
       if (!p.persistent && (d2 > 190 * 190 || (!p.alive && p.deadTimer > 40))) this.remove(p);
     }
@@ -321,6 +327,7 @@ export class PedSystem {
         const ped = this.spawnAt(pt.x, pt.z, jogger ? joggerOutfit(this.rng) : null);
         if (jogger) { ped.jogger = true; ped.speed = 3.1 + this.rng.next() * 0.6; }
         else if (!pt.sunbathe && !pt.wade && this.rng.next() < 0.09) { this.addDog(ped); ped.speed = Math.min(ped.speed, 1.3); }
+        else if (!pt.sunbathe && !pt.wade && ped.id % 4 !== 1 && this.rng.next() < 0.07) { this.addChild(ped); ped.speed = Math.min(ped.speed, 1.15); }
         if (pt.sunbathe) { ped.state = 'sunbathe'; ped.outfit.shorts = true; }
         if (pt.wade) { ped.state = 'wade'; ped.heading = Math.PI / 2 + (this.rng.next() - 0.5); }
       }
