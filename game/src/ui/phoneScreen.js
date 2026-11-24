@@ -141,7 +141,7 @@ export class PhoneScreen {
       const owned = st.properties.length;
       const tiles = [
         ['🚕', 'Cab fares', `${st.stats.fares} done`], ['📦', 'Couriers', `${st.stats.deliveries} runs`], ['🏁', 'Night Sprint', st.stats.bestRace ? `${st.stats.bestRace.toFixed(1)}s` : 'no time'],
-        ['📄', 'Tide pages', `${(st.pages || []).length}/20`], ['⌂', 'Properties', `${owned}/4 owned`], ['⛵', 'Speedboats', 'pier · harbor'],
+        ['📄', 'Tide pages', `${(st.pages || []).length}/20`], ['⌂', 'Properties', `${owned}/4 owned`], ['⛵', 'Riptide Run', st.stats.boatBest ? `${st.stats.boatBest.toFixed(1)}s` : 'pier end'],
       ].map(([icon, name, val]) => `<div class="tile"><span>${icon}</span><b>${name}</b><i>${val}</i></div>`).join('');
       this.side.innerHTML = `<h3>THE TIDE BOOK</h3><div class="progress">STORY ${st.story}/${STORY.length} · ${pct}% COMPLETE<i style="--p:${pct}%"></i></div><div class="story-list">${rows}</div><h3 class="sub">ON THE ISLAND</h3><div class="tiles">${tiles}</div>`;
       this.side.querySelectorAll('[data-portrait]').forEach((c) => paintPortrait(c.getContext('2d'), c.dataset.portrait, 40));
