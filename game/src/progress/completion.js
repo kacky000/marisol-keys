@@ -12,7 +12,8 @@ export function completionGoals(state) {
   const u = state.upgrades || {};
   const tuned = (u.engine || 0) + (u.tyres || 0) + (u.armor || 0);
   return [
-    ['Story missions', state.story || 0, STORY.length, 47],
+    ['Story missions', state.story || 0, STORY.length, 44],
+    ['Riptide Run', s.boatRaces || 0, 1, 3],
     ['Tide Book pages', (state.pages || []).length, PAGE_COUNT, 15],
     ['Stunt ramps cleared', (state.rampsCleared || []).length, JUMP_COUNT, 8],
     ['Properties', (state.properties || []).length, PROPERTIES.length, 10],

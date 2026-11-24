@@ -19,7 +19,7 @@ export function buildHudSnapshot(game) {
     money: game.state.money, snapMoney: game.shotMode, weatherIcon: game.weather.icon, hour: game.state.hour, stars: w.stars, starsFlash: w.flash,
     health: p.health, armor: p.armor, weapon: p.weapon, clip: p.clip[p.weapon], ammo: p.ammo[p.weapon],
     vehicle: v, aiming: p.aiming && !v,
-    map: { x: p.pos.x, z: p.pos.z, heading, arrowRel: (v ? 0 : p.heading - heading), speed: v ? Math.abs(v.speed) : 0, blips, time: game.time,
+    map: { x: p.pos.x, z: p.pos.z, heading, boat: !!v?.spec.boat, arrowRel: (v ? 0 : p.heading - heading), speed: v ? Math.abs(v.speed) : 0, blips, time: game.time,
       zone: w.stars > 0 ? { ...w.zone, seen: w.seen } : null },
   };
 }

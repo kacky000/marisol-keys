@@ -72,7 +72,7 @@ export function speedboatBatch(paint) {
 
 // [type, x, z, heading, cruising radius (0 = moored)]
 const FLEET = [
-  ['yacht', 900, 380, 0.3, 0], ['sailboat', 940, 520, 1.2, 60], ['speedboat', 880, 640, -0.4, 90], ['sailboat', 1000, 300, 2.0, 0],
+  ['yacht', 875, 330, 0.3, 0], ['sailboat', 1130, 520, 1.2, 60], // (kept clear of the Riptide Run gates) ['speedboat', 880, 640, -0.4, 90], ['sailboat', 1000, 300, 2.0, 0],
   ['sailboat', 980, 760, 0.8, 70], ['yacht', 930, 860, -1.2, 0], ['speedboat', 870, 470, 2.6, 0], ['sailboat', 20, 420, 0.5, 50],
   ['yacht', 60, 560, 1.6, 0], ['speedboat', 40, 700, 0.2, 80], ['tug', 330, 945, 1.57, 0], ['tug', 250, 960, 1.2, 40],
   ['sailboat', 520, 980, 2.1, 0], ['yacht', 600, 960, 1.57, 0], ['speedboat', 860, 520, 3.0, 0], ['sailboat', 1060, 600, 0.1, 0],

@@ -4,6 +4,7 @@
 import { cityMapCanvas, worldToMap } from './mapPainter.js';
 import { drawBlip } from './blipIcons.js';
 import { planRoute } from '../roads/routePlanner.js';
+import { isWater } from '../world/groundHeight.js';
 
 export class Minimap {
   constructor(canvas) {
@@ -40,9 +41,11 @@ export class Minimap {
     if (goal && (this.routeTimer <= 0 || this.routeFor !== goal)) {
       this.routeTimer = 1;
       this.routeFor = goal;
-      this.route = planRoute(view.x, view.z, goal.x, goal.z);
+      // on the water (in a boat, or heading for a buoy) the route is simply a straight line
+      this.route = view.boat || isWater(goal.x, goal.z) ? [] : planRoute(view.x, view.z, goal.x, goal.z);
+      this.straight = !this.route.length;
     }
-    if (goal && this.route.length) {
+    if (goal && (this.route.length || this.straight)) {
       g.strokeStyle = 'rgba(160,90,255,0.95)';
       g.lineWidth = 6;
       g.lineJoin = 'round';

@@ -100,8 +100,9 @@ cut to a two-shot camera; a new game opens with a letterboxed glide down from th
 failed mission can be retried on the spot, and any finished one replayed from the phone.
 
 **Progression.** Money from missions and jobs: Keys Cab fares, Sunrise Couriers deliveries, the
-Night Sprint time trial, Vigilante runs in a stolen cruiser, Paramedic runs in the ambulance
-outside Sunwake Medical, stunt jumps. Spend it at Keys Tactical
+Night Sprint time trial, the Riptide Run speedboat time trial through buoy gates off the beach,
+Vigilante runs in a stolen cruiser, Paramedic runs in the ambulance outside Sunwake Medical,
+stunt jumps. Spend it at Keys Tactical
 (guns, ammo, armour), Pastel Paint & Body (resprays), Sunbelt Garage (repairs and three tiers of
 engine, tyre and armour tuning), Sunwake Threads (five outfits), Kestrel Motors (cars delivered to
 your garage) and on four properties that pay out every day. Twenty hidden Tide Book pages, pickups,

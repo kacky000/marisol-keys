@@ -11,6 +11,7 @@ import { edges, nodes, lanePoint } from '../roads/roadNetwork.js';
 import { LaneDriver } from '../traffic/laneDriver.js';
 import { streetNameAt } from '../police/dispatchRadio.js';
 import { startParamedic, updateParamedic, dropPatient, HOSPITAL_BAY } from './paramedicJob.js';
+import { startBoatRace, updateBoatRace, RACE_START } from './boatRace.js';
 
 const SPRINT = [[10 * BLOCK, 11 * BLOCK], [10 * BLOCK, 9 * BLOCK], [8 * BLOCK + 32, 8 * BLOCK], [7 * BLOCK, 7 * BLOCK], [5 * BLOCK, 6 * BLOCK + 20], [6 * BLOCK, 10 * BLOCK], [8 * BLOCK, 12 * BLOCK], [10 * BLOCK, 12 * BLOCK + 32]];
 const FARE_NAMES = ['a tourist in a sun hat', 'a nervous accountant', 'two surfers', 'a wedding planner', 'a chef late for service', 'a lost cruise passenger'];
@@ -36,6 +37,7 @@ export class SideJobs {
       { kind: 'courier', ...PLACES.courier, letter: 'C' },
       { kind: 'sprint', ...PLACES.raceStart, letter: 'R' },
       { kind: 'paramedic', ...HOSPITAL_BAY, letter: 'A' }, // blip only: duty starts from inside the ambulance
+      { kind: 'boatrace', ...RACE_START, letter: 'B' },    // blip only: start it from a boat by the pier
     ];
   }
 
@@ -78,6 +80,10 @@ export class SideJobs {
         g.hud.prompt('<kbd>E</kbd> Vigilante — run down MKPD\'s most wanted');
         if (wasPressed('KeyE')) this.startVigilante(1);
       }
+      if (p.vehicle?.spec.boat && Math.hypot(p.pos.x - RACE_START.x, p.pos.z - RACE_START.z) < 45) {
+        g.hud.prompt('<kbd>E</kbd> Riptide Run — speedboat time trial');
+        if (wasPressed('KeyE')) startBoatRace(this);
+      }
       if (p.vehicle && p.vehicle.type === 'ambulance') {
         g.hud.prompt('<kbd>E</kbd> Paramedic — rush patients to Sunwake Medical');
         if (wasPressed('KeyE')) startParamedic(this, 1);
@@ -112,6 +118,7 @@ export class SideJobs {
       if (Math.hypot(p.pos.x - s.pos.x, p.pos.z - s.pos.z) > 380) { s.persistent = false; this.end('SUSPECT ESCAPED'); }
       return;
     }
+    if (a.kind === 'boatrace') { updateBoatRace(this, a, d); return; }
     if (a.kind === 'paramedic') { updateParamedic(this, a, d, wasPressed('KeyE')); return; }
     if (a.kind === 'taxi') {
       if (wasPressed('KeyE')) { this.end('OFF DUTY'); return; }

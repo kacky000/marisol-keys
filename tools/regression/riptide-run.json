@@ -1,0 +1,5 @@
+[
+ {
+  "eval": "window.__errs=[]; addEventListener('error', e => __errs.push(String(e.message))); marisol.menus.act('new'); marisol.intro.stop(); marisol.debugStep(5); (async () => { const g = marisol, p = g.player; const { RIPTIDE_COURSE } = await import('./src/activities/boatRace.js'); const b = g.vehicles.spawn('boat', 915, 505, 0, {}); b.persistent = true; p.vehicle = b; b.driver = 'player'; p.rig.visible = false; p.pos.copy(b.pos); g.debugStep(3); const prompt = document.getElementById('hud-prompt').innerText; const tap = (c) => { dispatchEvent(new KeyboardEvent('keydown', {code: c})); g.debugStep(1); dispatchEvent(new KeyboardEvent('keyup', {code: c})); g.debugStep(1); }; tap('KeyE'); const started = g.activities.active?.kind; const m0 = g.state.money; for (const [x, z] of RIPTIDE_COURSE) { b.pos.x = x; b.pos.z = z; b.vel.set(0, 0); p.pos.copy(b.pos); g.debugStep(20); } return JSON.stringify({expect: 'prompt by the pier, race starts, all gates pass, best time and pay recorded', prompt, started, done: !g.activities.active, best: g.state.stats.boatBest, pay: g.state.money - m0, errors: __errs}); })()"
+ }
+]

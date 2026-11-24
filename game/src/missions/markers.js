@@ -18,6 +18,7 @@ function beamTexture() {
   g.fillStyle = grad;
   g.fillRect(0, 0, 4, 128);
   beamTex = new THREE.CanvasTexture(c);
+  beamTex.userData.shared = true; // every marker uses it: never freed with one of them
   return beamTex;
 }
 
