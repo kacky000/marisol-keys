@@ -52,7 +52,7 @@ export class FireService {
     });
     if (!call) return;
     wreck.burning = 999; // keeps burning until the crew puts it out
-    g.dispatch.show(`KFD Engine 7 responding: vehicle fire on ${streetNameAt(wreck.pos.x, wreck.pos.z)}.`, 4);
+    g.dispatch.show(`KFD Engine 7 responding: vehicle fire near ${streetNameAt(wreck.pos.x, wreck.pos.z)}.`, 4);
     wreck.persistent = true;
     this.fires = this.fires.filter((f) => f.wreck !== wreck);
     this.call = call;

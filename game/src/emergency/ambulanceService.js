@@ -63,7 +63,7 @@ export class AmbulanceService {
     });
     if (!call) return;
     patient.persistent = true; // the body waits for the crew
-    g.dispatch.show(`Sunwake Medical, unit rolling to a casualty on ${streetNameAt(patient.pos.x, patient.pos.z)}.`, 4);
+    g.dispatch.show(`Sunwake Medical, unit rolling to a casualty near ${streetNameAt(patient.pos.x, patient.pos.z)}.`, 4);
     this.incidents = this.incidents.filter((i) => i.ped !== patient);
     this.call = call;
   }
