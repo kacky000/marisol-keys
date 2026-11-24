@@ -45,7 +45,10 @@ export class ResponseCall {
     this.t += dt;
     const playerDist = Math.hypot(v.pos.x - g.player.pos.x, v.pos.z - g.player.pos.z);
     if (v.driver !== this.driver || v.wrecked) { this.end(false); return true; }
-    if (playerDist > 240 || this.t > 120) { this.end(true); return true; }
+    // give up when the player has moved well away, or a call drags on — but never vanish in view
+    // (a unit can start up to ~350 m out: the scene is up to 170 m away and the unit 180 m beyond)
+    const tooFar = playerDist > (this.stage === 'respond' ? 420 : 240);
+    if (tooFar || (this.t > 120 && playerDist > 80)) { this.end(true); return true; }
     if (this.stage === 'respond') {
       this.driver.update(dt, this.target);
       const dist = Math.hypot(v.pos.x - this.scene.x, v.pos.z - this.scene.z);
@@ -59,23 +62,27 @@ export class ResponseCall {
     if (this.stage === 'leave') {
       this.driver.update(dt, this.target);
       this.leaveT += dt;
-      if (this.leaveT > 40 || playerDist > 200) { this.end(true); return true; }
+      if ((this.leaveT > 40 && playerDist > 80) || playerDist > 200) { this.end(true); return true; }
       return false;
     }
     // parked: brake to a stop, then hold the handbrake (brake at a standstill would reverse)
     v.input.throttle = 0; v.input.brake = v.speed > 0.5 ? 1 : 0; v.input.steer = 0; v.input.handbrake = true;
+    // a crew member blocked by street furniture eventually squeezes through
+    this.stageT = (this.stageT || 0) + dt;
+    const squeeze = this.stageT > 20;
     if (this.stage === 'work') {
       this.crew.forEach((m, k) => {
         const spot = this.hooks.spot(k);
+        if (squeeze) { m.pos.x = spot.x; m.pos.z = spot.z; }
         if (m.walkTo(spot.x, spot.z, dt, 0.4)) this.hooks.work(m, k, dt);
       });
-      if (this.hooks.done()) { this.hooks.finish(); this.stage = 'board'; }
+      if (this.hooks.done()) { this.hooks.finish(); this.stage = 'board'; this.stageT = 0; }
       return false;
     }
     if (this.stage === 'board') {
       const f = v.forward();
       const back = { x: v.pos.x - f.x * (v.spec.len / 2 + 1), z: v.pos.z - f.z * (v.spec.len / 2 + 1) };
-      if (this.crew.every((m) => m.walkTo(back.x, back.z, dt, 1.2))) this.depart();
+      if (squeeze || this.crew.every((m) => m.walkTo(back.x, back.z, dt, 1.2))) this.depart();
     }
     return false;
   }
@@ -103,6 +110,7 @@ export class ResponseCall {
   arrive() {
     const v = this.v, f = v.forward(), r = v.right();
     this.stage = 'work';
+    this.stageT = 0;
     // passers-by stop to watch the crew for a while
     let watchers = 0;
     for (const ped of this.game.peds.peds) {

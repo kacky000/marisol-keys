@@ -14,7 +14,7 @@ export function completionGoals(state) {
   return [
     ['Story missions', state.story || 0, STORY.length, 47],
     ['Tide Book pages', (state.pages || []).length, PAGE_COUNT, 15],
-    ['Stunt jumps', s.jumps || 0, JUMP_COUNT, 8],
+    ['Stunt ramps cleared', (state.rampsCleared || []).length, JUMP_COUNT, 8],
     ['Properties', (state.properties || []).length, PROPERTIES.length, 10],
     ['Sunbelt tuning', tuned, TUNING_STEPS, 5],
     ['Keys Cab fares', s.fares || 0, 5, 3],

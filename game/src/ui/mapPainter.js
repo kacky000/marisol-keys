@@ -6,8 +6,9 @@ import { edges } from '../roads/roadNetwork.js';
 import { PIER } from '../props/beachfront.js';
 import { CANAL_HALF } from '../world/terrain.js';
 import { eachCollider } from '../world/collisionWorld.js';
+import { MAINLAND_SHORE } from '../world/mainland.js';
 
-export const MAP_BOUNDS = { x0: -820, z0: -260, x1: 1140, z1: 1300 };
+export const MAP_BOUNDS = { x0: -1000, z0: -260, x1: 1140, z1: 1300 };
 const PPM = 1; // pixels per metre in the cached map
 
 let cached = null;
@@ -35,6 +36,18 @@ export function cityMapCanvas() {
   // hills to the north
   g.fillStyle = '#7fa65c';
   for (const [x, z, r] of [[200, -90, 120], [300, -140, 160], [420, -110, 140], [540, -170, 200], [700, -150, 160]]) { g.beginPath(); g.arc(x, z, r * 0.8, 0, Math.PI * 2); g.fill(); }
+  // the mainland across the channel: scrub, its beach, the ferry quays and the coast highway
+  const top = MAP_BOUNDS.z0, tall = MAP_BOUNDS.z1 - MAP_BOUNDS.z0;
+  g.fillStyle = '#9fbf72'; g.fillRect(MAP_BOUNDS.x0, top, MAINLAND_SHORE - MAP_BOUNDS.x0, tall);
+  g.fillStyle = '#f5e2ae'; g.fillRect(MAINLAND_SHORE, top, 28, tall);
+  g.fillStyle = '#4a4e55'; g.fillRect(MAINLAND_SHORE - 68, top, 16, tall);
+  g.fillStyle = '#d8d2c4';
+  for (const cw of CAUSEWAYS) g.fillRect(MAINLAND_SHORE - 5, cw.z - 22, 30, 44);
+  g.save();
+  g.translate(MAINLAND_SHORE - 110, 520); g.rotate(-Math.PI / 2);
+  g.fillStyle = 'rgba(40,60,40,0.75)'; g.font = '900 26px Arial'; g.textAlign = 'center';
+  g.fillText('PORT CALLOWAY · MAINLAND', 0, 0);
+  g.restore();
   // land blocks
   eachBlock((b) => {
     if (b.letter === '~') return;

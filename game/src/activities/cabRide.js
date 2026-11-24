@@ -5,6 +5,7 @@
 import { wasPressed } from '../core/input.js';
 import { nearestRoad } from '../roads/roadNetwork.js';
 import { ROAD_HALF } from '../world/cityPlan.js';
+import { isWater } from '../world/groundHeight.js';
 import { emit } from '../core/events.js';
 
 const MIN_DISTANCE = 150;     // metres: closer than this, walk
@@ -55,7 +56,12 @@ export class CabRide {
       const e = road.edge, len = Math.hypot(e.bx - e.ax, e.bz - e.az) || 1;
       const ux = (e.bx - e.ax) / len, uz = (e.bz - e.az) / len;
       const side = (r.dest.x - road.x) * -uz + (r.dest.z - road.z) * ux >= 0 ? 1 : -1;
-      p.placeAt(road.x - uz * side * (ROAD_HALF + 1.5), road.z + ux * side * (ROAD_HALF + 1.5), Math.atan2(ux, -uz));
+      // the kerb on the waypoint's side, else the far kerb, else the road's own shoulder (a
+      // waterfront street or a causeway has sea beyond its edge)
+      const spots = [side * (ROAD_HALF + 1.5), -side * (ROAD_HALF + 1.5), side * (ROAD_HALF - 1.2)]
+        .map((o) => ({ x: road.x - uz * o, z: road.z + ux * o }));
+      const spot = spots.find((s) => !isWater(s.x, s.z)) || spots[2];
+      p.placeAt(spot.x, spot.z, Math.atan2(ux, -uz));
       g.camera.yaw = p.heading;
       g.state.hour += Math.max(2, r.minutes) / 60;
       g.waypoint = null;

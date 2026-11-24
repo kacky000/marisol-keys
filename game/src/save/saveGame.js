@@ -10,7 +10,9 @@ export function newGameState() {
     hour: 17.6,
     properties: [],
     pages: [],
-    completionShown: 0,
+    rampsCleared: [],
+    // completionShown is left unset: the first check records the milestone already passed
+    // without a toast, which is what an older save needs too
     upgrades: { engine: 0, tyres: 0, armor: 0 },
     weapons: { owned: ['fists', 'pistol'], ammo: { pistol: 60, smg: 0, shotgun: 0 } },
     // on the sidewalk outside Ozzie's Bait & Tackle, facing him and the harbor

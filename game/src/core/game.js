@@ -219,6 +219,8 @@ export class Game {
   resetSession() {
     const p = this.player;
     if (this.missions.active) { this.missions.cleanupMission(); this.missions.active = null; }
+    this.missions.retryTimer = 0;
+    this.missions.replaying = false;
     if (this.activities.active) this.activities.end(null);
     this.events.stop();
     this.wanted.clear();

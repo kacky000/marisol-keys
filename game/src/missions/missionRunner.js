@@ -92,11 +92,11 @@ export class MissionRunner {
   // story doesn't move on.
   replay(index) {
     const g = this.game, p = g.player;
-    if (this.active || index >= g.state.story) return;
+    if (this.active || index >= g.state.story || g.cab?.ride || g.downTimer) return;
+    // same rule as a story start: no replays with the police on your tail
+    if (g.wanted.stars > 0) { g.hud.toast('Lose the <b>MKPD</b> before replaying a mission'); return; }
     const c = CONTACTS[STORY[index].at];
     if (p.vehicle) { p.vehicle.driver = null; p.vehicle = null; p.rig.visible = true; }
-    g.wanted.clear();
-    g.police.clearAll(p);
     p.placeAt(c.x - 1.5, c.z + 1.5, 0);
     this.start(index, true);
   }

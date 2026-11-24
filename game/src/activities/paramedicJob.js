@@ -33,6 +33,7 @@ export function startParamedic(jobs, level = 1) {
   const patient = g.peds.spawnAt(spot.x, spot.z);
   patient.state = 'sunbathe'; // lying on the pavement
   patient.persistent = true;
+  patient.kind = 'patient'; // not a passer-by: the AI ambulances leave this one to the player
   const what = CONDITIONS[Math.floor(rng.next() * CONDITIONS.length)];
   jobs.active = { kind: 'paramedic', stage: 'pickup', level, patient, what, timer: 55 - Math.min(20, level * 3), needsVehicle: true };
   jobs.setMarker(spot.roadX, spot.roadZ);
@@ -44,6 +45,7 @@ export function startParamedic(jobs, level = 1) {
 export function updateParamedic(jobs, a, markerDist, offDuty) {
   const g = jobs.game, p = g.player;
   if (offDuty) { dropPatient(g, a); jobs.end('OFF DUTY'); return; }
+  if (a.patient && !a.patient.alive) { dropPatient(g, a); jobs.end('PATIENT LOST'); return; }
   if (!p.vehicle || p.vehicle.type !== 'ambulance') return;
   const stopped = Math.abs(p.vehicle.speed) < 4;
   if (a.stage === 'pickup' && markerDist < 7 && stopped) {

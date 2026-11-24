@@ -66,7 +66,11 @@ export class StuntJumps {
   update(dt) {
     const g = this.game, v = g.player.vehicle;
     if (!v) { this.air = null; return; }
-    if (v.airborne && !this.air) this.air = { t: 0, x: v.pos.x, z: v.pos.z, peak: v.pos.y };
+    if (v.airborne && !this.air) {
+      // which ramp (if any) launched this jump: its lip is within a few metres of take-off
+      const ramp = RAMPS.find((r) => Math.hypot(v.pos.x - (r.x + Math.sin(r.heading) * r.len), v.pos.z - (r.z - Math.cos(r.heading) * r.len)) < 8);
+      this.air = { t: 0, x: v.pos.x, z: v.pos.z, peak: v.pos.y, ramp: ramp?.name };
+    }
     if (this.air) {
       this.air.t += dt;
       this.air.peak = Math.max(this.air.peak, v.pos.y);
@@ -76,6 +80,8 @@ export class StuntJumps {
           const pay = Math.round(200 + dist * 12 + this.air.t * 100);
           g.state.money += pay;
           g.state.stats.jumps = (g.state.stats.jumps || 0) + 1;
+          const cleared = (g.state.rampsCleared ??= []);
+          if (this.air.ramp && !cleared.includes(this.air.ramp)) cleared.push(this.air.ramp);
           g.hud.bigMessage('STUNT JUMP', `${dist.toFixed(0)} m · ${this.air.t.toFixed(1)} s airtime · +$${pay}`, 3);
           emit('sound', { name: 'passed' });
         }

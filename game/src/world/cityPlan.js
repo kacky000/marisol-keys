@@ -75,7 +75,10 @@ export function blockAtPoint(x, z) {
 
 export function districtAtPoint(x, z) {
   if (x < 2 * BLOCK - 10) {
-    for (const c of CAUSEWAYS) if (Math.abs(z - c.z) < 12 && x > c.x0) return { key: 'X', ...DISTRICTS.X, name: c.name };
+    for (const c of CAUSEWAYS) {
+      if (Math.abs(z - c.z) < 12 && x > c.x0) return { key: 'X', ...DISTRICTS.X, name: c.name };
+      if (Math.abs(z - c.z) < 22 && x > c.x0 - 45) return { key: 'X', ...DISTRICTS.X, name: 'Port Calloway Ferry', sub: 'MAINLAND LANDING' };
+    }
   }
   const { i, j } = blockAtPoint(x, z);
   const key = districtKey(i, j);
