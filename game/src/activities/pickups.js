@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { groundHeight } from '../world/groundHeight.js';
 import { emit, on } from '../core/events.js';
+import { disposeTree } from '../core/disposeTree.js';
 
 const B = 64;
 const KINDS = {
@@ -81,7 +82,7 @@ export class Pickups {
     for (const it of [...this.items]) {
       if (it.ttl !== undefined) {
         it.ttl -= dt;
-        if (it.ttl <= 0 || !it.mesh.visible) { this.game.scene.remove(it.mesh); this.items.splice(this.items.indexOf(it), 1); continue; }
+        if (it.ttl <= 0 || !it.mesh.visible) { this.game.scene.remove(it.mesh); disposeTree(it.mesh); this.items.splice(this.items.indexOf(it), 1); continue; }
       }
       if (!it.mesh.visible) {
         it.respawn -= dt;

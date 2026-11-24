@@ -3,6 +3,7 @@
 
 import * as THREE from 'three';
 import { groundHeight } from '../world/groundHeight.js';
+import { disposeTree } from '../core/disposeTree.js';
 
 let beamTex = null;
 function beamTexture() {
@@ -49,7 +50,7 @@ export class Marker {
     if (this.chev) { this.chev.position.y = 3 + Math.sin(time * 3) * 0.35; this.chev.rotation.y = time * 1.5; }
   }
 
-  dispose() { this.scene.remove(this.group); }
+  dispose() { this.scene.remove(this.group); disposeTree(this.group); }
 }
 
 // Race checkpoint: a tall gate of two posts and a banner.

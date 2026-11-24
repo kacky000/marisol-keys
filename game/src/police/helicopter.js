@@ -3,6 +3,7 @@
 
 import * as THREE from 'three';
 import { MeshBatch, tint } from '../core/meshBatch.js';
+import { disposeTree } from '../core/disposeTree.js';
 
 export function buildHelicopterMesh() {
   const g = new THREE.Group();
@@ -96,5 +97,5 @@ export class Helicopter {
     }
   }
 
-  dispose() { this.scene.remove(this.mesh); }
+  dispose() { this.scene.remove(this.mesh); disposeTree(this.mesh); }
 }
