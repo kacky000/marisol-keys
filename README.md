@@ -42,7 +42,7 @@ Any static file server works too: the game is just the files under `game/`.
 | Mouse | look / aim | look around |
 | Left click / Right click | fire / aim | drive-by (hold right, click left) |
 | F | steal / enter a car | get out |
-| 1-4, wheel | fists, Marlin .38, Wasp SMG, Breaker 12 | — |
+| 1-5, wheel | fists, Marlin .38, Wasp SMG, Breaker 12, Seagrape Slugger bat | — |
 | R | reload | — |
 | E | talk, buy, start a job | start a job (taxi, cruiser), garage |
 | Q | buy armour or a car | next radio station |
@@ -88,7 +88,7 @@ spike strips from three stars, the Air One helicopter from four, dispatch radio 
 chase. Break line of sight and leave the search circle to escape — or respray the car, or grab a
 bribe star.
 
-**Combat.** Fists, Marlin .38, Wasp SMG and Breaker 12 with muzzle flash, tracers, sparks and
+**Combat.** Fists, the Seagrape Slugger bat, Marlin .38, Wasp SMG and Breaker 12 with muzzle flash, tracers, sparks and
 hit markers; crouch in cover; gang crews and officers that advance, strafe, stagger and drop ammo.
 
 **Story.** *The Tide Book*: ten missions with dialogue and painted portraits for Tessa, Ozzie

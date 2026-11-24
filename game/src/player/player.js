@@ -14,6 +14,11 @@ import { fireWeapon } from '../combat/gunplay.js';
 import { tryEnterVehicle, updateEnterExit } from './vehicleEntry.js';
 import { updateDriving } from './drivingControls.js';
 
+// a tapered wooden bat, grip end at the hand
+const BAT_GEO = new THREE.CylinderGeometry(0.045, 0.022, 0.85, 8);
+BAT_GEO.translate(0, 0.36, 0);
+const BAT_MAT = new THREE.MeshStandardMaterial({ color: '#c8935a', roughness: 0.6 });
+
 export const TESSA_OUTFIT = { skin: '#d9a07a', shirt: '#19c3b4', pants: '#3a3f4a', hair: '#2b1b12', shorts: false, hat: null, shades: true, shoes: '#f5f5f5', build: 1.0, longSleeves: false };
 
 export class Player {
@@ -176,6 +181,7 @@ export class Player {
       if (wasPressed('Digit2')) this.selectWeapon('pistol');
       if (wasPressed('Digit3')) this.selectWeapon('smg');
       if (wasPressed('Digit4')) this.selectWeapon('shotgun');
+      if (wasPressed('Digit5')) this.selectWeapon('bat');
       if (mouse.wheel) this.cycleWeapon(mouse.wheel > 0 ? 1 : -1);
       if (wasPressed('KeyR')) this.reload();
       const w = WEAPONS[this.weapon];
@@ -201,7 +207,20 @@ export class Player {
       u.legs[1].rotation.x = 0.6 + u.legs[1].rotation.x * 0.3;
     }
     this.rig.userData.gun.visible = !WEAPONS[this.weapon].melee;
+    this.batMesh().visible = this.weapon === 'bat';
     this.syncRig(dt);
+  }
+
+  // The bat in Tessa's right hand, made on first use (the rig is rebuilt by a change of outfit).
+  batMesh() {
+    const u = this.rig.userData;
+    if (!u.bat) {
+      u.bat = new THREE.Mesh(BAT_GEO, BAT_MAT);
+      u.bat.position.set(0, -0.72, -0.25);
+      u.bat.rotation.x = -1.2;
+      u.arms[1].add(u.bat);
+    }
+    return u.bat;
   }
 
   selectWeapon(id) { if (this.owned.has(id)) { this.weapon = id; emit('player:weapon', { weapon: id }); } }
