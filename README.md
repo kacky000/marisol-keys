@@ -69,7 +69,8 @@ Vela Cinema, Hotel Esmeralda...).
 
 **A living city.** Lane-following traffic that obeys working traffic lights; pedestrians who walk
 the sidewalks, cross at the zebras on their light, jog, walk their dogs and their kids, talk on their phones,
-sunbathe, wade in the surf, play beach volleyball, flee from gunfire and get thrown by speeding cars; boats on the water; random street events (police pursuits, Gull's crew loitering at harbor hangouts
+sunbathe, wade in the surf, play beach volleyball, flee from gunfire (or stop to film it on their
+phones) and get thrown by speeding cars; boats on the water; random street events (police pursuits, Gull's crew loitering at harbor hangouts
 and Las Linternas on the canal corners,
 street racers, muggings you can break up). When someone goes down near you, a Sunwake Medical
 ambulance runs lights and siren to the scene and two paramedics kneel over the patient and carry

@@ -80,6 +80,7 @@ export class StuntJumps {
           const pay = Math.round(200 + dist * 12 + this.air.t * 100);
           g.state.money += pay;
           g.state.stats.jumps = (g.state.stats.jumps || 0) + 1;
+          g.state.stats.longestJump = Math.max(g.state.stats.longestJump || 0, dist);
           const cleared = (g.state.rampsCleared ??= []);
           if (this.air.ramp && !cleared.includes(this.air.ramp)) cleared.push(this.air.ramp);
           g.hud.bigMessage('STUNT JUMP', `${dist.toFixed(0)} m · ${this.air.t.toFixed(1)} s airtime · +$${pay}`, 3);

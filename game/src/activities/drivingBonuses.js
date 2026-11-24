@@ -19,7 +19,11 @@ export class DrivingBonuses {
 
   update(dt) {
     const g = this.game, v = g.player.vehicle;
-    if (!v || v.spec.boat || v.wrecked) { this.drift = 0; return; }
+    if (!v || v.wrecked) { this.drift = 0; return; }
+    // the island's record book: fastest ever, on land or water
+    const st = g.state.stats;
+    st.topSpeed = Math.max(st.topSpeed || 0, Math.abs(v.speed));
+    if (v.spec.boat) { this.drift = 0; return; }
     this.nearMisses(v, g.time);
     this.drifting(v, dt);
   }
@@ -48,7 +52,11 @@ export class DrivingBonuses {
       return;
     }
     const crashed = v.lastImpact !== this.driftStartImpact;
-    if (this.drift >= DRIFT_MIN && !crashed) this.pay(Math.round(this.drift * DRIFT_PAY / 10) * 10, `DRIFT ${this.drift.toFixed(1)}s`);
+    if (this.drift >= DRIFT_MIN && !crashed) {
+      this.pay(Math.round(this.drift * DRIFT_PAY / 10) * 10, `DRIFT ${this.drift.toFixed(1)}s`);
+      const st = this.game.state.stats;
+      st.longestDrift = Math.max(st.longestDrift || 0, this.drift);
+    }
     this.drift = 0;
   }
 

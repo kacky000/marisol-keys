@@ -173,7 +173,7 @@ export class PhoneScreen {
       }).join('');
       this.side.innerHTML = `<h3>ASSETS</h3><div class="progress">CASH ${formatMoney(st.money)} · ISLAND ${pct}% COMPLETE<i style="--p:${pct}%"></i></div>${rows}
         <div class="row"><span class="num">🔧</span><span class="what"><b>Sunbelt tuning</b>Engine ${'★'.repeat(st.upgrades.engine)}${'☆'.repeat(3 - st.upgrades.engine)} · Tyres ${'★'.repeat(st.upgrades.tyres)}${'☆'.repeat(3 - st.upgrades.tyres)} · Armour ${'★'.repeat(st.upgrades.armor)}${'☆'.repeat(3 - st.upgrades.armor)}</span></div>
-        <div class="row"><span class="what"><b>Stats</b>Missions ${st.stats.missions} · Fares ${st.stats.fares} · Deliveries ${st.stats.deliveries} · Jumps ${st.stats.jumps || 0} · Takedowns ${st.stats.kills}</span></div>
+        <div class="row"><span class="what"><b>Records</b>Top speed ${Math.round((st.stats.topSpeed || 0) * 3.6)} km/h · Longest jump ${Math.round(st.stats.longestJump || 0)} m · Longest drift ${(st.stats.longestDrift || 0).toFixed(1)} s · Takedowns ${st.stats.kills}</span></div>
         <h3 class="sub">ONE HUNDRED PERCENT</h3><div class="goals">${goals}</div>`;
     }
   }
