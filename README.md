@@ -110,6 +110,7 @@ engine, tyre and armour tuning), Sunwake Threads (five outfits), Kestrel Motors 
 your garage) and on four properties that pay out every day. Twenty hidden Tide Book pages, pickups,
 and a safehouse that saves, sleeps to morning and keeps your car. The phone tracks an island
 completion percentage with a checklist; each quarter is announced and 100% pays a $100,000 bonus.
+It also keeps your records: top speed, longest stunt jump, longest drift.
 
 **Interface.** A rotating minimap drawn from the city plan with building footprints, GPS route,
 search circle and blips; health, armour, money, stars, weapon and ammo, objective and timer,
