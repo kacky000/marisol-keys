@@ -68,8 +68,8 @@ The Coral Room, the pier café, and a skyline of invented brands (Mango Bay Cola
 Vela Cinema, Hotel Esmeralda...).
 
 **A living city.** Lane-following traffic that obeys working traffic lights; pedestrians who walk
-the sidewalks, cross at the zebras on their light, sunbathe, wade in the surf, flee from gunfire
-and get thrown by speeding cars; boats on the water; random street events (police pursuits, Gull's crew loitering at harbor hangouts,
+the sidewalks, cross at the zebras on their light, jog, walk their dogs, talk on their phones,
+sunbathe, wade in the surf, play beach volleyball, flee from gunfire and get thrown by speeding cars; boats on the water; random street events (police pursuits, Gull's crew loitering at harbor hangouts,
 street racers, muggings you can break up). When someone goes down near you, a Sunwake Medical
 ambulance runs lights and siren to the scene and two paramedics kneel over the patient and carry
 them off; a burning wreck brings KFD Engine 7, whose crew hoses it down before rolling home.
@@ -119,7 +119,8 @@ glowing signs, street lamps and headlights, siren light spilling over the street
 storms with rain, wet streets and lightning, and a rainbow as they clear; stars and a moon at
 night. WebAudio engines, tyre squeal, sirens, gunshots, surf,
 gulls, rain and three radio stations (Tidal 101.3, Static 88 FM, Reef Room Radio) composing their
-own music.
+own music, with DJs cutting in between tracks; MKPD, ambulance and fire engine each have their own
+siren.
 
 ## Source layout
 
