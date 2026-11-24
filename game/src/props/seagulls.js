@@ -36,8 +36,12 @@ export class Seagulls {
     }
   }
 
-  update(time) {
+  // hour: the island clock; the gulls roost after dark and are back at first light
+  update(time, hour = 12) {
+    const h = ((hour % 24) + 24) % 24, awake = h > 5.8 && h < 20.2;
     for (const b of this.birds) {
+      b.bird.visible = awake;
+      if (!awake) continue;
       const a = b.phase + time * b.speed;
       const x = b.cx + Math.cos(a) * b.r, z = b.cz + Math.sin(a) * b.r;
       b.bird.position.set(x, b.h + Math.sin(time * 0.7 + b.phase) * 1.5, z);

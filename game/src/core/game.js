@@ -326,7 +326,7 @@ export class Game {
     this.damageFx(dt);
     this.fx.particles.update(dt);
     this.fx.tracers.update(dt);
-    this.world.update(this.time, dt);
+    this.world.update(this.time, dt, this.state.hour);
     this.intro.update(dt);
     // out of combat for a while, Tessa patches herself up to half health
     p.sinceHurt = (p.sinceHurt || 0) + dt;

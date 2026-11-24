@@ -88,14 +88,14 @@ export function buildWorld(scene) {
     shopMaterial: kit.shopMaterial,
     nightMaterials: kit.nightMaterials,
     signals,
-    update(time, dt = 0.016) {
+    update(time, dt = 0.016, hour = 12) {
       signals.update(dt, time);
       ocean.uniforms.uTime.value = time;
       surf.userData.update(time);
       rockBoats(time);
       ferry(time);
       volleyball(time, dt);
-      gulls.update(time);
+      gulls.update(time, hour);
     },
   };
 }
