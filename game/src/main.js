@@ -3,12 +3,14 @@
 
 import { Game } from './core/game.js';
 import { mountScreens } from './ui/screenLayout.js';
+import { paintFavicon } from './ui/favicon.js';
 import { createRenderer, createCamera } from './core/renderer.js';
 import { runShot } from './shots/shotDirector.js';
 
 const params = new URLSearchParams(location.search);
 const shot = params.get('shot');
 mountScreens();
+paintFavicon();
 const stage = document.getElementById('stage');
 const renderer = createRenderer(stage, { preserve: !!shot });
 const camera = createCamera();

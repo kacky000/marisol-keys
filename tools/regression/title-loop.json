@@ -1,0 +1,4 @@
+[
+ {"wait": 8000},
+ {"eval": "JSON.stringify({ expect: 'title flyover running in the real frame loop, no exceptions above', onTitle: !marisol.running, clockRuns: marisol.time > 0, favicon: document.getElementById('favicon').href.startsWith('data:image/png') })"}
+]

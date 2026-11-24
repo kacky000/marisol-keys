@@ -38,7 +38,8 @@ export function buildBeachVolleyball(group) {
   });
   const order = [0, 2, 1, 3]; // the ball goes over the net every hit
   return (time, dt) => {
-    const hit = Math.floor(time / RALLY), u = (time / RALLY) % 1;
+    const t = Math.max(0, time);
+    const hit = Math.floor(t / RALLY), u = (t / RALLY) % 1;
     const from = players[order[hit % 4]], to = players[order[(hit + 1) % 4]];
     const fx = from.home.x, fz = from.home.z, tx = to.home.x, tz = to.home.z;
     ball.position.set(fx + (tx - fx) * u, 2.3 + Math.sin(u * Math.PI) * 4.5, fz + (tz - fz) * u);

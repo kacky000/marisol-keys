@@ -10,7 +10,8 @@ export function runFrameLoop(game) {
   const base = game.renderer.getPixelRatio();
   const frame = (now) => {
     const raw = now - last;
-    const dt = Math.min(0.05, raw / 1000);
+    // (the first frame's timestamp can be a hair earlier than performance.now(): never step back)
+    const dt = Math.max(0, Math.min(0.05, raw / 1000));
     last = now;
     avg += (raw - avg) * 0.05;
     settle -= raw;
