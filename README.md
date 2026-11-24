@@ -134,9 +134,10 @@ siren.
 ## Testing
 
 `bash tools/regression/run.sh` (with the local server running) plays the real game in headless
-Chrome: it drives all ten story missions to the end, holds a five-star police siege through
-several deaths and respawns, saves and continues, and follows an ambulance call and a fire call
-from dispatch to departure — each script prints its result and any page errors.
+Chrome: it drives all ten story missions to the end, replays one from the phone, holds a
+five-star police siege through several deaths and respawns, saves and continues, follows an
+ambulance call and a fire call from dispatch to departure, and runs the title flyover and a short
+drive through the real frame loop — each script prints its result and any page exceptions.
 
 ## Screenshots
 
