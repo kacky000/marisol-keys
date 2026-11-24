@@ -266,6 +266,7 @@ export class Game {
     el.innerHTML = [
       ['Story', `${st.story}/${STORY.length}`], ['Island', `${completionPercent(st)}%`],
       ['Cash', `$${st.money.toLocaleString('en-US')}`], ['Day', `${day} · ${formatClock(st.hour)}`],
+      ['Top speed', `${Math.round((st.stats.topSpeed || 0) * 3.6)} km/h`], ['Riptide Run', st.stats.boatBest ? `${st.stats.boatBest.toFixed(1)} s` : '—'],
     ].map(([k, v]) => `<span>${k} <b>${v}</b></span>`).join('');
   }
 
