@@ -35,6 +35,6 @@ export class ContactCalls {
     const [ask, reply] = (NUDGES[who] || NUDGES.ozzie)(where);
     emit('sound', { name: 'blip' });
     g.hud.toast(`📞 Incoming call · <b>${CAST[who].name}</b>`, 3);
-    g.dialogue.play([[who, ask], ['tessa', reply]], () => {});
+    g.dialogue.play([[who, ask], ['tessa', reply]], () => {}, { passive: true });
   }
 }

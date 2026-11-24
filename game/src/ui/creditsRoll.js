@@ -24,6 +24,7 @@ export function rollCredits(onDone) {
   // capture phase and stopImmediatePropagation: the key that closes the credits must not also
   // pause the game (Esc) or jump (Space)
   const key = (e) => {
+    if (!el.isConnected) { close(); return; } // already taken down (quit to title): just unhook
     if (e.code !== 'Space' && e.code !== 'Escape' && e.code !== 'Enter') return;
     e.stopImmediatePropagation();
     close();

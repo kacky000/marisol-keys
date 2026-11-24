@@ -20,10 +20,15 @@ export class DialogueBox {
 
   get open() { return !!this.onDone; }
 
-  play(lines, onDone) {
+  // passive: plays over normal control (a phone call while driving), so Space — the handbrake and
+  // jump — doesn't skip it; Enter still does
+  play(lines, onDone, { passive = false } = {}) {
     this.lines = lines;
     this.index = 0;
     this.onDone = onDone;
+    this.passive = passive;
+    const hint = this.el.querySelector('.dialogue-hint');
+    if (hint) hint.textContent = passive ? 'ENTER ▸' : 'SPACE ▸';
     this.showLine();
   }
 
@@ -73,6 +78,6 @@ export class DialogueBox {
       this.hold += dt;
       if (this.hold > 2.6 + text.length * 0.03) this.skip();
     }
-    if (menuPressed('Space') || menuPressed('Enter')) this.skip();
+    if ((!this.passive && menuPressed('Space')) || menuPressed('Enter')) this.skip();
   }
 }

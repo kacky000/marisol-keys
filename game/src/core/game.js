@@ -347,7 +347,10 @@ export class Game {
     }
     if (!this.paused && (menuPressed('KeyM') || menuPressed('Tab'))) { this.phone.toggle(); setInputEnabled(!this.phone.open); }
     if (wasPressed('KeyQ') && this.player.vehicle) this.hud.setRadio(this.radio.tune(this.radio.index + 1));
-    if (this.prevLocked && !pointerLocked() && !this.paused && !this.phone.open && !this.dialogue.open) this.setPaused(true);
+    // losing the mouse pauses the game, except mid-cutscene (dialogue that holds the controls) or
+    // over the credits; a phone call while driving does pause
+    const cutscene = this.dialogue.open && this.player.controlsLocked;
+    if (this.prevLocked && !pointerLocked() && !this.paused && !this.phone.open && !cutscene && !document.getElementById('credits')) this.setPaused(true);
     if (!pointerLocked() && !this.paused && !this.phone.open && !this.intro.playing && !this.everLocked) this.hud.prompt('Click the view to take control of the camera');
     if (pointerLocked()) this.everLocked = true;
     this.prevLocked = pointerLocked();

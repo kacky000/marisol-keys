@@ -19,7 +19,12 @@ export function initInput(canvas) {
   addEventListener('blur', () => down.clear());
   canvas.addEventListener('mousedown', (e) => {
     // the click that captures the mouse should not also fire a shot
-    if (enabled && !locked && !lockRefused && canvas.requestPointerLock) { canvas.requestPointerLock(); return; }
+    if (enabled && !locked && canvas.requestPointerLock) {
+      canvas.requestPointerLock();
+      // normally the capturing click is not a shot; where capture keeps being refused, the click
+      // counts as well (and the lock is still asked for, in case it becomes possible)
+      if (!lockRefused) return;
+    }
     if (e.button === 0) { mouse.left = true; mouse.leftPressed = true; }
     if (e.button === 2) mouse.right = true;
   });
@@ -36,7 +41,7 @@ export function initInput(canvas) {
     refusals++;
     if (refusals >= 3) lockRefused = true;
   });
-  document.addEventListener('pointerlockchange', () => { if (document.pointerLockElement === canvas) refusals = 0; });
+  document.addEventListener('pointerlockchange', () => { if (document.pointerLockElement === canvas) { refusals = 0; lockRefused = false; } });
   addEventListener('mousemove', (e) => {
     if (!locked && !lockRefused) return;
     mouse.dx += e.movementX;

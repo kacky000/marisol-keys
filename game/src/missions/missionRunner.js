@@ -312,7 +312,7 @@ export class MissionRunner {
     emit('mission:passed', { mission: m });
     emit('sound', { name: 'passed' });
     g.save();
-    if (g.state.story >= STORY.length && !g.shotMode) setTimeout(() => rollCredits(), 4500);
+    if (g.state.story >= STORY.length && !g.shotMode) setTimeout(() => { if (g.running) rollCredits(); }, 4500); // not if she quit to the title meanwhile
   }
 
   fail(reason) {

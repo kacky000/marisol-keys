@@ -39,7 +39,7 @@ export function updateDriving(player, dt, ctx) {
   seatRider(player, v, dt);
   // drive-by: aim and fire to the sides with the pistol or SMG
   const mouse = mouseState();
-  player.aiming = !locked && mouse.right && player.weapon !== 'shotgun' && player.weapon !== 'fists';
+  player.aiming = !locked && mouse.right && (player.weapon === 'pistol' || player.weapon === 'smg');
   if (player.aiming && mouse.left && player.cooldown <= 0) player.fire(ctx);
   if (!locked && wasPressed('Digit2')) player.selectWeapon('pistol');
   if (!locked && wasPressed('Digit3')) player.selectWeapon('smg');

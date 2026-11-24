@@ -113,9 +113,11 @@ export class Shops {
   gunShop() {
     const g = this.game, p = g.player;
     const stock = [['bat', 250, 0], ['smg', 1600, 96], ['shotgun', 2400, 24], ['pistol', 300, 48]];
-    // what you don't own yet comes first; after that the counter cycles through ammo (not the bat)
-    const refills = stock.filter(([id]) => !WEAPONS[id].melee);
-    const next = stock.find(([id]) => !p.owned.has(id)) || refills[(Math.floor(g.time / 3)) % refills.length];
+    // a gun you don't own yet comes first; otherwise the counter cycles through ammo refills, with
+    // the bat in the rotation until you've bought one (it never blocks the ammo)
+    const guns = stock.filter(([id]) => !WEAPONS[id].melee);
+    const rotation = [...stock.filter(([id]) => WEAPONS[id].melee && !p.owned.has(id)), ...guns];
+    const next = guns.find(([id]) => !p.owned.has(id)) || rotation[(Math.floor(g.time / 3)) % rotation.length];
     const [id, price, ammo] = next;
     const owned = p.owned.has(id);
     const cost = owned ? Math.round(price * 0.25) : price;
