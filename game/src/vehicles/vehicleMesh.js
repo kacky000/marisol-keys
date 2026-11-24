@@ -1,11 +1,10 @@
 // Procedural vehicle models: clear-coated bodies with chamfered shoulders, wheel arches, sloped
 // glass cabins, chrome trim, bright head and tail lights that bloom, wheels that steer and spin,
-// plus police light bars and push bars, taxi signs and checker bands, bus window bands, spoilers
-// and the motorbike.
+// bus window bands, spoilers and the motorbike. Service liveries come from liveries.js.
 
 import * as THREE from 'three';
 import { MeshBatch, tint } from '../core/meshBatch.js';
-import { canvasTexture } from '../core/canvasTexture.js';
+import { applyLivery } from './liveries.js';
 import { speedboatBatch } from '../water/boats.js';
 import { buildHuman, poseHuman } from '../peds/humanModel.js';
 
@@ -14,9 +13,6 @@ const glowMat = new THREE.MeshStandardMaterial({ vertexColors: true, emissive: '
 glowMat.onBeforeCompile = (s) => { s.fragmentShader = s.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance *= diffuseColor.rgb;'); };
 const tireMat = new THREE.MeshStandardMaterial({ color: '#18181a', roughness: 0.92 });
 const rimMat = new THREE.MeshStandardMaterial({ color: '#d7dbe0', metalness: 0.9, roughness: 0.25 });
-const redLight = new THREE.MeshBasicMaterial({ color: new THREE.Color(7, 0.35, 0.3) });
-const blueLight = new THREE.MeshBasicMaterial({ color: new THREE.Color(0.3, 0.9, 8) });
-const whiteLight = new THREE.MeshBasicMaterial({ color: new THREE.Color(6, 6, 5.5) });
 const GLASS = '#16222e';
 const tireGeo = new THREE.CylinderGeometry(1, 1, 1, 16);
 tireGeo.rotateZ(Math.PI / 2);
@@ -36,19 +32,6 @@ const beamMat = new THREE.ShaderMaterial({
 });
 const beamGeo = new THREE.PlaneGeometry(5, 12);
 beamGeo.rotateX(-Math.PI / 2);
-
-let decalTex = null;
-function policeDecal() {
-  decalTex ??= canvasTexture(256, 64, (g, w, h) => {
-    g.fillStyle = '#132a4a'; g.fillRect(0, 0, w, h);
-    g.fillStyle = '#ff7a59'; g.fillRect(0, h - 12, w, 7);
-    g.fillStyle = '#ffffff'; g.font = '900 34px "Arial Black", Arial'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText('MKPD', w / 2 - 30, h / 2 - 4);
-    g.font = '700 14px Arial';
-    g.fillText('MARISOL KEYS', w / 2 + 70, h / 2 - 2);
-  }, { repeat: false, seed: 61 });
-  return decalTex;
-}
 
 // Cabin prism with slanted windshield and rear glass, chrome window line and B-pillars.
 function cabin(batch, W, beltY, c, paint, roofPaint = paint) {
@@ -188,80 +171,7 @@ export function buildVehicleMesh(type, spec, paint) {
       body.orientedBox(0, belt + 0.22, L / 2 - 0.06, W, 0.44, 0.1, 0, paintC);
       body.orientedBox(0, spec.cabin.top + 0.04, -spec.cabin.back - 0.3, W * 0.8, 0.06, 0.06, 0, chrome);
     }
-    if (spec.police) {
-      // navy doors, push bar, light bar
-      for (const s of [-1, 1]) body.orientedBox(s * (W / 2 + 0.006), clearance + sideH * 0.45, 0.05, 0.01, sideH * 0.8, L * 0.46, 0, tint('#132a4a'));
-      body.orientedBox(0, clearance + 0.35, -L / 2 - 0.2, W * 0.7, 0.4, 0.1, 0, black);
-      const y = spec.cabin.top + 0.1, z = (-spec.cabin.front + spec.cabin.slopeF - spec.cabin.back - spec.cabin.slopeB) / 2;
-      body.orientedBox(0, y - 0.07, z, 1.5, 0.08, 0.36, 0, black);
-      const r = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.14, 0.3), redLight);
-      const b = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.14, 0.3), blueLight);
-      r.position.set(-0.38, y, z); b.position.set(0.38, y, z);
-      group.add(r, b);
-      lightbar.push(r, b);
-      const decal = new THREE.MeshBasicMaterial({ map: policeDecal() });
-      for (const s of [-1, 1]) {
-        const plane = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 0.48), decal);
-        plane.position.set(s * (W / 2 + 0.02), clearance + sideH * 0.5, 0.05);
-        plane.rotation.y = s * Math.PI / 2;
-        group.add(plane);
-      }
-    }
-    if (spec.taxiSign) {
-      const z = (-spec.cabin.front + spec.cabin.slopeF - spec.cabin.back - spec.cabin.slopeB) / 2;
-      glow.orientedBox(0, spec.cabin.top + 0.16, z, 0.95, 0.28, 0.32, 0, tint('#fff2a0'));
-      for (const s of [-1, 1]) for (let k = 0; k < 10; k++) {
-        body.orientedBox(s * (W / 2 + 0.005), belt - 0.08, -L * 0.35 + k * L * 0.07, 0.01, 0.12, L * 0.035, 0, k % 2 ? tint('#111') : tint('#fafafa'));
-      }
-    }
-    if (type === 'van') {
-      for (const s of [-1, 1]) body.orientedBox(s * (W / 2 + 0.005), spec.height * 0.55, 0.6, 0.01, 0.5, 2.4, 0, tint('#ff6b35'));
-    }
-    if (spec.firetruck) {
-      // equipment body with roller lockers, a ladder on the roof rack, white band, red/white bar
-      const white = tint('#f2efe8'), locker = tint('#9a1a20');
-      const boxFront = -spec.cabin.back, boxLen = L / 2 - boxFront, boxZ = boxFront + boxLen / 2, top = spec.height * 0.86;
-      body.orientedBox(0, (belt - 0.1 + top) / 2, boxZ, W, top - belt + 0.1, boxLen, 0, paintC);
-      for (const s of [-1, 1]) {
-        body.orientedBox(s * (W / 2 + 0.005), belt - 0.05, 0, 0.01, 0.16, L * 0.96, 0, white);
-        for (let k = 0; k < 3; k++) body.orientedBox(s * (W / 2 + 0.008), (belt + top) / 2 + 0.05, boxFront + 0.35 + k * (boxLen / 3) + boxLen / 6 - 0.35, 0.01, top - belt - 0.35, boxLen / 3 - 0.25, 0, locker);
-      }
-      for (const s of [-1, 1]) body.orientedBox(s * 0.55, top + 0.32, boxZ - 0.3, 0.08, 0.08, boxLen + 1.6, 0, chrome); // ladder rails
-      for (let k = 0; k < 12; k++) body.orientedBox(0, top + 0.32, boxFront - 0.8 + k * ((boxLen + 1.2) / 11), 1.1, 0.05, 0.06, 0, chrome); // rungs
-      for (const z of [boxFront + 0.3, L / 2 - 0.4]) body.orientedBox(0, top + 0.14, z, 1.4, 0.28, 0.12, 0, dark); // rack posts
-      body.orientedBox(0, belt - 0.3, -L / 2 - 0.12, W * 0.8, 0.2, 0.14, 0, chrome); // front bumper
-      const y = spec.cabin.top + 0.1, z = -spec.cabin.front + spec.cabin.slopeF + 0.25;
-      body.orientedBox(0, y - 0.07, z, 1.9, 0.08, 0.3, 0, black);
-      const a = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.15, 0.26), redLight);
-      const b = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.15, 0.26), whiteLight);
-      a.position.set(-0.46, y, z); b.position.set(0.46, y, z);
-      group.add(a, b);
-      lightbar.push(a, b);
-    }
-    if (spec.ambulance) {
-      // a tall patient box behind the cab, coral band, red crosses on its sides and roof,
-      // and a red light bar over the cab
-      const coral = tint('#ff5a4e'), cross = tint('#e0262b');
-      const boxFront = -spec.cabin.back, boxLen = L / 2 - boxFront, boxZ = boxFront + boxLen / 2, top = spec.height;
-      // (orientedBox takes the centre height)
-      body.orientedBox(0, (belt - 0.1 + top) / 2, boxZ, W, top - belt + 0.1, boxLen, 0, paintC);
-      body.orientedBox(0, top + 0.03, boxZ, W - 0.2, 0.06, boxLen - 0.2, 0, chrome);
-      for (const s of [-1, 1]) {
-        body.orientedBox(s * (W / 2 + 0.005), belt - 0.05, 0.2, 0.01, 0.22, L * 0.95, 0, coral);
-        body.orientedBox(s * (W / 2 + 0.008), belt + 0.55, boxZ, 0.01, 0.8, 0.26, 0, cross);
-        body.orientedBox(s * (W / 2 + 0.008), belt + 0.55, boxZ, 0.01, 0.26, 0.8, 0, cross);
-      }
-      body.orientedBox(0, top + 0.07, boxZ, 1.1, 0.02, 0.34, 0, cross);
-      body.orientedBox(0, top + 0.07, boxZ, 0.34, 0.02, 1.1, 0, cross);
-      for (const s of [-1, 1]) body.orientedBox(s * 0.5, (belt + top) / 2, L / 2 + 0.005, 0.85, top - belt - 0.2, 0.01, 0, dark); // rear doors
-      const y = spec.cabin.top + 0.1, z = -spec.cabin.front + spec.cabin.slopeF + 0.2;
-      body.orientedBox(0, y - 0.07, z, 1.7, 0.08, 0.3, 0, black);
-      const a = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.14, 0.26), redLight);
-      const b = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.14, 0.26), redLight);
-      a.position.set(-0.42, y, z); b.position.set(0.42, y, z);
-      group.add(a, b);
-      lightbar.push(a, b);
-    }
+    applyLivery(type, spec, { body, glow, group, lightbar, W, L, belt, clearance, sideH, paint: paintC, black, dark, chrome });
     const wx = W / 2 - 0.1;
     for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) addWheel(group, wheels, sx * wx, spec.wheelR, sz * spec.wheelbase / 2, spec.wheelR, 0.3, sz < 0);
   }
