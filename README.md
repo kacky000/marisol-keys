@@ -50,7 +50,7 @@ Any static file server works too: the game is just the files under `game/`.
 | C | — | look behind |
 | V | camera distance | camera distance, hood cam |
 | G | — | siren (in an MKPD cruiser or an ambulance) |
-| T | — | hail a Keys Cab to your map waypoint (fast travel, paid) |
+| T | hail a Keys Cab to your map waypoint (fast travel, paid) | — |
 | M or Tab | phone: map, story, jobs, assets | same |
 | Esc or P | pause menu (save, settings, controls) | same |
 
@@ -68,19 +68,19 @@ The Coral Room, the pier café, and a skyline of invented brands (Mango Bay Cola
 Vela Cinema, Hotel Esmeralda...).
 
 **A living city.** Lane-following traffic that obeys working traffic lights; pedestrians who walk
-the sidewalks, cross at the zebras on their light, jog, walk their dogs and their kids, talk on their phones,
-sunbathe, wade in the surf, play beach volleyball, flee from gunfire (or stop to film it on their
-phones) and get thrown by speeding cars; boats on the water; random street events (police pursuits, Gull's crew loitering at harbor hangouts
-and Las Linternas on the canal corners,
-street racers, muggings you can break up). When someone goes down near you, a Sunwake Medical
+the sidewalks, cross at the zebras on their light, jog, walk their dogs and their kids, talk on
+their phones, sunbathe, wade in the surf, play beach volleyball, flee from gunfire (or stop to
+film it on their phones) and get thrown by speeding cars; boats and a car ferry on the water;
+street crews (Gull's men at the harbor, Las Linternas on the canal corners); random street events
+(police pursuits, street racers, muggings you can break up). When someone goes down near you, a Sunwake Medical
 ambulance runs lights and siren to the scene and two paramedics kneel over the patient and carry
 them off; a burning wreck brings KFD Engine 7, whose crew hoses it down before rolling home.
 
 **Driving.** Thirteen invented vehicles — Solara Vela sedan, Kestrel Strata GT, Marisol Spyder
-convertible, Sandpiper beach buggy (parked on the sand), Mako Tradesman pickup, Keys Cab, Coastline Transit bus, MKPD Interceptor, Sunrise
-Courier van, Sunwake Medical Rescue ambulance, KFD Engine 7 fire truck, Zephyr 400 motorbike,
-Riptide 22 speedboat — with arcade physics, handbrake drifts,
-stunt-jump ramps, crashes, smoke, fire and explosions, skid marks, and a speed-sensitive chase
+convertible, Sandpiper beach buggy (parked on the sand), Mako Tradesman pickup, Keys Cab,
+Coastline Transit bus, MKPD Interceptor, Sunrise Courier van, Sunwake Medical Rescue ambulance,
+KFD Engine 7 fire truck, Zephyr 400 motorbike, Riptide 22 speedboat — with arcade physics,
+handbrake drifts, slick roads in the rain, stunt-jump ramps, crashes, smoke, fire and explosions, skid marks, and a speed-sensitive chase
 camera. Near misses at speed and long clean drifts pay street-style cash.
 
 **Wanted level.** One to five stars from crimes the city sees. MKPD cruisers route through the
@@ -89,8 +89,8 @@ spike strips from three stars, the Air One helicopter from four, dispatch radio 
 chase. Break line of sight and leave the search circle to escape — or respray the car, or grab a
 bribe star.
 
-**Combat.** Fists, the Seagrape Slugger bat, Marlin .38, Wasp SMG and Breaker 12 with muzzle flash, tracers, sparks and
-hit markers; crouch in cover; gang crews and officers that advance, strafe, stagger and drop ammo.
+**Combat.** Fists, the Seagrape Slugger bat, Marlin .38, Wasp SMG and Breaker 12 with muzzle
+flash, tracers, sparks and hit markers; crouch in cover; gang crews and officers that advance, strafe, stagger and drop ammo.
 
 **Story.** *The Tide Book*: ten missions with dialogue and painted portraits for Tessa, Ozzie
 Calderón, Priya Lund, Lulu Marchetti, Gideon "Gull" Moreau and Captain Rourke Hale — a homecoming
@@ -104,8 +104,7 @@ long and the next contact phones you with a nudge.
 **Progression.** Money from missions and jobs: Keys Cab fares, Sunrise Couriers deliveries, the
 Night Sprint time trial, the Riptide Run speedboat time trial through buoy gates off the beach,
 Vigilante runs in a stolen cruiser, Paramedic runs in the ambulance outside Sunwake Medical,
-stunt jumps. Spend it at Keys Tactical
-(guns, ammo, armour), Pastel Paint & Body (resprays), Sunbelt Garage (repairs and three tiers of
+stunt jumps. Spend it at Keys Tactical (guns, a bat, ammo, armour), Pastel Paint & Body (resprays), Sunbelt Garage (repairs and three tiers of
 engine, tyre and armour tuning), Sunwake Threads (five outfits), Kestrel Motors (cars delivered to
 your garage) and on four properties that pay out every day. Twenty hidden Tide Book pages, pickups,
 and a safehouse that saves, sleeps to morning and keeps your car. The phone tracks an island
@@ -138,12 +137,13 @@ siren.
 ## Testing
 
 `bash tools/regression/run.sh` (with the local server running) plays the real game in headless
-Chrome: it drives all ten story missions to the end, replays one from the phone, holds a
-five-star police siege through several deaths and respawns, saves and continues, follows an
-ambulance call and a fire call from dispatch to departure, checks that nothing leaks between
-sessions (phone and controls, a stolen cruiser, ammo across saves, saving at sea), and runs the
-title flyover and a short drive through the real frame loop — each script prints its result and
-any page exceptions.
+Chrome: it drives all ten story missions to the end, replays one from the phone, runs the Riptide
+Run, holds a five-star police siege through several deaths and respawns, saves and continues,
+follows an ambulance call and a fire call from dispatch to departure, runs every system at once,
+checks that GPU memory stays flat as traffic and people are recycled, that nothing leaks between
+sessions (phone and controls, a stolen cruiser, ammo across saves, saving at sea) or survives
+quitting to the title, and runs the title flyover and a short drive through the real frame loop —
+each script prints its result and any page exceptions.
 
 ## Screenshots
 
