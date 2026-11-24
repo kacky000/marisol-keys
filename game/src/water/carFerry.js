@@ -11,6 +11,9 @@ const ISLAND_END = 70, MAINLAND_END = MAINLAND_SHORE + 60;
 const CROSSING = 150, DWELL = 40;      // seconds
 const LEN = 38, WIDTH = 13;
 
+// Where the hull is right now, for boats to bump into (it runs east-west, so its length is on x).
+export const FERRY_HULL = { x: ISLAND_END, z: ROUTE_Z, halfLen: LEN / 2 + 1, halfWidth: WIDTH / 2 + 1 };
+
 function buildFerry() {
   const b = new MeshBatch();
   const white = tint('#f3f1ea'), blue = tint('#1f4e8c'), deck = tint('#8b8f94'), dark = tint('#24303c'), red = tint('#c8302a');
@@ -58,6 +61,7 @@ export function createCarFerry(group) {
     else u = 1 - (t - 2 * DWELL - CROSSING) / CROSSING;
     const s = u * u * (3 - 2 * u);
     holder.position.set(ISLAND_END + (MAINLAND_END - ISLAND_END) * s, -0.9 + Math.sin(time * 0.9) * 0.08, ROUTE_Z);
+    FERRY_HULL.x = holder.position.x;
     holder.rotation.z = Math.sin(time * 0.7) * 0.012;
   };
 }

@@ -5,6 +5,7 @@ import { WALK_Y } from './terrain.js';
 import { BOARDWALK, PIER } from '../props/beachfront.js';
 import { rampHeight } from '../activities/stuntJumps.js';
 import { MAINLAND_SHORE } from './mainland.js';
+import { FERRY_HULL } from '../water/carFerry.js';
 
 // Stunt ramps rise above whatever surface they sit on.
 export function groundHeight(x, z) {
@@ -37,6 +38,7 @@ export const isWater = (x, z) => groundHeight(x, z) < -0.6;
 export function navigable(x, z) {
   if (x >= PIER.x0 - 1 && x <= PIER.x1 + 1 && Math.abs(z - PIER.z) <= PIER.half + 1.2) return false;
   if (x < MAINLAND_SHORE + 32) return false; // the mainland shore and its ferry quays
+  if (Math.abs(x - FERRY_HULL.x) < FERRY_HULL.halfLen && Math.abs(z - FERRY_HULL.z) < FERRY_HULL.halfWidth) return false; // the car ferry
   const i = Math.floor(x / BLOCK), j = Math.floor(z / BLOCK);
   const l = blockLetter(i, j);
   if (l === 'S') return x > (i + 1) * BLOCK + 10;
