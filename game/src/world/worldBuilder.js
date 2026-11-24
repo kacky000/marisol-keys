@@ -24,6 +24,7 @@ import { buildBeachfront } from '../props/beachfront.js';
 import { createOcean, createSurf } from '../water/ocean.js';
 import { buildBoats } from '../water/boats.js';
 import { createCarFerry } from '../water/carFerry.js';
+import { buildBeachVolleyball } from '../props/beachVolleyball.js';
 import { Seagulls } from '../props/seagulls.js';
 import { buildLandmarkSigns } from '../buildings/landmarkSigns.js';
 import { buildSeawalls } from '../props/seawalls.js';
@@ -77,6 +78,7 @@ export function buildWorld(scene) {
   group.add(surf);
   const rockBoats = buildBoats(group);
   const ferry = createCarFerry(group);
+  const volleyball = buildBeachVolleyball(group);
   const gulls = new Seagulls(group);
   scene.add(group);
   return {
@@ -92,6 +94,7 @@ export function buildWorld(scene) {
       surf.userData.update(time);
       rockBoats(time);
       ferry(time);
+      volleyball(time, dt);
       gulls.update(time);
     },
   };
