@@ -1,0 +1,7 @@
+[
+ {"eval": "new Promise((done) => { const t0 = Date.now(); const ready = () => window.marisol ? done('ready') : Date.now() - t0 > 40000 ? done('timeout') : setTimeout(ready, 300); ready(); })"},
+ {"eval": "marisol.menus.act('new'); marisol.intro.stop(); { const g = marisol; const v = g.vehicles.spawn('sports', g.player.pos.x + 4, g.player.pos.z, 0, {}); g.player.vehicle = v; v.driver = 'player'; g.player.rig.visible = false; window.__start = { x: v.pos.x, z: v.pos.z, t: g.time }; } 'driving'"},
+ {"keys": ["KeyW"], "ms": 6000},
+ {"keys": ["KeyW", "KeyA", "Space"], "ms": 3000},
+ {"eval": "new Promise((done) => setTimeout(() => { const v = marisol.player.vehicle; done(JSON.stringify({ expect: 'game running in the real frame loop and the clock advancing, no exceptions above', running: marisol.running, gameSeconds: +(marisol.time - __start.t).toFixed(2), metresDriven: +Math.hypot(v.pos.x - __start.x, v.pos.z - __start.z).toFixed(1) })); }, 1500))"}
+]
