@@ -32,6 +32,7 @@ import { formatClock } from '../sky/timeOfDay.js';
 import { DrivingBonuses } from '../activities/drivingBonuses.js';
 import { AmbulanceService } from '../emergency/ambulanceService.js';
 import { CabRide } from '../activities/cabRide.js';
+import { ContactCalls } from '../story/contactCalls.js';
 import { FireService } from '../emergency/fireService.js';
 import { GangTurf } from '../combat/gangTurf.js';
 import { Shops, tuningFor } from '../economy/shops.js';
@@ -121,6 +122,7 @@ export class Game {
     this.bonuses = new DrivingBonuses(this);
     this.ambulance = new AmbulanceService(this);
     this.cab = new CabRide(this);
+    this.calls = new ContactCalls(this);
     this.fire = new FireService(this);
     this.gangs = new GangTurf(this);
     on('gunfire', ({ x, z, team }) => { if (team === 'player') this.gangs.alertNear(x, z); });
@@ -238,6 +240,7 @@ export class Game {
     this.fx.skids.clear();
     this.ambulance.clear();
     this.cab.cancel();
+    this.calls.idle = 0;
     this.fire.clear();
     this.intro.cancel();
     this.shops.clearGarageCar();
@@ -311,6 +314,7 @@ export class Game {
       this.bonuses.update(dt);
       this.ambulance.update(dt);
       this.cab.update(dt);
+      if (!this.shotMode) this.calls.update(dt);
       this.fire.update(dt);
     }
     this.contacts.update(dt);

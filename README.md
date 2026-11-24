@@ -97,7 +97,8 @@ drive, a beach stash, a street race, wiretap relays against the clock, a harbor 
 stolen evidence van, a speedboat run round the island, a downtown takedown, an estate raid and a
 four-star run across the causeway, then the credits. Contacts wait in person; face-to-face scenes
 cut to a two-shot camera; a new game opens with a letterboxed glide down from the skyline; a
-failed mission can be retried on the spot, and any finished one replayed from the phone.
+failed mission can be retried on the spot, and any finished one replayed from the phone. Wander too
+long and the next contact phones you with a nudge.
 
 **Progression.** Money from missions and jobs: Keys Cab fares, Sunrise Couriers deliveries, the
 Night Sprint time trial, the Riptide Run speedboat time trial through buoy gates off the beach,
