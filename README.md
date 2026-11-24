@@ -60,7 +60,8 @@ Any static file server works too: the game is just the files under `game/`.
 art-deco strip, Sunwake Beach with its boardwalk, lifeguard towers and pier, Lantern Canals with
 footbridges and skiffs, Saltgate Harbor's gantry cranes and container stacks, the villas of
 Mirador Hills, Palmetto Flats, Old Keys and Seagrape Park — and two causeways to the mainland.
-A stone seawall with promenade railings, quay bollards and riprap rings the island.
+A stone seawall with promenade railings, quay bollards and riprap rings the island; across the
+channel the causeways land at Port Calloway on the mainland, a coastal town under scrub hills.
 Landmarks: the 206 m Lumen Tower, rounded deco corner towers in neon, Ozzie's Bait & Tackle,
 The Coral Room, the pier café, and a skyline of invented brands (Mango Bay Cola, Palmetto Bank,
 Vela Cinema, Hotel Esmeralda...).
