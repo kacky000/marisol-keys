@@ -3,6 +3,7 @@
 
 import { paintIllustratedMap } from './mapPainter.js';
 import { setInputEnabled } from '../core/input.js';
+import { emit } from '../core/events.js';
 import { drawBlip } from './blipIcons.js';
 import { STORY, CONTACTS } from '../missions/storyMissions.js';
 import { CAST, paintPortrait } from '../story/cast.js';
@@ -31,6 +32,7 @@ export class PhoneScreen {
       if (e.button === 2) game.waypoint = null;
       else game.waypoint = { x: MAP_VIEW.x0 + (e.offsetX * k) / s, z: MAP_VIEW.z0 + (e.offsetY * k) / s };
       game.hud.toast(game.waypoint ? 'Waypoint set — follow the purple route' : 'Waypoint cleared');
+      if (game.waypoint) emit('waypoint:set', { ...game.waypoint });
       this.render();
     });
   }

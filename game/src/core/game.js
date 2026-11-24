@@ -276,6 +276,8 @@ export class Game {
     if (this.running) this.state.hour += dt / 120; // a full day every 48 minutes
     const p = this.player;
     Object.assign(playerTuning, tuningFor(this.state.upgrades));
+    // storms leave the roads slick: up to a quarter less grip in a downpour
+    playerTuning.grip *= 1 - 0.25 * (this.weather.rainAmount || 0);
     if (this.downTimer > 0) { this.downTimer -= dt; if (this.downTimer <= 0) this.respawn(); }
     p.update(dt, { camera: this.camera, vehicles: this.vehicles, targets: this.targets, fx: this.fx, time: this.time });
     this.traffic.update(dt, this.time, p);
