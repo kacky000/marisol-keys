@@ -4,6 +4,7 @@ import { groundAt, BLOCK, blockLetter } from './cityPlan.js';
 import { WALK_Y } from './terrain.js';
 import { BOARDWALK, PIER } from '../props/beachfront.js';
 import { rampHeight } from '../activities/stuntJumps.js';
+import { MAINLAND_SHORE } from './mainland.js';
 
 // Stunt ramps rise above whatever surface they sit on.
 export function groundHeight(x, z) {
@@ -35,6 +36,7 @@ export const isWater = (x, z) => groundHeight(x, z) < -0.6;
 // Water a boat can sail: open sea and the bay, under the causeways, but not over the beach shallows or the pier.
 export function navigable(x, z) {
   if (x >= PIER.x0 - 1 && x <= PIER.x1 + 1 && Math.abs(z - PIER.z) <= PIER.half + 1.2) return false;
+  if (x < MAINLAND_SHORE + 32) return false; // the mainland shore and its ferry quays
   const i = Math.floor(x / BLOCK), j = Math.floor(z / BLOCK);
   const l = blockLetter(i, j);
   if (l === 'S') return x > (i + 1) * BLOCK + 10;
