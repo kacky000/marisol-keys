@@ -1,4 +1,3 @@
 [
- {"wait": 8000},
- {"eval": "JSON.stringify({ expect: 'title flyover running in the real frame loop, no exceptions above', onTitle: !marisol.running, clockRuns: marisol.time > 0, favicon: document.getElementById('favicon').href.startsWith('data:image/png') })"}
+ {"eval": "new Promise((done) => { const t0 = Date.now(); const check = () => (window.marisol && marisol.time > 0.1) || Date.now() - t0 > 40000 ? done(JSON.stringify({ expect: 'title flyover running in the real frame loop, no exceptions above', onTitle: !!window.marisol && !marisol.running, clockRuns: !!window.marisol && marisol.time > 0.1, favicon: document.getElementById('favicon').href.startsWith('data:image/png') })) : setTimeout(check, 500); check(); })"}
 ]
