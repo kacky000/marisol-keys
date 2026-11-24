@@ -11,6 +11,9 @@ export const boardwalk = {
   setup(game) {
     game.peds.target = 0;
     game.traffic.target = 0;
+    // ?bow=1: as if a shower had just blown through, with a rainbow low over the surf
+    const bow = Number(new URLSearchParams(location.search).get('bow') ?? 0);
+    if (bow) { game.weather.w = game.weather.target = 0.12; game.weather.wet = bow; }
     const p = game.player;
     p.placeAt(12 * B + 12.5, 9 * B + 4, 2.6);
     p.weapon = 'fists';

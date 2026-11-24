@@ -93,13 +93,17 @@ export class WeatherSystem {
       setTimeout(() => emit('sound', { name: 'thunder' }), 400 + Math.random() * 1500);
     }
     this.rainAmount = rainAmount;
+    // a rainbow as a storm clears: "wet" remembers recent rain and dries over a minute and a half
+    this.wet = rainAmount > 0.3 ? 1 : Math.max(0, (this.wet || 0) - dt / 90);
+    this.rainbow = this.wet * Math.max(0, 1 - rainAmount * 2.5) * (this.w < 0.62 ? 1 : 0);
   }
 
   // Greys the sky, dims the sun and lifts the ambient during cloud and storms.
   apply(state) {
     const w = this.w;
-    if (w < 0.01 && this.flash <= 0) return state;
+    if (w < 0.01 && this.flash <= 0 && !(this.rainbow > 0)) return state;
     const s = { ...state, zenith: state.zenith.clone(), horizon: state.horizon.clone(), ambient: state.ambient.clone(), sunColor: state.sunColor.clone() };
+    s.rainbow = this.rainbow || 0;
     s.zenith.lerp(GREY_DARK, w * 0.75);
     s.horizon.lerp(GREY, w * 0.7);
     s.ambient.lerp(GREY, w * 0.5);

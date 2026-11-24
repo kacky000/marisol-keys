@@ -19,6 +19,7 @@ uniform vec3 uSunDir;
 uniform vec3 uSunColor;
 uniform float uTime;
 uniform float uCloud;
+uniform float uRainbow;
 varying vec3 vDir;
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float noise(vec2 p) {
@@ -50,6 +51,16 @@ void main() {
     col += vec3(0.95, 0.93, 0.85) * smoothstep(0.99955, 0.99975, m) * 1.6 * night;
     col += vec3(0.45, 0.55, 0.8) * pow(m, 80.0) * 0.25 * night;
   }
+  // after a storm: a rainbow 42 degrees around the point opposite the sun
+  if (uRainbow > 0.0 && d.y > 0.0) {
+    float ang = acos(clamp(dot(d, -normalize(uSunDir)), -1.0, 1.0));
+    float t = (ang - 0.70) / 0.075;
+    if (t > 0.0 && t < 1.0) {
+      vec3 bow = clamp(abs(mod(t * 0.8 * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0); // violet inside, red outside
+      float edge = smoothstep(0.0, 0.2, t) * smoothstep(1.0, 0.8, t);
+      col += bow * edge * uRainbow * 0.32 * smoothstep(0.0, 0.12, d.y) * step(0.02, uSunDir.y);
+    }
+  }
   // clouds: a band of soft cumulus above the horizon
   if (d.y > 0.0) {
     vec2 uv = d.xz / (d.y + 0.15) * 1.6 + vec2(uTime * 0.004, 0.0);
@@ -73,6 +84,7 @@ export function createSkyDome() {
       uSunColor: { value: new THREE.Color('#ffffff') },
       uTime: { value: 0 },
       uCloud: { value: 0 },
+      uRainbow: { value: 0 },
     },
     vertexShader: vertex,
     fragmentShader: fragment,
@@ -94,5 +106,6 @@ export function updateSkyDome(dome, state, camera, time) {
   u.uSunColor.value.copy(state.sunColor);
   u.uTime.value = time;
   u.uCloud.value = state.cloudCover || 0;
+  u.uRainbow.value = state.rainbow || 0;
   dome.position.copy(camera.position);
 }
