@@ -87,6 +87,7 @@ export class Ped {
   // Stand and film the commotion at (x, z) with a phone held up.
   film(x, z, time) {
     if (this.state === 'flee') return;
+    if (this.crossing) { this.flee(x, z, 9); return; } // never stand filming in a traffic lane
     this.state = 'film';
     this.filmTimer = time;
     this.heading = Math.atan2(x - this.pos.x, -(z - this.pos.z));
@@ -115,16 +116,17 @@ export class Ped {
       return;
     }
     if (this.state === 'dead') {
+      if (this.phone) this.phone.visible = false;
       this.deadTimer += dt;
       poseHuman(this.rig, 'dead', 0, dt);
       this.rig.position.set(this.pos.x, this.pos.y + 0.14, this.pos.z);
       this.rig.rotation.y = -this.heading;
       return;
     }
-    if (this.state === 'brawl') { this.updateBrawl(dt); return; }
+    if (this.state === 'brawl') { if (this.phone) this.phone.visible = false; this.updateBrawl(dt); return; }
     if (this.state === 'film') {
       this.filmTimer -= dt;
-      if (this.filmTimer <= 0) { this.state = 'walk'; this.route.length = 0; }
+      if (this.filmTimer <= 0) { this.state = 'walk'; this.route.length = 0; this.crossing = false; }
       poseHuman(this.rig, 'idle', 0, dt);
       const arm = this.rig.userData.arms[1];
       arm.rotation.set(1.8, 0, 0.3); // phone held out at eye level

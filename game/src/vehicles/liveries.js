@@ -75,11 +75,11 @@ export function applyLivery(type, spec, c) {
     const cage = c.chrome, y0 = belt, y1 = belt + 0.95;
     for (const s of [-1, 1]) {
       body.orientedBox(s * (W / 2 - 0.12), (y0 + y1) / 2, 0.55, 0.07, y1 - y0, 0.07, 0, cage);
-      body.orientedBox(s * (W / 2 - 0.12), (y0 + y1) / 2 - 0.1, -0.35, 0.07, y1 - y0 - 0.2, 0.07, 0, cage);
-      body.orientedBox(s * (W / 2 - 0.12), y1, 0.1, 0.07, 0.07, 0.95, 0, cage);
+      body.orientedBox(s * (W / 2 - 0.12), (y0 + y1) / 2 - 0.1, 0.0, 0.07, y1 - y0 - 0.2, 0.07, 0, cage); // behind the windshield frame
+      body.orientedBox(s * (W / 2 - 0.12), y1, 0.275, 0.07, 0.07, 0.6, 0, cage);
     }
     body.orientedBox(0, y1, 0.55, W - 0.24, 0.07, 0.07, 0, cage);
-    body.orientedBox(0, y1 - 0.2, -0.35, W - 0.24, 0.07, 0.07, 0, cage);
+    body.orientedBox(0, y1 - 0.2, 0.0, W - 0.24, 0.07, 0.07, 0, cage);
     body.orientedBox(0, belt + 0.15, L / 2 + 0.12, 0.62, 0.62, 0.22, 0, c.black);
   }
   if (type === 'van') {
