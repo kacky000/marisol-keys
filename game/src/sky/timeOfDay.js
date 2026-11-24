@@ -5,7 +5,8 @@ import * as THREE from 'three';
 
 // Key frames: hour, sun elevation (deg), sun colour, intensity, sky zenith, horizon, fog, ambient.
 const KEYS = [
-  { h: 0, el: -30, sun: '#5d6fa8', si: 0.0, zen: '#0a1030', hor: '#1f2b55', amb: '#2a3768', ai: 0.35 },
+  // nights are moonlit: a cool ambient just bright enough to read the streets by
+  { h: 0, el: -30, sun: '#5d6fa8', si: 0.0, zen: '#0a1030', hor: '#1f2b55', amb: '#3a4a86', ai: 0.5 },
   { h: 5.5, el: -4, sun: '#ff9b6a', si: 0.2, zen: '#24305e', hor: '#c97a6a', amb: '#5a5a88', ai: 0.45 },
   { h: 7, el: 10, sun: '#ffc48a', si: 1.6, zen: '#4f86c6', hor: '#f6c8a0', amb: '#9fb4d6', ai: 0.7 },
   { h: 10, el: 45, sun: '#fff3dc', si: 2.6, zen: '#2f7fd0', hor: '#bfe1f2', amb: '#bcd6ee', ai: 0.85 },
@@ -14,8 +15,8 @@ const KEYS = [
   { h: 17, el: 22, sun: '#ffd28f', si: 3.0, zen: '#1c72d8', hor: '#ffc890', amb: '#a9c2df', ai: 1.0 },
   { h: 18.4, el: 9, sun: '#ffac5c', si: 3.3, zen: '#1f6ad0', hor: '#ff9e5a', amb: '#93aed6', ai: 0.95 },
   { h: 19.6, el: -3, sun: '#ff6a4a', si: 0.6, zen: '#2a2f6a', hor: '#e9746a', amb: '#7a6390', ai: 0.5 },
-  { h: 21, el: -18, sun: '#5d6fa8', si: 0.0, zen: '#0c1236', hor: '#2c2f60', amb: '#2e3a70', ai: 0.38 },
-  { h: 24, el: -30, sun: '#5d6fa8', si: 0.0, zen: '#0a1030', hor: '#1f2b55', amb: '#2a3768', ai: 0.35 },
+  { h: 21, el: -18, sun: '#5d6fa8', si: 0.0, zen: '#0c1236', hor: '#2c2f60', amb: '#3a4a86', ai: 0.5 },
+  { h: 24, el: -30, sun: '#5d6fa8', si: 0.0, zen: '#0a1030', hor: '#1f2b55', amb: '#3a4a86', ai: 0.5 },
 ];
 
 const tmpA = new THREE.Color(), tmpB = new THREE.Color();
