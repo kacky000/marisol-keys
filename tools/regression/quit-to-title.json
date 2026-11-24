@@ -1,0 +1,11 @@
+[
+ {
+  "eval": "window.__errs=[]; addEventListener('error', e => __errs.push(String(e.message))); marisol.menus.act('new'); marisol.debugStep(5); 'new'"
+ },
+ {
+  "wait": 1500
+ },
+ {
+  "eval": "(async () => { const g = marisol; g.dialogue.play([['ozzie', 'A line that should not survive quitting.']], () => {}); g.setPaused(true); g.quitToTitle(); const m = await import('./src/ui/creditsRoll.js'); m.rollCredits(); dispatchEvent(new KeyboardEvent('keydown', {code: 'Escape'})); g.debugStep(1); const leftovers = { dialogue: !document.getElementById('dialogue')?.classList.contains('hidden'), intro: g.intro.playing, credits: !!document.getElementById('credits'), paused: g.paused }; return JSON.stringify({expect: 'nothing left over the title after quitting mid-dialogue; Esc closes the credits without pausing', leftovers, errors: __errs}); })()"
+ }
+]
