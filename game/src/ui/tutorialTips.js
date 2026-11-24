@@ -6,7 +6,7 @@ import { on } from '../core/events.js';
 
 const TIPS = {
   car: 'Driving: <b>W/S</b> throttle and brake · <b>Space</b> handbrake drift · <b>Q</b> radio · <b>V</b> camera · <b>F</b> get out',
-  boat: 'Boats: steer round the island · <b>F</b> near a quay or the beach to step off',
+  boat: 'Boats: steer round the island · <b>F</b> near a quay or the beach to step off · press <b>E</b> by the pier end for the <b>Riptide Run</b>',
   wanted: 'Wanted: break line of sight and leave the <b>search circle</b> on the radar · a <b>respray</b> or a gold <b>bribe star</b> helps',
   gun: 'Combat: <b>right-click</b> aim · <b>left-click</b> fire · <b>X</b> crouch in cover · <b>R</b> reload',
   mission: 'Story contacts wait at the <b>yellow markers</b> · <b>M</b> opens the phone with the map, story and jobs',
